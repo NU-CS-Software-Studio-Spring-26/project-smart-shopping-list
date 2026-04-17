@@ -5,23 +5,27 @@
 /log/*
 !/log/.keep
 
-# Ignore temp files
+# Ignore tmp files
 /tmp/*
 !/tmp/.keep
 
-# Ignore storage files
+# Ignore uploaded files
 /storage/*
 !/storage/.keep
 
-# Ignore sqlite dbs
+# Ignore sqlite database files
 /db/*.sqlite3
+/db/*.sqlite3-journal
 
-# Ignore environment files
+# Ignore master key
+/config/master.key
+/config/credentials/*.key
+
 .env
 
-# Ignore Rails master key
-/config/master.key
+# Ignore frontend dependencies
+/node_modules
+/yarn-error.log
 
-# Ignore key files for decrypting credentials and more.
-/config/*.key
-
+# macOS
+.DS_Store
