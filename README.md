@@ -11,3 +11,5 @@
 
 # Miro: https://miro.com/app/board/uXjVGjU99U8=/
 # Meeting: https://www.when2meet.com/?36156767-PyTqS
+# Demo: https://smart-shoppinglist-6ae31171e85c.herokuapp.com/.
+
