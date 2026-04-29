@@ -60,7 +60,7 @@ module PriceScrapers
       if obj["@graph"].is_a?(Array)
         obj["@graph"]
       else
-        [obj]
+        [ obj ]
       end
     end
 

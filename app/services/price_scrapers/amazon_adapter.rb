@@ -23,18 +23,18 @@ module PriceScrapers
       "#priceblock_ourprice",
       "#priceblock_dealprice",
       "#priceblock_saleprice",
-      "span.a-price > span.a-offscreen",
+      "span.a-price > span.a-offscreen"
     ].freeze
 
     TITLE_SELECTORS = [
       "#productTitle",
-      "#title",
+      "#title"
     ].freeze
 
     IMAGE_SELECTORS = [
       "#landingImage",
       "#imgBlkFront",
-      "#main-image",
+      "#main-image"
     ].freeze
 
     def parse(doc, _url)

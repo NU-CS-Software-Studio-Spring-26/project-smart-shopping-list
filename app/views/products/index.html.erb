@@ -2,59 +2,110 @@
   <div class="container">
     <h1 class="display-5 fw-bold">📦 Products</h1>
     <p class="lead">Track price changes across stores and find the best time to buy</p>
-    <%= form_with url: products_path, method: :get, class: "d-flex gap-2 mt-3" do |f| %>
-      <%= f.text_field :search, value: params[:search], placeholder: "Search by name or category...", class: "form-control w-auto" %>
-      <%= f.submit "Search", class: "btn btn-warning" %>
-      <%= link_to "Clear", products_path, class: "btn btn-outline-light" %>
+
+    <%= form_with url: products_path, method: :get, class: "row g-2 mt-3 align-items-end" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :search, "Search", class: "form-label text-white-50 small mb-1" %>
+        <%= f.text_field :search, value: params[:search], placeholder: "Name, category, or description...", class: "form-control" %>
+      </div>
+
+      <div class="col-md-3">
+        <%= f.label :category, "Category", class: "form-label text-white-50 small mb-1" %>
+        <%= f.select :category,
+              options_for_select([ [ "All categories", "" ] ] + @categories, params[:category]),
+              {},
+              class: "form-select" %>
+      </div>
+
+      <div class="col-md-3">
+        <%= f.label :sort, "Sort by", class: "form-label text-white-50 small mb-1" %>
+        <%= f.select :sort,
+              options_for_select(
+                [
+                  [ "Newest first", "newest" ],
+                  [ "Oldest first", "oldest" ],
+                  [ "Name (A→Z)",   "name_asc" ],
+                  [ "Name (Z→A)",   "name_desc" ],
+                  [ "Price (low→high)",  "price_asc" ],
+                  [ "Price (high→low)",  "price_desc" ]
+                ],
+                params[:sort].presence || "newest"
+              ),
+              {},
+              class: "form-select" %>
+      </div>
+
+      <div class="col-md-2 d-flex gap-2">
+        <%= f.submit "Apply", class: "btn btn-warning flex-grow-1" %>
+        <%= link_to "Clear", products_path, class: "btn btn-outline-light" %>
+      </div>
     <% end %>
   </div>
 </div>
 
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <span class="text-muted"><%= @products.count %> products</span>
+    <span class="text-muted"><%= pluralize(@products.size, "product") %></span>
     <%= link_to "+ Add Product", new_product_path, class: "btn btn-primary" %>
   </div>
 
-  <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
-    <% @products.each do |product| %>
-      <div class="col">
-        <div class="card h-100 shadow-sm">
-          <% if product.image_url.present? %>
-            <%= image_tag product.image_url, class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
-          <% else %>
-            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-              <span class="fs-1">📦</span>
-            </div>
-          <% end %>
-          <div class="card-body">
-            <span class="badge bg-secondary mb-1"><%= product.category %></span>
-            <h5 class="card-title"><%= product.name %></h5>
-            <p class="card-text text-muted small"><%= truncate(product.description, length: 80) %></p>
-            <div class="d-flex justify-content-between align-items-center mt-2">
-              <div>
-                <% if product.latest_price %>
-                  <span class="badge bg-success fs-6">$<%= sprintf("%.2f", product.latest_price) %></span>
-                  <small class="text-muted d-block">@ <%= product.latest_store %></small>
-                <% else %>
-                  <span class="text-muted small">No price yet</span>
+  <% if @products.any? %>
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+      <% @products.each do |product| %>
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <% if product.image_url.present? %>
+              <%= image_tag product.image_url, class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
+            <% else %>
+              <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                <span class="fs-1">📦</span>
+              </div>
+            <% end %>
+            <div class="card-body">
+              <span class="badge bg-secondary mb-1"><%= product.category %></span>
+              <h5 class="card-title"><%= product.name %></h5>
+              <p class="card-text text-muted small"><%= truncate(product.description, length: 80) %></p>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <div>
+                  <% if product.latest_price %>
+                    <span class="badge bg-success fs-6">$<%= sprintf("%.2f", product.latest_price) %></span>
+                    <small class="text-muted d-block">@ <%= product.latest_store %></small>
+                  <% else %>
+                    <span class="text-muted small">No price yet</span>
+                  <% end %>
+                </div>
+                <% if product.lowest_price %>
+                  <div class="text-end">
+                    <small class="text-muted d-block">Lowest</small>
+                    <span class="text-danger fw-bold">$<%= sprintf("%.2f", product.lowest_price) %></span>
+                  </div>
                 <% end %>
               </div>
-              <% if product.lowest_price %>
-                <div class="text-end">
-                  <small class="text-muted d-block">Lowest</small>
-                  <span class="text-danger fw-bold">$<%= sprintf("%.2f", product.lowest_price) %></span>
-                </div>
-              <% end %>
+            </div>
+            <div class="card-footer d-flex gap-2">
+              <%= link_to "View", product, class: "btn btn-primary btn-sm flex-grow-1" %>
+              <%= link_to "Edit", edit_product_path(product), class: "btn btn-outline-secondary btn-sm" %>
+              <%= link_to "Delete", product, data: { turbo_method: :delete, turbo_confirm: "Delete this product?" }, class: "btn btn-outline-danger btn-sm" %>
             </div>
           </div>
-          <div class="card-footer d-flex gap-2">
-            <%= link_to "View", product, class: "btn btn-primary btn-sm flex-grow-1" %>
-            <%= link_to "Edit", edit_product_path(product), class: "btn btn-outline-secondary btn-sm" %>
-            <%= link_to "Delete", product, data: { turbo_method: :delete, turbo_confirm: "Delete this product?" }, class: "btn btn-outline-danger btn-sm" %>
-          </div>
         </div>
-      </div>
-    <% end %>
-  </div>
+      <% end %>
+    </div>
+  <% elsif params[:search].present? || params[:category].present? %>
+    <div class="text-center py-5 text-muted bg-light rounded mb-5">
+      <p class="fs-5 mb-1">No products match your filters.</p>
+      <p class="mb-3">Try a different search term or clear the filters.</p>
+      <%= link_to "Clear filters", products_path, class: "btn btn-outline-secondary" %>
+    </div>
+  <% else %>
+    <div class="text-center py-5 mb-5 bg-light rounded">
+      <div class="display-1 mb-2">🛒</div>
+      <h3 class="fw-bold">Your shopping list is empty</h3>
+      <p class="text-muted mb-4">
+        Paste a product link from Amazon, Target, Walmart, Best Buy, Lululemon —
+        we'll grab the title, image, and current price for you.
+      </p>
+      <%= link_to "+ Add your first product", new_product_path, class: "btn btn-primary btn-lg" %>
+    </div>
+  <% end %>
 </div>

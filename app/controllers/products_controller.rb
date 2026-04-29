@@ -4,6 +4,10 @@ class ProductsController < ApplicationController
   def index
     @products = Current.user.products.includes(:price_records)
     @products = fuzzy_search(@products, params[:search]) if params[:search].present?
+    @products = @products.where(category: params[:category]) if params[:category].present?
+    @products = sort_products(@products, params[:sort])
+
+    @categories = Current.user.products.distinct.pluck(:category).compact.sort
   end
 
   def show
@@ -81,6 +85,31 @@ class ProductsController < ApplicationController
   end
 
   private
+
+  # Sort options exposed on the products index page. Anything not in this
+  # whitelist falls back to "newest first" so users can't inject SQL via params.
+  SORT_OPTIONS = {
+    "newest"     => "products.created_at DESC",
+    "oldest"     => "products.created_at ASC",
+    "name_asc"   => "LOWER(products.name) ASC",
+    "name_desc"  => "LOWER(products.name) DESC",
+    "price_asc"  => "latest_price ASC NULLS LAST",
+    "price_desc" => "latest_price DESC NULLS LAST"
+  }.freeze
+
+  def sort_products(scope, key)
+    order_clause = SORT_OPTIONS[key] || SORT_OPTIONS["newest"]
+
+    if order_clause.start_with?("latest_price")
+      scope
+        .left_joins(:price_records)
+        .select("products.*, MAX(price_records.price) AS latest_price")
+        .group("products.id")
+        .order(Arel.sql(order_clause))
+    else
+      scope.order(Arel.sql(order_clause))
+    end
+  end
 
   def fuzzy_search(scope, query)
     tokens = query.to_s.downcase.split(/\s+/).reject(&:blank?)

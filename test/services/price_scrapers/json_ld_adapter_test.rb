@@ -43,7 +43,7 @@ class PriceScrapers::JsonLdAdapterTest < ActiveSupport::TestCase
                    url: "https://shop.lululemon.com/p/foo/qek715w0hh")
     assert_equal BigDecimal("148.00"), result.price
     assert_equal "USD", result.currency
-    assert_equal 'lululemon Align™ Ribbed-Trim Cami Dress', result.title
+    assert_equal "lululemon Align™ Ribbed-Trim Cami Dress", result.title
     assert_match %r{lululemon\.com}, result.image_url
   end
 end

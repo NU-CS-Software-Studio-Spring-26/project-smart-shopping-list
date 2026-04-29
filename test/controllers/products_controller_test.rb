@@ -91,4 +91,40 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Sony Headphones", response.body
     assert_no_match "Wired Mouse", response.body
   end
+
+  test "category filter limits results to matching category" do
+    @user.products.create!(name: "Atomic Habits", category: "Books")
+    @user.products.create!(name: "Sony Headphones", category: "Electronics")
+
+    get products_url, params: { category: "Books" }
+    assert_response :success
+    assert_match "Atomic Habits",   response.body
+    assert_no_match "Sony Headphones", response.body
+  end
+
+  test "sort by name_asc orders alphabetically" do
+    @user.products.destroy_all
+    @user.products.create!(name: "Banana Phone", category: "Electronics")
+    @user.products.create!(name: "Apple Phone",  category: "Electronics")
+    @user.products.create!(name: "Cherry Phone", category: "Electronics")
+
+    get products_url, params: { sort: "name_asc" }
+    assert_response :success
+    body = response.body
+    assert body.index("Apple Phone")  < body.index("Banana Phone")
+    assert body.index("Banana Phone") < body.index("Cherry Phone")
+  end
+
+  test "empty state appears when user has no products" do
+    @user.products.destroy_all
+    get products_url
+    assert_response :success
+    assert_match "Your shopping list is empty", response.body
+  end
+
+  test "no-match state appears when filters return nothing" do
+    get products_url, params: { search: "this-string-will-never-match" }
+    assert_response :success
+    assert_match "No products match your filters", response.body
+  end
 end
