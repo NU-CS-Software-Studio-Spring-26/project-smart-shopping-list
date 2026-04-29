@@ -222,6 +222,7 @@ HTTP client (Ruby, curl, Python `requests`, etc.) can defeat.
 |---|---|---|---|
 | **Cloudflare Bot Management** | First request returns HTTP 403 with response headers `cf-mitigated: challenge` and a `__cf_bm` cookie. The body is a JavaScript challenge page from `challenges.cloudflare.com`, not the real product. | The challenge requires executing JavaScript in a real browser to compute a token, then re-requesting with the resulting cookie. HTTParty does not run JavaScript, and TLS fingerprinting (JA3) flags Ruby clients regardless of headers. | Alo Yoga, Nordstrom, Sephora, ASOS |
 | **Akamai Bot Manager (strict mode)** | HTTP 403 or an Akamai sensor-data challenge page; sometimes redirects to a `_abck` cookie set page. | Same root cause as Cloudflare: requires a full browser environment to execute the sensor JS. | Footlocker (some pages), some Nike releases |
+| **PerimeterX / HUMAN Security (IP-reputation tier)** | HTTP 403 with a `_pxhd` (or `_px`) cookie set, sometimes accompanied by `RTSS` / `rtss1` headers. The body is either an empty PX challenge page or a generic `<html>403</html>`. **Crucially: this often returns success from a residential IP and 403 from a cloud IP** — it's not deterministic. | PX scores every request against an IP reputation database. Heroku / AWS / GCP IP ranges are pre-flagged as "datacenter, likely bot" and blocked even with a perfect User-Agent. There is no client-side workaround. | Free People, Urban Outfitters, Anthropologie (all on the URBN platform) |
 | **Login / membership wall** | HTML loads, but price markup is replaced with "Sign in to see price." | Requires authenticated session cookies we don't have. | Costco (some categories) |
 | **Variant required for price** | Page renders without a price; user must pick size/color first via JS. | Initial SSR HTML genuinely contains no price — there is nothing to scrape. | Some apparel PDPs |
 | **Pure client-side rendering** | The HTML is essentially an empty `<div id="root">`; everything is fetched and rendered by React/Vue after page load. | Headless browser (Playwright) needed; out of scope on a single Heroku Eco dyno. | Some smaller DTC sites |
@@ -270,12 +271,27 @@ flat `offers.price`).
 post-create).
 
 **Symptom**: `HTTP 403 from <host>` on a major brand site (e.g. Alo Yoga,
-Nordstrom, Sephora).
-**Cause**: The site is behind Cloudflare Bot Management or Akamai Bot
-Manager and is serving a JavaScript challenge instead of the product page.
-You can confirm with `curl -I <url>` — if you see `cf-mitigated: challenge`
-or a `__cf_bm` / `_abck` cookie in the response, this is the case.
+Nordstrom, Sephora, Free People).
+**Cause**: The site is behind Cloudflare Bot Management, Akamai Bot
+Manager, or PerimeterX / HUMAN Security and is serving a challenge instead
+of the product page. You can confirm with `curl -I <url>` and look at the
+response cookies / headers:
+- `__cf_bm` cookie or `cf-mitigated: challenge` header → Cloudflare
+- `_abck` cookie or `ak_bmsc` cookie → Akamai
+- `_pxhd` / `_px*` cookie or `RTSS` header → PerimeterX
 **Fix**: This is not a bug; see Section 6.D for the design rationale and
 the list of options for supporting these sites (paid scraping APIs or a
 headless-browser dyno). For now, prefer a different retailer for that
 product, or fall back to manual price entry.
+
+**Symptom**: A URL that just worked locally returns 403 once deployed to
+Heroku.
+**Cause**: PerimeterX-style protections (Free People, Urban Outfitters,
+Anthropologie, etc.) use IP reputation scoring. Heroku's IP ranges are
+flagged as datacenter traffic, so production refreshes can fail even when
+the same URL works fine in local development. This is by design on the
+retailer's side, not a regression.
+**Fix**: Same as above — for blocked sites, use a different retailer or
+add prices manually. Do not chase this with new headers; it cannot be
+fixed without changing IP, which means proxying through a paid scraping
+service.
