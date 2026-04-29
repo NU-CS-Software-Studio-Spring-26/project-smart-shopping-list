@@ -185,7 +185,6 @@ Rich Results require it. The same parser handles all of these.
 | Site | Why it should work |
 |---|---|
 | Best Buy | Standard JSON-LD |
-| Target | Standard JSON-LD |
 | Newegg | Standard JSON-LD |
 | Apple Store | Standard JSON-LD |
 | B&H Photo | Standard JSON-LD |
@@ -226,6 +225,7 @@ HTTP client (Ruby, curl, Python `requests`, etc.) can defeat.
 | **Login / membership wall** | HTML loads, but price markup is replaced with "Sign in to see price." | Requires authenticated session cookies we don't have. | Costco (some categories) |
 | **Variant required for price** | Page renders without a price; user must pick size/color first via JS. | Initial SSR HTML genuinely contains no price — there is nothing to scrape. | Some apparel PDPs |
 | **Pure client-side rendering** | The HTML is essentially an empty `<div id="root">`; everything is fetched and rendered by React/Vue after page load. | Headless browser (Playwright) needed; out of scope on a single Heroku Eco dyno. | Some smaller DTC sites |
+| **Target (CSR rollout, ~Apr 2026)** | Returns HTTP 200 with a complete-looking HTML page, but contains zero `application/ld+json` scripts. The Next.js `__NEXT_DATA__` blob explicitly carries `pageProps.isProductDetailServerSideRenderPriceEnabled: false`. The price is fetched after hydration via `redsky.target.com/redsky_aggregations/...`. | Target rolled this server-side-render-disable flag out globally just before Milestone 1; their HTML now contains no price field at all to scrape. Reverse-engineering the redsky GraphQL endpoint is feasible (it requires a hard-coded `x-api-key` they ship in their JS bundle) but is brittle and out of scope. | All `target.com/p/...` PDPs |
 | **API gated by OAuth / paid keys** | Public HTML pages exist, but the canonical price comes from an authenticated API. | Requires obtaining and rotating API credentials. | eBay's modern catalog API |
 
 If a customer of the app really needs one of these sites, the realistic
@@ -263,6 +263,17 @@ specific site, write a custom adapter or back off the cron frequency.
 locate the price (e.g. Walmart sometimes shows a price *range* without a
 flat `offers.price`).
 **Fix**: Add a manual price record, or write a site adapter.
+
+**Symptom**: `No schema.org Product JSON-LD found` from a `target.com/p/...`
+URL even though the page loads in a browser.
+**Cause**: As of late April 2026 Target globally disabled server-side
+rendering of price (`isProductDetailServerSideRenderPriceEnabled: false`
+in their Next.js page props) and now fetches the price client-side from
+`redsky.target.com`. Our HTML scrape genuinely has nothing to extract.
+**Fix**: There is no quick fix — the price is no longer in the HTML. See
+Section 6.D for the full picture. For now, prefer Best Buy / Walmart for
+similar product categories, or add the price to the Target product
+manually.
 
 **Symptom**: "Couldn't read that URL" on product creation.
 **Cause**: 5-second timeout exceeded, or hard 4xx from the site.
