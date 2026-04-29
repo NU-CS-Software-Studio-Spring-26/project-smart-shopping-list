@@ -1,9 +1,6 @@
 <div class="container" style="max-width: 420px;">
   <h2 class="mb-4">Sign in</h2>
 
-  <% if flash[:alert] %><div class="alert alert-danger"><%= flash[:alert] %></div><% end %>
-  <% if flash[:notice] %><div class="alert alert-success"><%= flash[:notice] %></div><% end %>
-
   <%= form_with url: session_path, local: true do |form| %>
     <div class="mb-3">
       <%= form.label :email_address, class: "form-label" %>

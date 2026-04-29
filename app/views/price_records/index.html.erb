@@ -11,6 +11,7 @@
     <%= link_to "← All Products", products_path, class: "btn btn-outline-secondary" %>
   </div>
 
+  <% if @price_records.any? %>
   <div class="table-responsive">
     <table class="table table-hover table-bordered align-middle">
       <thead>
@@ -53,4 +54,12 @@
       </tbody>
     </table>
   </div>
+  <% else %>
+    <div class="text-center py-5 mb-5 bg-light rounded">
+      <div class="display-1 mb-2">📈</div>
+      <h3 class="fw-bold">No price records yet</h3>
+      <p class="text-muted mb-4">Add a product, then log the price you saw to start a history.</p>
+      <%= link_to "+ Add Product", new_product_path, class: "btn btn-primary btn-lg" %>
+    </div>
+  <% end %>
 </div>
