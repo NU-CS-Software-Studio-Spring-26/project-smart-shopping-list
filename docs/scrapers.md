@@ -214,11 +214,24 @@ Rich Results require it. The same parser handles all of these.
 
 ### D — Not feasible without a different approach
 
-- Sites that gate prices behind login or membership.
-- Sites that require selecting a variant (size/color) before a price appears.
-- Sites that rely entirely on client-side rendering with no SSR
-  (would need a headless browser like Playwright, out of scope).
-- APIs that require OAuth/keys (e.g. eBay's modern catalog API).
+These sites are **known blockers**. Hitting one of them is not a bug in our
+scraper — it is a deliberate design decision by the retailer that no plain
+HTTP client (Ruby, curl, Python `requests`, etc.) can defeat.
+
+| Category | What it looks like | Why we cannot bypass it | Confirmed examples |
+|---|---|---|---|
+| **Cloudflare Bot Management** | First request returns HTTP 403 with response headers `cf-mitigated: challenge` and a `__cf_bm` cookie. The body is a JavaScript challenge page from `challenges.cloudflare.com`, not the real product. | The challenge requires executing JavaScript in a real browser to compute a token, then re-requesting with the resulting cookie. HTTParty does not run JavaScript, and TLS fingerprinting (JA3) flags Ruby clients regardless of headers. | Alo Yoga, Nordstrom, Sephora, ASOS |
+| **Akamai Bot Manager (strict mode)** | HTTP 403 or an Akamai sensor-data challenge page; sometimes redirects to a `_abck` cookie set page. | Same root cause as Cloudflare: requires a full browser environment to execute the sensor JS. | Footlocker (some pages), some Nike releases |
+| **Login / membership wall** | HTML loads, but price markup is replaced with "Sign in to see price." | Requires authenticated session cookies we don't have. | Costco (some categories) |
+| **Variant required for price** | Page renders without a price; user must pick size/color first via JS. | Initial SSR HTML genuinely contains no price — there is nothing to scrape. | Some apparel PDPs |
+| **Pure client-side rendering** | The HTML is essentially an empty `<div id="root">`; everything is fetched and rendered by React/Vue after page load. | Headless browser (Playwright) needed; out of scope on a single Heroku Eco dyno. | Some smaller DTC sites |
+| **API gated by OAuth / paid keys** | Public HTML pages exist, but the canonical price comes from an authenticated API. | Requires obtaining and rotating API credentials. | eBay's modern catalog API |
+
+If a customer of the app really needs one of these sites, the realistic
+options are (a) integrate a paid scraping service such as ScraperAPI,
+ZenRows, or Bright Data, which solve Cloudflare/Akamai challenges on their
+infrastructure, or (b) provision a Playwright-based dyno separate from web —
+both are out of scope for this milestone.
 
 ---
 
@@ -255,3 +268,14 @@ flat `offers.price`).
 **Fix**: Try again, try a different URL, or add the product manually
 (temporarily put a placeholder URL or just skip auto-fetch by editing
 post-create).
+
+**Symptom**: `HTTP 403 from <host>` on a major brand site (e.g. Alo Yoga,
+Nordstrom, Sephora).
+**Cause**: The site is behind Cloudflare Bot Management or Akamai Bot
+Manager and is serving a JavaScript challenge instead of the product page.
+You can confirm with `curl -I <url>` — if you see `cf-mitigated: challenge`
+or a `__cf_bm` / `_abck` cookie in the response, this is the case.
+**Fix**: This is not a bug; see Section 6.D for the design rationale and
+the list of options for supporting these sites (paid scraping APIs or a
+headless-browser dyno). For now, prefer a different retailer for that
+product, or fall back to manual price entry.
