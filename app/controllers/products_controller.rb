@@ -12,14 +12,27 @@ class ProductsController < ApplicationController
 
   def show
     @price_records = @product.price_records.order(recorded_at: :desc)
+    @chart_data = build_chart_data(@price_records)
   end
 
   def new
     @product = Current.user.products.build
+    @manual  = ActiveModel::Type::Boolean.new.cast(params[:manual])
   end
 
   def create
     @product = Current.user.products.build(create_params)
+    @manual  = ActiveModel::Type::Boolean.new.cast(params[:manual])
+
+    # Manual mode: user filled in name/details by hand, skip the scraper.
+    if @manual || @product.name.present?
+      @manual = true
+      if @product.save
+        return redirect_to @product, notice: "Product added."
+      else
+        return render :new, status: :unprocessable_entity
+      end
+    end
 
     if @product.source_url.blank?
       @product.errors.add(:source_url, "can't be blank")
@@ -29,7 +42,9 @@ class ProductsController < ApplicationController
     begin
       result = PriceScrapers.fetch(@product.source_url, timeout: 5)
     rescue PriceScrapers::Error => e
-      flash.now[:alert] = "Couldn't read that URL: #{e.message}. Try a different link."
+      @manual = true
+      flash.now[:alert] = friendly_scrape_error(e) +
+        " You can fill in the product details below to add it manually."
       return render :new, status: :unprocessable_entity
     end
 
@@ -86,6 +101,27 @@ class ProductsController < ApplicationController
 
   private
 
+  # Group price records by store for the price-history chart. Stores with only
+  # one observation get that point duplicated at the overall date range so the
+  # chart still draws a flat horizontal line — same convention as Newegg/CamelCamelCamel.
+  def build_chart_data(records)
+    return [] if records.empty?
+
+    dates = records.map { |r| r.recorded_at.to_date }
+    range_start, range_end = dates.min, dates.max
+
+    records.group_by(&:store_name).map do |store, recs|
+      points = recs.sort_by(&:recorded_at).map { |r| [ r.recorded_at.to_date.iso8601, r.price.to_f ] }
+
+      if points.size == 1 && range_start != range_end
+        _, y = points.first
+        points = [ [ range_start.iso8601, y ], [ range_end.iso8601, y ] ]
+      end
+
+      { name: store.presence || "Unknown", data: points }
+    end
+  end
+
   # Sort options exposed on the products index page. Anything not in this
   # whitelist falls back to "newest first" so users can't inject SQL via params.
   SORT_OPTIONS = {
@@ -128,10 +164,25 @@ class ProductsController < ApplicationController
     @product = Current.user.products.find(params[:id])
   end
 
-  # New form: only source_url + category. name/image/description are populated
-  # by the scraper in #create, never from user input.
+  # New form: source_url + category by default. When the scraper fails or the
+  # user opts into manual mode, name/description/image_url are also accepted
+  # so the user can finish onboarding without a working scrape.
   def create_params
-    params.require(:product).permit(:category, :source_url)
+    params.require(:product).permit(:category, :source_url, :name, :description, :image_url)
+  end
+
+  # Map scraper exceptions to a single user-facing sentence. We deliberately
+  # don't surface raw exception text (DNS errors, "getaddrinfo(3)", HTTP codes)
+  # to end users — those belong in logs, not in a flash banner.
+  def friendly_scrape_error(error)
+    case error
+    when PriceScrapers::TransientError
+      "We couldn't reach that site right now."
+    when PriceScrapers::PermanentError
+      "That URL didn't work — the page may not exist or the site may be blocking automated lookups."
+    else
+      "We couldn't read product details from that page."
+    end
   end
 
   # Edit form keeps everything editable so users can correct scraped values.

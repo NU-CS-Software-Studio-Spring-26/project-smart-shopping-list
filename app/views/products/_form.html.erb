@@ -10,13 +10,20 @@
   <% end %>
 
   <% if product.new_record? %>
+    <% manual = local_assigns.fetch(:manual, false) %>
+    <%= hidden_field_tag :manual, "1" if manual %>
+
     <div class="mb-3">
       <%= f.label :source_url, "Product URL", class: "form-label fw-semibold" %>
       <%= f.url_field :source_url, class: "form-control",
-            placeholder: "https://www.target.com/p/...",
-            required: true %>
+            placeholder: "https://www.lululemon.com/p/...",
+            required: !manual %>
       <div class="form-text">
-        Paste a link to the product page. We'll fetch the title, image, and current price for you.
+        <% if manual %>
+          We'll still save the link with the product so you can record prices against it later.
+        <% else %>
+          Paste a link to the product page. We'll fetch the title, image, and current price for you.
+        <% end %>
       </div>
     </div>
 
@@ -28,7 +35,33 @@
           class: "form-select" %>
     </div>
 
-    <%= f.submit "Add Product", class: "btn btn-primary w-100" %>
+    <% if manual %>
+      <div class="mb-3">
+        <%= f.label :name, "Product name", class: "form-label fw-semibold" %>
+        <%= f.text_field :name, class: "form-control", required: true %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, "Description", class: "form-label fw-semibold" %>
+        <%= f.text_area :description, class: "form-control", rows: 3 %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :image_url, "Image URL (optional)", class: "form-label fw-semibold" %>
+        <%= f.url_field :image_url, class: "form-control", placeholder: "https://..." %>
+      </div>
+
+      <%= f.submit "Add Product", class: "btn btn-primary w-100" %>
+      <div class="text-center mt-2">
+        <%= link_to "← Try the auto-fetch flow instead", new_product_path, class: "small text-muted" %>
+      </div>
+    <% else %>
+      <%= f.submit "Add Product", class: "btn btn-primary w-100" %>
+      <div class="text-center mt-2">
+        <%= link_to "Site not supported? Fill in details manually →",
+              new_product_path(manual: 1), class: "small text-muted" %>
+      </div>
+    <% end %>
   <% else %>
     <div class="mb-3">
       <%= f.label :name, "Product Name", class: "form-label fw-semibold" %>

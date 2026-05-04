@@ -74,6 +74,17 @@
         </div>
         <div class="card-body p-0">
           <% if @price_records.any? %>
+            <div class="p-3 border-bottom">
+              <%= line_chart @chart_data,
+                    height: "260px",
+                    thousands: ",",
+                    prefix: "$",
+                    round: 2,
+                    library: {
+                      elements: { point: { radius: 4, hoverRadius: 6 } },
+                      interaction: { mode: "nearest", intersect: false }
+                    } %>
+            </div>
             <div class="table-responsive">
               <table class="table table-hover mb-0">
                 <thead class="table-dark">

@@ -24,6 +24,9 @@ gem "sassc-rails"
 gem "nokogiri"
 gem "httparty"
 
+# Charts on the product detail page (price history)
+gem "chartkick"
+
 group :development, :test do
   gem "faker"
 end
