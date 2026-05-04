@@ -45,6 +45,12 @@
                 <% if @product.latest_price %>$<%= sprintf("%.2f", @product.latest_price) %><% else %>—<% end %>
               </div>
               <small class="text-muted">Latest Price</small>
+              <% if @product.price_trend %>
+                <div class="mt-2">
+                  <span class="fs-4" title="<%= @product.price_trend_description %>"><%= @product.price_trend_emoji %></span>
+                  <small class="d-block text-muted"><%= @product.price_trend_description.downcase %></small>
+                </div>
+              <% end %>
             </div>
             <div class="text-center">
               <div class="fs-5 fw-bold text-danger">
@@ -85,6 +91,22 @@
                       interaction: { mode: "nearest", intersect: false }
                     } %>
             </div>
+            <% if @lowest_price_record %>
+              <div class="p-3 bg-light border-bottom">
+                <div class="row g-2 align-items-center">
+                  <div class="col">
+                    <small class="text-muted d-block">📍 Lowest Price Point</small>
+                    <strong class="text-danger">
+                      $<%= sprintf("%.2f", @lowest_price_record.price) %>
+                      <span class="text-muted fw-normal">@ <%= @lowest_price_record.store_name %></span>
+                    </strong>
+                    <small class="text-muted d-block">
+                      <%= @lowest_price_record.recorded_at.strftime("%B %d, %Y at %I:%M %p") %>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            <% end %>
             <div class="table-responsive">
               <table class="table table-hover mb-0">
                 <thead class="table-dark">

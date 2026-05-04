@@ -13,6 +13,7 @@ class ProductsController < ApplicationController
   def show
     @price_records = @product.price_records.order(recorded_at: :desc)
     @chart_data = build_chart_data(@price_records)
+    @lowest_price_record = @product.lowest_price_record
   end
 
   def new

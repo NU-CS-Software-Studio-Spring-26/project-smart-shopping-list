@@ -70,6 +70,9 @@
                   <% if product.latest_price %>
                     <span class="badge bg-success fs-6">$<%= sprintf("%.2f", product.latest_price) %></span>
                     <small class="text-muted d-block">@ <%= product.latest_store %></small>
+                    <small class="d-block mt-1" title="<%= product.price_trend_description %>">
+                      <span class="fs-5"><%= product.price_trend_emoji %></span>
+                    </small>
                   <% else %>
                     <span class="text-muted small">No price yet</span>
                   <% end %>

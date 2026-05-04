@@ -39,4 +39,56 @@ class ProductTest < ActiveSupport::TestCase
     @product.price_records.create!(price: 105, store_name: "Target", recorded_at: 1.day.ago)
     assert_equal 90, @product.lowest_price
   end
+
+  # --- Price Trend Tests ---
+
+  test "price_trend returns nil with less than 2 records" do
+    @product.save!
+    assert_nil @product.price_trend
+  end
+
+  test "price_trend returns :up when price increases significantly" do
+    @product.save!
+    @product.price_records.create!(price: 100, store_name: "Amazon", recorded_at: 5.days.ago)
+    @product.price_records.create!(price: 95, store_name: "Amazon", recorded_at: 4.days.ago)
+    @product.price_records.create!(price: 98, store_name: "Amazon", recorded_at: 3.days.ago)
+    @product.price_records.create!(price: 110, store_name: "Amazon", recorded_at: 1.day.ago)
+
+    assert_equal :up, @product.price_trend
+  end
+
+  test "price_trend returns :down when price decreases significantly" do
+    @product.save!
+    @product.price_records.create!(price: 100, store_name: "Amazon", recorded_at: 5.days.ago)
+    @product.price_records.create!(price: 105, store_name: "Amazon", recorded_at: 4.days.ago)
+    @product.price_records.create!(price: 102, store_name: "Amazon", recorded_at: 3.days.ago)
+    @product.price_records.create!(price: 85, store_name: "Amazon", recorded_at: 1.day.ago)
+
+    assert_equal :down, @product.price_trend
+  end
+
+  test "price_trend returns :stable when price changes are within threshold" do
+    @product.save!
+    @product.price_records.create!(price: 100, store_name: "Amazon", recorded_at: 3.days.ago)
+    @product.price_records.create!(price: 101, store_name: "Amazon", recorded_at: 2.days.ago)
+    @product.price_records.create!(price: 102, store_name: "Amazon", recorded_at: 1.day.ago)
+
+    assert_equal :stable, @product.price_trend
+  end
+
+  test "price_trend_emoji returns correct emoji for trend" do
+    @product.save!
+    @product.price_records.create!(price: 100, store_name: "Amazon", recorded_at: 2.days.ago)
+    @product.price_records.create!(price: 110, store_name: "Amazon", recorded_at: 1.day.ago)
+
+    assert_equal "📈", @product.price_trend_emoji
+  end
+
+  test "price_trend_description returns human-readable trend" do
+    @product.save!
+    @product.price_records.create!(price: 100, store_name: "Amazon", recorded_at: 2.days.ago)
+    @product.price_records.create!(price: 110, store_name: "Amazon", recorded_at: 1.day.ago)
+
+    assert_match(/trending up/i, @product.price_trend_description)
+  end
 end
