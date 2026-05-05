@@ -1,0 +1,1047 @@
+commit 78d1b1fb8c6c95fc6af4fc3ab6b789aad6b50c52
+Author: andrewhxd <andrewhxue@gmail.com>
+Date:   Tue Apr 21 18:34:18 2026 -0500
+
+    Add user authentication and scope products to current user
+
+diff --git a/Gemfile b/Gemfile
+index 2750084..0993872 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -25,7 +25,7 @@ group :development, :test do
+ end
+ 
+ # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
+-# gem "bcrypt", "~> 3.1.7"
++gem "bcrypt", "~> 3.1.7"
+ 
+ # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+ gem "tzinfo-data", platforms: %i[ windows jruby ]
+diff --git a/Gemfile.lock b/Gemfile.lock
+index 62da592..a831572 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -79,6 +79,7 @@ GEM
+       public_suffix (>= 2.0.2, < 8.0)
+     ast (2.4.3)
+     base64 (0.3.0)
++    bcrypt (3.1.22)
+     bcrypt_pbkdf (1.1.2)
+     bigdecimal (4.1.1)
+     bindex (0.8.1)
+@@ -382,12 +383,14 @@ PLATFORMS
+   aarch64-linux-musl
+   arm-linux-gnu
+   arm-linux-musl
++  arm64-darwin-23
+   arm64-darwin-25
+   x86_64-linux
+   x86_64-linux-gnu
+   x86_64-linux-musl
+ 
+ DEPENDENCIES
++  bcrypt (~> 3.1.7)
+   bootsnap
+   bootstrap (~> 5.3)
+   brakeman
+@@ -428,6 +431,7 @@ CHECKSUMS
+   addressable (2.9.0) sha256=7fdf6ac3660f7f4e867a0838be3f6cf722ace541dd97767fa42bc6cfa980c7af
+   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
+   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
++  bcrypt (3.1.22) sha256=1f0072e88c2d705d94aff7f2c5cb02eb3f1ec4b8368671e19112527489f29032
+   bcrypt_pbkdf (1.1.2) sha256=c2414c23ce66869b3eb9f643d6a3374d8322dfb5078125c82792304c10b94cf6
+   bigdecimal (4.1.1) sha256=1c09efab961da45203c8316b0cdaec0ff391dfadb952dd459584b63ebf8054ca
+   bindex (0.8.1) sha256=7b1ecc9dc539ed8bccfc8cb4d2732046227b09d6f37582ff12e50a5047ceb17e
+diff --git a/app/channels/application_cable/connection.rb b/app/channels/application_cable/connection.rb
+new file mode 100644
+index 0000000..4264c74
+--- /dev/null
++++ b/app/channels/application_cable/connection.rb
+@@ -0,0 +1,16 @@
++module ApplicationCable
++  class Connection < ActionCable::Connection::Base
++    identified_by :current_user
++
++    def connect
++      set_current_user || reject_unauthorized_connection
++    end
++
++    private
++      def set_current_user
++        if session = Session.find_by(id: cookies.signed[:session_id])
++          self.current_user = session.user
++        end
++      end
++  end
++end
+diff --git a/app/controllers/application_controller.rb b/app/controllers/application_controller.rb
+index c353756..5f38f02 100644
+--- a/app/controllers/application_controller.rb
++++ b/app/controllers/application_controller.rb
+@@ -1,4 +1,5 @@
+ class ApplicationController < ActionController::Base
++  include Authentication
+   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
+   allow_browser versions: :modern
+ 
+diff --git a/app/controllers/concerns/authentication.rb b/app/controllers/concerns/authentication.rb
+new file mode 100644
+index 0000000..3538f48
+--- /dev/null
++++ b/app/controllers/concerns/authentication.rb
+@@ -0,0 +1,52 @@
++module Authentication
++  extend ActiveSupport::Concern
++
++  included do
++    before_action :require_authentication
++    helper_method :authenticated?
++  end
++
++  class_methods do
++    def allow_unauthenticated_access(**options)
++      skip_before_action :require_authentication, **options
++    end
++  end
++
++  private
++    def authenticated?
++      resume_session
++    end
++
++    def require_authentication
++      resume_session || request_authentication
++    end
++
++    def resume_session
++      Current.session ||= find_session_by_cookie
++    end
++
++    def find_session_by_cookie
++      Session.find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
++    end
++
++    def request_authentication
++      session[:return_to_after_authenticating] = request.url
++      redirect_to new_session_path
++    end
++
++    def after_authentication_url
++      session.delete(:return_to_after_authenticating) || root_url
++    end
++
++    def start_new_session_for(user)
++      user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
++        Current.session = session
++        cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
++      end
++    end
++
++    def terminate_session
++      Current.session.destroy
++      cookies.delete(:session_id)
++    end
++end
+diff --git a/app/controllers/passwords_controller.rb b/app/controllers/passwords_controller.rb
+new file mode 100644
+index 0000000..f95ec78
+--- /dev/null
++++ b/app/controllers/passwords_controller.rb
+@@ -0,0 +1,35 @@
++class PasswordsController < ApplicationController
++  allow_unauthenticated_access
++  before_action :set_user_by_token, only: %i[ edit update ]
++  rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_password_path, alert: "Try again later." }
++
++  def new
++  end
++
++  def create
++    if user = User.find_by(email_address: params[:email_address])
++      PasswordsMailer.reset(user).deliver_later
++    end
++
++    redirect_to new_session_path, notice: "Password reset instructions sent (if user with that email address exists)."
++  end
++
++  def edit
++  end
++
++  def update
++    if @user.update(params.permit(:password, :password_confirmation))
++      @user.sessions.destroy_all
++      redirect_to new_session_path, notice: "Password has been reset."
++    else
++      redirect_to edit_password_path(params[:token]), alert: "Passwords did not match."
++    end
++  end
++
++  private
++    def set_user_by_token
++      @user = User.find_by_password_reset_token!(params[:token])
++    rescue ActiveSupport::MessageVerifier::InvalidSignature
++      redirect_to new_password_path, alert: "Password reset link is invalid or has expired."
++    end
++end
+diff --git a/app/controllers/price_records_controller.rb b/app/controllers/price_records_controller.rb
+index f70a661..d415db5 100644
+--- a/app/controllers/price_records_controller.rb
++++ b/app/controllers/price_records_controller.rb
+@@ -2,18 +2,18 @@ class PriceRecordsController < ApplicationController
+   before_action :set_price_record, only: [:show, :edit, :update, :destroy]
+ 
+   def index
+-    @price_records = PriceRecord.all.includes(:product).order(recorded_at: :desc)
++    @price_records = PriceRecord.where(product: Current.user.products).includes(:product).order(recorded_at: :desc)
+   end
+ 
+   def show; end
+ 
+   def new
+-    @product = Product.find(params[:product_id])
++    @product = Current.user.products.find(params[:product_id])
+     @price_record = @product.price_records.new
+   end
+ 
+   def create
+-    @product = Product.find(params[:product_id])
++    @product = Current.user.products.find(params[:product_id])
+     @price_record = @product.price_records.new(price_record_params)
+     @price_record.recorded_at ||= Time.current
+     if @price_record.save
+@@ -44,7 +44,7 @@ class PriceRecordsController < ApplicationController
+   private
+ 
+   def set_price_record
+-    @price_record = PriceRecord.find(params[:id])
++    @price_record = PriceRecord.where(product: Current.user.products).find(params[:id])
+   end
+ 
+   def price_record_params
+diff --git a/app/controllers/products_controller.rb b/app/controllers/products_controller.rb
+index a3e33a5..6b7198d 100644
+--- a/app/controllers/products_controller.rb
++++ b/app/controllers/products_controller.rb
+@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
+   before_action :set_product, only: [:show, :edit, :update, :destroy]
+ 
+   def index
+-    @products = Product.all.includes(:price_records)
++    @products = Current.user.products.includes(:price_records)
+     if params[:search].present?
+       @products = @products.where("name LIKE ? OR category LIKE ?", "%#{params[:search]}%", "%#{params[:search]}%")
+     end
+@@ -13,11 +13,11 @@ class ProductsController < ApplicationController
+   end
+ 
+   def new
+-    @product = Product.new
++    @product = Current.user.products.build
+   end
+ 
+   def create
+-    @product = Product.new(product_params)
++    @product = Current.user.products.build(product_params)
+     if @product.save
+       redirect_to @product, notice: 'Product added successfully!'
+     else
+@@ -43,7 +43,7 @@ class ProductsController < ApplicationController
+   private
+ 
+   def set_product
+-    @product = Product.find(params[:id])
++    @product = Current.user.products.find(params[:id])
+   end
+ 
+   def product_params
+diff --git a/app/controllers/registrations_controller.rb b/app/controllers/registrations_controller.rb
+new file mode 100644
+index 0000000..d9b43c8
+--- /dev/null
++++ b/app/controllers/registrations_controller.rb
+@@ -0,0 +1,23 @@
++class RegistrationsController < ApplicationController
++  allow_unauthenticated_access only: [:new, :create]
++
++  def new
++    @user = User.new
++  end
++
++  def create
++    @user = User.new(registration_params)
++    if @user.save
++      start_new_session_for @user
++      redirect_to root_path, notice: "Welcome! Your account has been created."
++    else
++      render :new, status: :unprocessable_entity
++    end
++  end
++
++  private
++
++  def registration_params
++    params.require(:user).permit(:email_address, :password, :password_confirmation)
++  end
++end
+diff --git a/app/controllers/sessions_controller.rb b/app/controllers/sessions_controller.rb
+new file mode 100644
+index 0000000..cf7fccd
+--- /dev/null
++++ b/app/controllers/sessions_controller.rb
+@@ -0,0 +1,21 @@
++class SessionsController < ApplicationController
++  allow_unauthenticated_access only: %i[ new create ]
++  rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_session_path, alert: "Try again later." }
++
++  def new
++  end
++
++  def create
++    if user = User.authenticate_by(params.permit(:email_address, :password))
++      start_new_session_for user
++      redirect_to after_authentication_url
++    else
++      redirect_to new_session_path, alert: "Try another email address or password."
++    end
++  end
++
++  def destroy
++    terminate_session
++    redirect_to new_session_path, status: :see_other
++  end
++end
+diff --git a/app/mailers/passwords_mailer.rb b/app/mailers/passwords_mailer.rb
+new file mode 100644
+index 0000000..4f0ac7f
+--- /dev/null
++++ b/app/mailers/passwords_mailer.rb
+@@ -0,0 +1,6 @@
++class PasswordsMailer < ApplicationMailer
++  def reset(user)
++    @user = user
++    mail subject: "Reset your password", to: user.email_address
++  end
++end
+diff --git a/app/models/current.rb b/app/models/current.rb
+new file mode 100644
+index 0000000..2bef56d
+--- /dev/null
++++ b/app/models/current.rb
+@@ -0,0 +1,4 @@
++class Current < ActiveSupport::CurrentAttributes
++  attribute :session
++  delegate :user, to: :session, allow_nil: true
++end
+diff --git a/app/models/product.rb b/app/models/product.rb
+index 62354da..ea184eb 100644
+--- a/app/models/product.rb
++++ b/app/models/product.rb
+@@ -1,6 +1,7 @@
+ class Product < ApplicationRecord
++    belongs_to :user
+     has_many :price_records, dependent: :destroy
+-  
++
+     validates :name, presence: true
+     validates :category, presence: true
+   
+diff --git a/app/models/session.rb b/app/models/session.rb
+new file mode 100644
+index 0000000..cf376fb
+--- /dev/null
++++ b/app/models/session.rb
+@@ -0,0 +1,3 @@
++class Session < ApplicationRecord
++  belongs_to :user
++end
+diff --git a/app/models/user.rb b/app/models/user.rb
+new file mode 100644
+index 0000000..ca0f4c9
+--- /dev/null
++++ b/app/models/user.rb
+@@ -0,0 +1,7 @@
++class User < ApplicationRecord
++  has_secure_password
++  has_many :sessions, dependent: :destroy
++  has_many :products, dependent: :destroy
++
++  normalizes :email_address, with: ->(e) { e.strip.downcase }
++end
+diff --git a/app/views/layouts/application.html.erb b/app/views/layouts/application.html.erb
+index 6c18da1..6a074ba 100644
+--- a/app/views/layouts/application.html.erb
++++ b/app/views/layouts/application.html.erb
+@@ -16,8 +16,15 @@
+           <%= link_to "Products", products_path, class: "nav-link #{controller_name == 'products' ? 'active' : ''}" %>
+           <%= link_to "Price Records", price_records_path, class: "nav-link #{controller_name == 'price_records' ? 'active' : ''}" %>
+         </div>
+-        <div class="d-flex gap-2">
+-          <%= link_to "+ Add Product", new_product_path, class: "btn btn-outline-light btn-sm" %>
++        <div class="d-flex gap-2 align-items-center">
++          <% if authenticated? %>
++            <%= link_to "+ Add Product", new_product_path, class: "btn btn-outline-light btn-sm" %>
++            <span class="text-white-50 small"><%= Current.user.email_address %></span>
++            <%= button_to "Sign out", session_path, method: :delete, class: "btn btn-outline-light btn-sm", form: { class: "d-inline" } %>
++          <% else %>
++            <%= link_to "Sign in", new_session_path, class: "btn btn-outline-light btn-sm" %>
++            <%= link_to "Sign up", new_registration_path, class: "btn btn-light btn-sm" %>
++          <% end %>
+         </div>
+       </div>
+     </nav>
+diff --git a/app/views/passwords/edit.html.erb b/app/views/passwords/edit.html.erb
+new file mode 100644
+index 0000000..9f0c87c
+--- /dev/null
++++ b/app/views/passwords/edit.html.erb
+@@ -0,0 +1,9 @@
++<h1>Update your password</h1>
++
++<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
++
++<%= form_with url: password_path(params[:token]), method: :put do |form| %>
++  <%= form.password_field :password, required: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72 %><br>
++  <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72 %><br>
++  <%= form.submit "Save" %>
++<% end %>
+diff --git a/app/views/passwords/new.html.erb b/app/views/passwords/new.html.erb
+new file mode 100644
+index 0000000..44efb2b
+--- /dev/null
++++ b/app/views/passwords/new.html.erb
+@@ -0,0 +1,8 @@
++<h1>Forgot your password?</h1>
++
++<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
++
++<%= form_with url: passwords_path do |form| %>
++  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
++  <%= form.submit "Email reset instructions" %>
++<% end %>
+diff --git a/app/views/passwords_mailer/reset.html.erb b/app/views/passwords_mailer/reset.html.erb
+new file mode 100644
+index 0000000..1b09154
+--- /dev/null
++++ b/app/views/passwords_mailer/reset.html.erb
+@@ -0,0 +1,6 @@
++<p>
++  You can reset your password on
++  <%= link_to "this password reset page", edit_password_url(@user.password_reset_token) %>.
++
++  This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
++</p>
+diff --git a/app/views/passwords_mailer/reset.text.erb b/app/views/passwords_mailer/reset.text.erb
+new file mode 100644
+index 0000000..aecee82
+--- /dev/null
++++ b/app/views/passwords_mailer/reset.text.erb
+@@ -0,0 +1,4 @@
++You can reset your password on
++<%= edit_password_url(@user.password_reset_token) %>
++
++This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
+diff --git a/app/views/registrations/new.html.erb b/app/views/registrations/new.html.erb
+new file mode 100644
+index 0000000..e85d37e
+--- /dev/null
++++ b/app/views/registrations/new.html.erb
+@@ -0,0 +1,33 @@
++<div class="container" style="max-width: 420px;">
++  <h2 class="mb-4">Create account</h2>
++
++  <% if @user.errors.any? %>
++    <div class="alert alert-danger">
++      <ul class="mb-0">
++        <% @user.errors.full_messages.each do |msg| %>
++          <li><%= msg %></li>
++        <% end %>
++      </ul>
++    </div>
++  <% end %>
++
++  <%= form_with model: @user, url: registration_path, local: true do |form| %>
++    <div class="mb-3">
++      <%= form.label :email_address, class: "form-label" %>
++      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "form-control" %>
++    </div>
++    <div class="mb-3">
++      <%= form.label :password, class: "form-label" %>
++      <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72, class: "form-control" %>
++    </div>
++    <div class="mb-3">
++      <%= form.label :password_confirmation, "Confirm password", class: "form-label" %>
++      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "form-control" %>
++    </div>
++    <%= form.submit "Create account", class: "btn btn-primary w-100" %>
++  <% end %>
++
++  <div class="mt-3">
++    Already have an account? <%= link_to "Sign in", new_session_path %>
++  </div>
++</div>
+diff --git a/app/views/sessions/new.html.erb b/app/views/sessions/new.html.erb
+new file mode 100644
+index 0000000..48185cb
+--- /dev/null
++++ b/app/views/sessions/new.html.erb
+@@ -0,0 +1,23 @@
++<div class="container" style="max-width: 420px;">
++  <h2 class="mb-4">Sign in</h2>
++
++  <% if flash[:alert] %><div class="alert alert-danger"><%= flash[:alert] %></div><% end %>
++  <% if flash[:notice] %><div class="alert alert-success"><%= flash[:notice] %></div><% end %>
++
++  <%= form_with url: session_path, local: true do |form| %>
++    <div class="mb-3">
++      <%= form.label :email_address, class: "form-label" %>
++      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", class: "form-control", value: params[:email_address] %>
++    </div>
++    <div class="mb-3">
++      <%= form.label :password, class: "form-label" %>
++      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "form-control" %>
++    </div>
++    <%= form.submit "Sign in", class: "btn btn-primary w-100" %>
++  <% end %>
++
++  <div class="mt-3 d-flex justify-content-between">
++    <%= link_to "Create account", new_registration_path %>
++    <%= link_to "Forgot password?", new_password_path %>
++  </div>
++</div>
+diff --git a/config/routes.rb b/config/routes.rb
+index a94e583..0671209 100644
+--- a/config/routes.rb
++++ b/config/routes.rb
+@@ -1,4 +1,7 @@
+ Rails.application.routes.draw do
++  resource :session
++  resource :registration, only: [:new, :create]
++  resources :passwords, param: :token
+   root 'products#index'
+   resources :products do
+     resources :price_records, only: [:new, :create]
+diff --git a/db/migrate/20260421231429_create_users.rb b/db/migrate/20260421231429_create_users.rb
+new file mode 100644
+index 0000000..71f2ff1
+--- /dev/null
++++ b/db/migrate/20260421231429_create_users.rb
+@@ -0,0 +1,11 @@
++class CreateUsers < ActiveRecord::Migration[8.1]
++  def change
++    create_table :users do |t|
++      t.string :email_address, null: false
++      t.string :password_digest, null: false
++
++      t.timestamps
++    end
++    add_index :users, :email_address, unique: true
++  end
++end
+diff --git a/db/migrate/20260421231430_create_sessions.rb b/db/migrate/20260421231430_create_sessions.rb
+new file mode 100644
+index 0000000..ec9efdb
+--- /dev/null
++++ b/db/migrate/20260421231430_create_sessions.rb
+@@ -0,0 +1,11 @@
++class CreateSessions < ActiveRecord::Migration[8.1]
++  def change
++    create_table :sessions do |t|
++      t.references :user, null: false, foreign_key: true
++      t.string :ip_address
++      t.string :user_agent
++
++      t.timestamps
++    end
++  end
++end
+diff --git a/db/migrate/20260421231436_add_user_to_products.rb b/db/migrate/20260421231436_add_user_to_products.rb
+new file mode 100644
+index 0000000..390df68
+--- /dev/null
++++ b/db/migrate/20260421231436_add_user_to_products.rb
+@@ -0,0 +1,5 @@
++class AddUserToProducts < ActiveRecord::Migration[8.1]
++  def change
++    add_reference :products, :user, null: true, foreign_key: true
++  end
++end
+diff --git a/db/migrate/20260421233116_make_products_user_required.rb b/db/migrate/20260421233116_make_products_user_required.rb
+new file mode 100644
+index 0000000..ace1f77
+--- /dev/null
++++ b/db/migrate/20260421233116_make_products_user_required.rb
+@@ -0,0 +1,11 @@
++class MakeProductsUserRequired < ActiveRecord::Migration[8.1]
++  def up
++    execute "DELETE FROM price_records WHERE product_id IN (SELECT id FROM products WHERE user_id IS NULL)"
++    execute "DELETE FROM products WHERE user_id IS NULL"
++    change_column_null :products, :user_id, false
++  end
++
++  def down
++    change_column_null :products, :user_id, true
++  end
++end
+diff --git a/db/schema.rb b/db/schema.rb
+new file mode 100644
+index 0000000..dbc7886
+--- /dev/null
++++ b/db/schema.rb
+@@ -0,0 +1,60 @@
++# This file is auto-generated from the current state of the database. Instead
++# of editing this file, please use the migrations feature of Active Record to
++# incrementally modify your database, and then regenerate this schema definition.
++#
++# This file is the source Rails uses to define your schema when running `bin/rails
++# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
++# be faster and is potentially less error prone than running all of your
++# migrations from scratch. Old migrations may fail to apply correctly if those
++# migrations use external dependencies or application code.
++#
++# It's strongly recommended that you check this file into your version control system.
++
++ActiveRecord::Schema[8.1].define(version: 2026_04_21_233116) do
++  # These are extensions that must be enabled in order to support this database
++  enable_extension "pg_catalog.plpgsql"
++
++  create_table "price_records", force: :cascade do |t|
++    t.datetime "created_at", null: false
++    t.text "notes"
++    t.decimal "price"
++    t.bigint "product_id", null: false
++    t.datetime "recorded_at"
++    t.string "store_name"
++    t.datetime "updated_at", null: false
++    t.string "url"
++    t.index ["product_id"], name: "index_price_records_on_product_id"
++  end
++
++  create_table "products", force: :cascade do |t|
++    t.string "category"
++    t.datetime "created_at", null: false
++    t.text "description"
++    t.string "image_url"
++    t.string "name"
++    t.datetime "updated_at", null: false
++    t.bigint "user_id", null: false
++    t.index ["user_id"], name: "index_products_on_user_id"
++  end
++
++  create_table "sessions", force: :cascade do |t|
++    t.datetime "created_at", null: false
++    t.string "ip_address"
++    t.datetime "updated_at", null: false
++    t.string "user_agent"
++    t.bigint "user_id", null: false
++    t.index ["user_id"], name: "index_sessions_on_user_id"
++  end
++
++  create_table "users", force: :cascade do |t|
++    t.datetime "created_at", null: false
++    t.string "email_address", null: false
++    t.string "password_digest", null: false
++    t.datetime "updated_at", null: false
++    t.index ["email_address"], name: "index_users_on_email_address", unique: true
++  end
++
++  add_foreign_key "price_records", "products"
++  add_foreign_key "products", "users"
++  add_foreign_key "sessions", "users"
++end
+diff --git a/db/seeds.rb b/db/seeds.rb
+index 04c4e6c..d1fded1 100644
+--- a/db/seeds.rb
++++ b/db/seeds.rb
+@@ -1,6 +1,15 @@
+ puts "Clearing existing data..."
+ PriceRecord.destroy_all
+ Product.destroy_all
++User.destroy_all
++
++puts "Creating demo user..."
++demo_user = User.create!(
++  email_address: "demo@example.com",
++  password: "password",
++  password_confirmation: "password"
++)
++puts "  demo login: demo@example.com / password"
+ 
+ puts "Creating products..."
+ products_data = [
+@@ -26,7 +35,7 @@ products_data = [
+   { name: "Adidas Ultraboost 22", category: "Clothing & Shoes", description: "Men's running shoes with responsive Boost midsole and Primeknit+ upper" }
+ ]
+ 
+-products = products_data.map { |p| Product.create!(p) }
++products = products_data.map { |p| demo_user.products.create!(p) }
+ 
+ puts "Creating price records..."
+ store_urls = {
+diff --git a/test/controllers/passwords_controller_test.rb b/test/controllers/passwords_controller_test.rb
+new file mode 100644
+index 0000000..e1a1b03
+--- /dev/null
++++ b/test/controllers/passwords_controller_test.rb
+@@ -0,0 +1,67 @@
++require "test_helper"
++
++class PasswordsControllerTest < ActionDispatch::IntegrationTest
++  setup { @user = User.take }
++
++  test "new" do
++    get new_password_path
++    assert_response :success
++  end
++
++  test "create" do
++    post passwords_path, params: { email_address: @user.email_address }
++    assert_enqueued_email_with PasswordsMailer, :reset, args: [ @user ]
++    assert_redirected_to new_session_path
++
++    follow_redirect!
++    assert_notice "reset instructions sent"
++  end
++
++  test "create for an unknown user redirects but sends no mail" do
++    post passwords_path, params: { email_address: "missing-user@example.com" }
++    assert_enqueued_emails 0
++    assert_redirected_to new_session_path
++
++    follow_redirect!
++    assert_notice "reset instructions sent"
++  end
++
++  test "edit" do
++    get edit_password_path(@user.password_reset_token)
++    assert_response :success
++  end
++
++  test "edit with invalid password reset token" do
++    get edit_password_path("invalid token")
++    assert_redirected_to new_password_path
++
++    follow_redirect!
++    assert_notice "reset link is invalid"
++  end
++
++  test "update" do
++    assert_changes -> { @user.reload.password_digest } do
++      put password_path(@user.password_reset_token), params: { password: "new", password_confirmation: "new" }
++      assert_redirected_to new_session_path
++    end
++
++    follow_redirect!
++    assert_notice "Password has been reset"
++  end
++
++  test "update with non matching passwords" do
++    token = @user.password_reset_token
++    assert_no_changes -> { @user.reload.password_digest } do
++      put password_path(token), params: { password: "no", password_confirmation: "match" }
++      assert_redirected_to edit_password_path(token)
++    end
++
++    follow_redirect!
++    assert_notice "Passwords did not match"
++  end
++
++  private
++    def assert_notice(text)
++      assert_select "div", /#{text}/
++    end
++end
+diff --git a/test/controllers/price_records_controller_test.rb b/test/controllers/price_records_controller_test.rb
+index d9c0883..395a7c2 100644
+--- a/test/controllers/price_records_controller_test.rb
++++ b/test/controllers/price_records_controller_test.rb
+@@ -1,23 +1,39 @@
+ require "test_helper"
+ 
+ class PriceRecordsControllerTest < ActionDispatch::IntegrationTest
++  setup do
++    @user = users(:one)
++    @product = products(:one)
++    @price_record = price_records(:one)
++    sign_in_as @user
++  end
++
+   test "should get index" do
+-    get price_records_index_url
++    get price_records_url
+     assert_response :success
+   end
+ 
+-  test "should get show" do
+-    get price_records_show_url
++  test "should show price record" do
++    get price_record_url(@price_record)
+     assert_response :success
+   end
+ 
+   test "should get new" do
+-    get price_records_new_url
++    get new_product_price_record_url(@product)
+     assert_response :success
+   end
+ 
+-  test "should get edit" do
+-    get price_records_edit_url
+-    assert_response :success
++  test "should create price record" do
++    assert_difference("PriceRecord.count") do
++      post product_price_records_url(@product), params: {
++        price_record: { price: 9.99, store_name: "Amazon", url: "https://example.com", notes: "test" }
++      }
++    end
++  end
++
++  test "should not access another user's price record" do
++    other = price_records(:two)
++    get price_record_url(other)
++    assert_response :not_found
+   end
+ end
+diff --git a/test/controllers/products_controller_test.rb b/test/controllers/products_controller_test.rb
+index 9eba243..8adca5b 100644
+--- a/test/controllers/products_controller_test.rb
++++ b/test/controllers/products_controller_test.rb
+@@ -1,23 +1,60 @@
+ require "test_helper"
+ 
+ class ProductsControllerTest < ActionDispatch::IntegrationTest
++  setup do
++    @user = users(:one)
++    @product = products(:one)
++    sign_in_as @user
++  end
++
+   test "should get index" do
+-    get products_index_url
++    get products_url
+     assert_response :success
+   end
+ 
+-  test "should get show" do
+-    get products_show_url
++  test "should get new" do
++    get new_product_url
+     assert_response :success
+   end
+ 
+-  test "should get new" do
+-    get products_new_url
++  test "should create product" do
++    assert_difference("Product.count") do
++      post products_url, params: { product: { name: "Test", category: "Cat", description: "desc" } }
++    end
++    assert_redirected_to product_url(Product.last)
++  end
++
++  test "should show product" do
++    get product_url(@product)
+     assert_response :success
+   end
+ 
+   test "should get edit" do
+-    get products_edit_url
++    get edit_product_url(@product)
+     assert_response :success
+   end
++
++  test "should update product" do
++    patch product_url(@product), params: { product: { name: "Updated" } }
++    assert_redirected_to product_url(@product)
++  end
++
++  test "should destroy product" do
++    assert_difference("Product.count", -1) do
++      delete product_url(@product)
++    end
++    assert_redirected_to products_url
++  end
++
++  test "should not show another user's product" do
++    other = products(:two)
++    get product_url(other)
++    assert_response :not_found
++  end
++
++  test "should redirect unauthenticated user to sign in" do
++    sign_out
++    get products_url
++    assert_redirected_to new_session_url
++  end
+ end
+diff --git a/test/controllers/sessions_controller_test.rb b/test/controllers/sessions_controller_test.rb
+new file mode 100644
+index 0000000..07d72ef
+--- /dev/null
++++ b/test/controllers/sessions_controller_test.rb
+@@ -0,0 +1,33 @@
++require "test_helper"
++
++class SessionsControllerTest < ActionDispatch::IntegrationTest
++  setup { @user = User.take }
++
++  test "new" do
++    get new_session_path
++    assert_response :success
++  end
++
++  test "create with valid credentials" do
++    post session_path, params: { email_address: @user.email_address, password: "password" }
++
++    assert_redirected_to root_path
++    assert cookies[:session_id]
++  end
++
++  test "create with invalid credentials" do
++    post session_path, params: { email_address: @user.email_address, password: "wrong" }
++
++    assert_redirected_to new_session_path
++    assert_nil cookies[:session_id]
++  end
++
++  test "destroy" do
++    sign_in_as(User.take)
++
++    delete session_path
++
++    assert_redirected_to new_session_path
++    assert_empty cookies[:session_id]
++  end
++end
+diff --git a/test/fixtures/products.yml b/test/fixtures/products.yml
+index ed08478..3651da2 100644
+--- a/test/fixtures/products.yml
++++ b/test/fixtures/products.yml
+@@ -1,13 +1,13 @@
+-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+-
+ one:
+-  name: MyString
+-  category: MyString
+-  description: MyText
+-  image_url: MyString
++  name: Sample Product One
++  category: Electronics
++  description: A sample product for testing
++  image_url: https://example.com/one.jpg
++  user: one
+ 
+ two:
+-  name: MyString
+-  category: MyString
+-  description: MyText
+-  image_url: MyString
++  name: Sample Product Two
++  category: Books
++  description: Another sample product
++  image_url: https://example.com/two.jpg
++  user: two
+diff --git a/test/fixtures/users.yml b/test/fixtures/users.yml
+new file mode 100644
+index 0000000..0951563
+--- /dev/null
++++ b/test/fixtures/users.yml
+@@ -0,0 +1,9 @@
++<% password_digest = BCrypt::Password.create("password") %>
++
++one:
++  email_address: one@example.com
++  password_digest: <%= password_digest %>
++
++two:
++  email_address: two@example.com
++  password_digest: <%= password_digest %>
+diff --git a/test/mailers/previews/passwords_mailer_preview.rb b/test/mailers/previews/passwords_mailer_preview.rb
+new file mode 100644
+index 0000000..01d07ec
+--- /dev/null
++++ b/test/mailers/previews/passwords_mailer_preview.rb
+@@ -0,0 +1,7 @@
++# Preview all emails at http://localhost:3000/rails/mailers/passwords_mailer
++class PasswordsMailerPreview < ActionMailer::Preview
++  # Preview this email at http://localhost:3000/rails/mailers/passwords_mailer/reset
++  def reset
++    PasswordsMailer.reset(User.take)
++  end
++end
+diff --git a/test/models/price_record_test.rb b/test/models/price_record_test.rb
+index 0a3e260..8c0ecef 100644
+--- a/test/models/price_record_test.rb
++++ b/test/models/price_record_test.rb
+@@ -2,7 +2,7 @@ require "test_helper"
+ 
+ class PriceRecordTest < ActiveSupport::TestCase
+   def setup
+-    @product = Product.create!(name: "Test Product", category: "Electronics")
++    @product = users(:one).products.create!(name: "Test Product", category: "Electronics")
+     @record = PriceRecord.new(
+       product: @product,
+       price: 99.99,
+diff --git a/test/models/product_test.rb b/test/models/product_test.rb
+index 3f2bb96..f03f795 100644
+--- a/test/models/product_test.rb
++++ b/test/models/product_test.rb
+@@ -2,7 +2,8 @@ require "test_helper"
+ 
+ class ProductTest < ActiveSupport::TestCase
+   def setup
+-    @product = Product.new(name: "Test Product", category: "Electronics")
++    @user = users(:one)
++    @product = @user.products.build(name: "Test Product", category: "Electronics")
+   end
+ 
+   test "valid product" do
+diff --git a/test/models/user_test.rb b/test/models/user_test.rb
+new file mode 100644
+index 0000000..83445c4
+--- /dev/null
++++ b/test/models/user_test.rb
+@@ -0,0 +1,8 @@
++require "test_helper"
++
++class UserTest < ActiveSupport::TestCase
++  test "downcases and strips email_address" do
++    user = User.new(email_address: " DOWNCASED@EXAMPLE.COM ")
++    assert_equal("downcased@example.com", user.email_address)
++  end
++end
+diff --git a/test/test_helper.rb b/test/test_helper.rb
+index 0c22470..85c54c6 100644
+--- a/test/test_helper.rb
++++ b/test/test_helper.rb
+@@ -1,6 +1,7 @@
+ ENV["RAILS_ENV"] ||= "test"
+ require_relative "../config/environment"
+ require "rails/test_help"
++require_relative "test_helpers/session_test_helper"
+ 
+ module ActiveSupport
+   class TestCase
+diff --git a/test/test_helpers/session_test_helper.rb b/test/test_helpers/session_test_helper.rb
+new file mode 100644
+index 0000000..0686378
+--- /dev/null
++++ b/test/test_helpers/session_test_helper.rb
+@@ -0,0 +1,19 @@
++module SessionTestHelper
++  def sign_in_as(user)
++    Current.session = user.sessions.create!
++
++    ActionDispatch::TestRequest.create.cookie_jar.tap do |cookie_jar|
++      cookie_jar.signed[:session_id] = Current.session.id
++      cookies["session_id"] = cookie_jar[:session_id]
++    end
++  end
++
++  def sign_out
++    Current.session&.destroy!
++    cookies.delete("session_id")
++  end
++end
++
++ActiveSupport.on_load(:action_dispatch_integration_test) do
++  include SessionTestHelper
++end

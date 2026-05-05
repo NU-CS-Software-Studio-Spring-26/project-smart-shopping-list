@@ -54,7 +54,7 @@ body {
 .pt-mono { font-family: var(--mono); font-feature-settings: "tnum","zero"; letter-spacing: -0.005em; }
 .pt-strong { font-weight: 600; color: var(--ink); }
 .pt-muted { color: var(--muted); }
-.pt-link { color: var(--accent); text-decoration: none; }
+.pt-link { color: #0033cc; text-decoration: none; }
 .pt-link:hover { text-decoration: underline; }
 .pt-link-strong { font-weight: 500; }
 
@@ -134,7 +134,7 @@ body {
 }
 .pt-btn:active { transform: scale(0.98); }
 .pt-btn-primary {
-  background: var(--accent); color: white;
+  background: #000000; color: #ffffff;
 }
 .pt-btn-primary:hover { background: var(--accent-hover); color: white; }
 .pt-btn-secondary {
@@ -863,7 +863,7 @@ body {
 }
 .pt-footer-brand { display: flex; gap: 12px; align-items: flex-start; }
 .pt-footer-title { font-size: 16px; line-height: 1.2; font-weight: 600; color: var(--ink); }
-.pt-footer-sub { color: var(--muted); font-size: 13px; max-width: 32ch; margin-top: 4px; }
+.pt-footer-sub { color: #333333; font-size: 13px; max-width: 32ch; margin-top: 4px; }
 .pt-footer-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .pt-footer-cols a {
   display: block; color: var(--ink-2);
