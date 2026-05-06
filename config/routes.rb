@@ -10,4 +10,5 @@ Rails.application.routes.draw do
     end
   end
   resources :price_records, only: [ :index, :show, :edit, :update, :destroy ]
+  get "recommendations", to: "recommendations#index"
 end
