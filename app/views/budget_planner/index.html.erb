@@ -128,7 +128,7 @@
         <div class="pt-grid">
           <% @over_budget.each do |product| %>
             <% lowest = product.lowest_price_seen.to_f %>
-            <article class="pt-card" style="opacity:0.65;">
+            <article class="pt-card" style="opacity:0.85;border:2px solid var(--orange);" aria-label="<%= product.name %>, over budget">
               <%= link_to product_path(product), class: "pt-card-media", style: "text-decoration:none;color:inherit;" do %>
                 <% if product.image_url.present? %>
                   <%= image_tag product.image_url, alt: product.name %>
@@ -137,6 +137,7 @@
                 <% end %>
                 <div class="pt-card-media-shade"></div>
                 <span class="pt-tag pt-tag-overlay"><%= product.category %></span>
+                <span style="position:absolute;top:8px;right:8px;background:var(--orange);color:#fff;font-size:11px;font-weight:600;padding:4px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;">Over budget</span>
               <% end %>
               <div class="pt-card-body">
                 <h3 class="pt-card-title">
