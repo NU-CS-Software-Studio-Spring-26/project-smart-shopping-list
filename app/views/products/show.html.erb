@@ -127,7 +127,21 @@
             <% end %>
           </div>
           <% if @price_records.any? %>
-            <div class="pt-chart-wrap" style="padding-bottom: 22px;">
+            <%
+              prices = @price_records.map { |r| r.price.to_f }
+              chart_min = prices.min
+              chart_max = prices.max
+              chart_first = prices.first
+              chart_last = prices.last
+              chart_summary = "Price history line chart for #{@product.name}. " \
+                              "#{@price_records.size} observations. " \
+                              "Lowest recorded: $#{sprintf('%.2f', chart_min)}. " \
+                              "Highest recorded: $#{sprintf('%.2f', chart_max)}. " \
+                              "First recorded: $#{sprintf('%.2f', chart_first)}. " \
+                              "Most recent: $#{sprintf('%.2f', chart_last)}."
+            %>
+            <div class="pt-chart-wrap" style="padding-bottom: 22px;" role="img" aria-label="<%= chart_summary %>">
+              <p class="visually-hidden"><%= chart_summary %> The full price ledger below contains the same data in table form.</p>
               <%= line_chart @chart_data,
                     height: "260px",
                     thousands: ",",
