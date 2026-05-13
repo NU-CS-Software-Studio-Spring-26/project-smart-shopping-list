@@ -912,6 +912,42 @@ body {
   .pt-user-email, .pt-savings { display: none; }
 }
 
+@media (max-width: 640px) {
+  /* Header: wrap nav to second row */
+  .pt-header-inner {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 0;
+  }
+  .pt-header-right { margin-left: auto; }
+  .pt-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  .pt-nav-link { font-size: 12px; padding: 6px 10px; white-space: nowrap; }
+
+  /* Toolbar: can't track dynamic header height on mobile */
+  .pt-toolbar-wrap { position: static; }
+
+  /* Search: allow full-width shrink */
+  .pt-search { min-width: 0; flex: 1 1 100%; }
+  .pt-filter-group { flex: 1 1 auto; }
+
+  /* Product grid: single column */
+  .pt-grid { grid-template-columns: 1fr; }
+
+  /* Hero: tighten up padding */
+  .pt-hero { padding: 40px 0 24px; }
+
+  /* Footer: keep 2-col but tighten */
+  .pt-footer-cols { grid-template-columns: 1fr 1fr; }
+  .pt-footer-inner { padding: 32px 0 16px; }
+}
+
 .small { font-size: 12px; }
 
 /* ============== Inline SVG icons ============== */
