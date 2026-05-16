@@ -1,0 +1,26 @@
+{
+  "name": "PriceTracker",
+  "short_name": "PriceTracker",
+  "description": "Track every price change across stores. Set a target price and get notified when an item drops.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1d1d1f",
+  "categories": ["shopping", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
