@@ -22,6 +22,38 @@ A web app where signed-in users save products they are watching, record prices s
 - **Scheduling (When2meet):** https://www.when2meet.com/?36156767-PyTqS
 - **Heroku deployment:** https://smart-shoppinglist-6ae31171e85c.herokuapp.com/
 
+## Automatic daily price refresh
+
+Every product with a `source_url` is re-scraped once a day so the
+price-history chart stays fresh without anyone clicking *Fetch latest
+price* by hand.
+
+- **Schedule** — `.github/workflows/refresh-prices.yml` runs at 09:00 UTC
+  daily and can also be triggered manually from the *Actions* tab.
+- **Trigger** — the workflow `POST`s to `/admin/refresh_prices` on the
+  deployed app, authenticated by a shared secret (`X-Admin-Token` header,
+  matched against `ENV["ADMIN_REFRESH_TOKEN"]` via constant-time compare).
+- **Worker** — `AdminController#refresh_prices` calls
+  `PriceFetcher.refresh_all`, which iterates every eligible product, calls
+  the appropriate `PriceScrapers` adapter, and writes a new `PriceRecord`
+  **only when the price has actually changed** (dedup). A per-product
+  failure (timeout, 403 from Cloudflare/Akamai/PerimeterX-protected sites,
+  unparseable HTML, …) is captured in `product.last_fetch_error` and never
+  crashes the run.
+
+We picked GitHub Actions cron over Solid Queue + a Heroku worker dyno
+because it stays inside the GitHub Student `$13/month` credit, keeps the
+schedule in version control, and is portable if we ever migrate off
+Heroku — only `APP_URL` would change.
+
+For setup steps, debugging, the full list of supported / unsupported
+retailers, and the legal/ethical scraping notes, see:
+
+- [`docs/scrapers.md`](docs/scrapers.md) — adapter contract, site support
+  matrix, full request flow, troubleshooting.
+- [`wiki.md` § Scheduled tasks](wiki.md) — one-time secret setup and
+  manual-trigger verification.
+
 ## Ideas captured from early planning
 
 - Save product links to the database with a user id.

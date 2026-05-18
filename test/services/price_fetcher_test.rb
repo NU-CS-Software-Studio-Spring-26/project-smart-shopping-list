@@ -117,4 +117,78 @@ class PriceFetcherTest < ActiveSupport::TestCase
     assert_includes fetched, @product.source_url
     refute_includes fetched, fresh.source_url
   end
+
+  # ---------- refresh_all (the daily cron entry point) ----------
+
+  test ".refresh_all returns a summary hash with succeeded / failed / duration" do
+    stub_method(PriceScrapers, :fetch, ->(_url, **_opts) {
+      PriceScrapers::Result.new(
+        price: BigDecimal("10.00"), title: "X", image_url: nil,
+        store_name: "X", fetched_at: Time.current
+      )
+    }) do
+      summary = PriceFetcher.refresh_all
+      assert_kind_of Hash, summary
+      assert_includes summary.keys, :succeeded
+      assert_includes summary.keys, :failed
+      assert_includes summary.keys, :duration
+    end
+  end
+
+  test ".refresh_all counts a scrape that raised PriceScrapers::Error as failed, not succeeded" do
+    # Fixture has @product (source_url set in setup) and one other product
+    # without a source_url, plus we add a second eligible product here so
+    # we can prove the counter splits succeeded vs failed correctly.
+    bad = Product.create!(
+      user: users(:one), name: "Bad", category: "Electronics",
+      source_url: "https://example.com/bad"
+    )
+
+    stub_method(PriceScrapers, :fetch, ->(url, **_opts) {
+      raise PriceScrapers::TransientError, "boom" if url.include?("/bad")
+      PriceScrapers::Result.new(
+        price: BigDecimal("10.00"), title: "X", image_url: nil,
+        store_name: "X", fetched_at: Time.current
+      )
+    }) do
+      summary = PriceFetcher.refresh_all
+      assert_equal 1, summary[:succeeded], "the @product fetch should be counted as succeeded"
+      assert_equal 1, summary[:failed],    "the bad-url product should be counted as failed"
+    end
+
+    assert_match(/boom/, bad.reload.last_fetch_error)
+    assert_nil @product.reload.last_fetch_error
+  end
+
+  test ".refresh_all skips products with no source_url entirely" do
+    fetched = []
+    stub_method(PriceScrapers, :fetch, ->(url, **_opts) {
+      fetched << url
+      PriceScrapers::Result.new(
+        price: BigDecimal("1.00"), title: "X", image_url: nil,
+        store_name: "X", fetched_at: Time.current
+      )
+    }) do
+      PriceFetcher.refresh_all
+    end
+
+    # products(:two) has no source_url and must not appear in the fetched list.
+    refute_includes fetched, products(:two).source_url
+    refute fetched.any?(&:nil?)
+  end
+
+  test ".refresh_all does not raise when an individual product fails" do
+    # Whole-cron robustness: even if every product fails, refresh_all still
+    # returns a summary instead of bubbling the exception up to the caller
+    # (which in production is AdminController and ultimately the GitHub
+    # Actions runner — we don't want a single bad URL to red-X the whole job).
+    stub_method(PriceScrapers, :fetch, ->(*_a, **_kw) {
+      raise PriceScrapers::PermanentError, "every product is bad"
+    }) do
+      assert_nothing_raised do
+        summary = PriceFetcher.refresh_all
+        assert_operator summary[:failed], :>=, 1
+      end
+    end
+  end
 end
