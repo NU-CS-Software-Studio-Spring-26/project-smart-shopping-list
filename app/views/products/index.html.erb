@@ -79,7 +79,12 @@
 
         <div class="pt-result-row">
           <span class="pt-result-count">
-            <%= pagination_summary(@pagination, "product") %>
+            <% if @pagy && @pagy.count > @products.size %>
+              Showing <%= @pagy.from %>–<%= @pagy.to %> of <%= @pagy.count %>
+              <%= "product".pluralize(@pagy.count) %>
+            <% else %>
+              Showing <%= @products.size %> of <%= Current.user.products.count %> products
+            <% end %>
           </span>
         </div>
       </div>
@@ -187,7 +192,15 @@
           </article>
         <% end %>
       </div>
-      <%= pagination_nav(@pagination) %>
+
+      <% if @pagy && @pagy.pages > 1 %>
+        <nav class="pt-pagination" aria-label="Products pagination">
+          <%== pagy_nav(@pagy) %>
+        </nav>
+        <div class="pt-pagination-meta">
+          Page <%= @pagy.page %> of <%= @pagy.pages %> · <%= @pagy.count %> products
+        </div>
+      <% end %>
     <% elsif params[:search].present? || params[:category].present? %>
       <div class="pt-empty-filter">
         <div class="pt-empty-icon"><%= render "shared/icon", name: "search", size: 32 %></div>

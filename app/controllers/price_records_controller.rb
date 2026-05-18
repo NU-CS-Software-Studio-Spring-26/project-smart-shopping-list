@@ -3,7 +3,7 @@ class PriceRecordsController < ApplicationController
 
   def index
     scope = PriceRecord.where(product: Current.user.products).includes(:product).order(recorded_at: :desc)
-    @price_records, @pagination = paginate(scope, per_page: 30)
+    @pagy, @price_records = pagy(scope, limit: 30)
   end
 
   def show; end

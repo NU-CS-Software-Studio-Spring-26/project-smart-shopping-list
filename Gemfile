@@ -28,6 +28,14 @@ gem "httparty"
 # Charts on the product detail page (price history)
 gem "chartkick"
 
+# Pagination
+gem "pagy", "~> 9.3"
+
+# OAuth sign-in (Google)
+gem "omniauth"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
+
 group :development, :test do
   gem "faker"
 end

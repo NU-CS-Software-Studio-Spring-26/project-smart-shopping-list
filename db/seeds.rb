@@ -87,6 +87,8 @@ puts "Creating load-test users..."
 end
 
 puts "Creating products and price histories..."
+
+# Don't fire the price-alerter or its emails during bulk seeding.
 PriceRecord.alerter_callback_enabled = false
 
 begin
