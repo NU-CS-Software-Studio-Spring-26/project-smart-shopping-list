@@ -41,4 +41,49 @@ class UserTest < ActiveSupport::TestCase
     user = User.new(valid_attributes.merge(password: "", password_confirmation: ""))
     assert_not user.valid?
   end
+
+  test "from_omniauth creates a user with generated password" do
+    auth = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "google-123",
+      info: {
+        email: "oauth@example.com",
+        name: "OAuth User",
+        image: "https://example.com/avatar.png"
+      }
+    )
+
+    assert_difference("User.count") do
+      user = User.from_omniauth(auth)
+
+      assert_equal "oauth@example.com", user.email_address
+      assert_equal "google_oauth2", user.provider
+      assert_equal "google-123", user.uid
+      assert user.authenticate(user.password)
+    end
+  end
+
+  test "from_omniauth links an existing user by email" do
+    user = User.create!(valid_attributes(email_address: "linkme@example.com"))
+    auth = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "google-456",
+      info: { email: "linkme@example.com", name: "Linked User" }
+    )
+
+    assert_no_difference("User.count") do
+      linked = User.from_omniauth(auth)
+
+      assert_equal user.id, linked.id
+      assert_equal "google_oauth2", linked.provider
+      assert_equal "google-456", linked.uid
+    end
+  end
+
+  test "from_omniauth rejects missing email" do
+    auth = OmniAuth::AuthHash.new(provider: "google_oauth2", uid: "no-email", info: {})
+
+    error = assert_raises(User::OauthError) { User.from_omniauth(auth) }
+    assert_match(/email/i, error.message)
+  end
 end

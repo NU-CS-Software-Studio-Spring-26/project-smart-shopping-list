@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   resource :session
+  match "/auth/:provider/callback", to: "omniauth_callbacks#create", via: %i[ get post ]
+  get "/auth/failure", to: "omniauth_callbacks#failure"
   resource :registration, only: [ :new, :create ]
   resources :passwords, param: :token
   root "products#index"

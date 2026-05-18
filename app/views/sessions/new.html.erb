@@ -25,26 +25,42 @@
     </aside>
 
     <div class="pt-auth-form-wrap">
-      <%= form_with url: session_path, local: true, class: "pt-auth-form" do |form| %>
+      <div class="pt-auth-form">
         <div class="pt-eyebrow">Sign in</div>
         <h2 class="pt-h1">Welcome back</h2>
 
-        <div class="pt-form" style="margin-top: 24px;">
-          <div class="pt-field">
-            <label class="pt-field-label" for="email_address">Email address</label>
-            <%= form.email_field :email_address,
-                  required: true, autofocus: true, autocomplete: "username",
-                  class: "pt-input", value: params[:email_address] %>
-          </div>
-          <div class="pt-field">
-            <label class="pt-field-label" for="password">Password</label>
-            <%= form.password_field :password,
-                  required: true, autocomplete: "current-password", maxlength: 72,
-                  class: "pt-input" %>
+        <% if ENV["GOOGLE_CLIENT_ID"].present? && ENV["GOOGLE_CLIENT_SECRET"].present? %>
+          <div class="pt-oauth-actions">
+            <%= button_to "/auth/google_oauth2",
+                  method: :post,
+                  data: { turbo: false },
+                  class: "pt-btn pt-btn-secondary pt-btn-lg pt-btn-block pt-oauth-btn" do %>
+              <span class="pt-oauth-mark" aria-hidden="true">G</span>
+              <span>Continue with Google</span>
+            <% end %>
           </div>
 
-          <%= form.submit "Sign in", class: "pt-btn pt-btn-primary pt-btn-lg pt-btn-block" %>
-        </div>
+          <div class="pt-auth-divider"><span>or</span></div>
+        <% end %>
+
+        <%= form_with url: session_path, local: true do |form| %>
+          <div class="pt-form" style="margin-top: 24px;">
+            <div class="pt-field">
+              <label class="pt-field-label" for="email_address">Email address</label>
+              <%= form.email_field :email_address,
+                    required: true, autofocus: true, autocomplete: "username",
+                    class: "pt-input", value: params[:email_address] %>
+            </div>
+            <div class="pt-field">
+              <label class="pt-field-label" for="password">Password</label>
+              <%= form.password_field :password,
+                    required: true, autocomplete: "current-password", maxlength: 72,
+                    class: "pt-input" %>
+            </div>
+
+            <%= form.submit "Sign in", class: "pt-btn pt-btn-primary pt-btn-lg pt-btn-block" %>
+          </div>
+        <% end %>
 
         <div class="pt-auth-foot">
           New here? <%= link_to "Create an account", new_registration_path, class: "pt-link pt-link-strong" %>
@@ -52,7 +68,7 @@
         <div class="pt-auth-links">
           <%= link_to "Forgot password?", new_password_path, class: "pt-link" %>
         </div>
-      <% end %>
+      </div>
     </div>
   </div>
 </div>

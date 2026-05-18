@@ -118,6 +118,19 @@
               </div>
             </div>
 
+            <% if @deal_advice %>
+              <div class="pt-ai-advice" data-source="<%= @deal_advice.source %>">
+                <div class="pt-ai-advice-head">
+                  <span class="pt-ai-spark" aria-hidden="true">✦</span>
+                  <span><%= @deal_advice.label %></span>
+                  <% if @deal_advice.source == "local" %>
+                    <span class="pt-ai-fallback">local fallback</span>
+                  <% end %>
+                </div>
+                <p><%= @deal_advice.summary %></p>
+              </div>
+            <% end %>
+
             <div class="pt-prod-actions">
               <% if @product.source_url.present? %>
                 <%= button_to fetch_price_product_path(@product), method: :post,
@@ -207,7 +220,7 @@
             <div class="pt-panel-head">
               <div>
                 <div class="pt-panel-eyebrow">▌ LEDGER</div>
-                <h2 class="pt-panel-title">All observations <span class="pt-mono pt-muted small">· <%= @price_records.size %></span></h2>
+                <h2 class="pt-panel-title">All observations <span class="pt-mono pt-muted small">· <%= pagination_summary(@price_records_pagination, "observation") %></span></h2>
               </div>
             </div>
             <div class="pt-table-wrap" style="border-radius: 0; border: none; border-top: 1px solid var(--line-2);">
@@ -224,11 +237,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% total = @price_records.size %>
+                  <% total = @price_records_pagination[:total_count] %>
                   <% @price_records.each_with_index do |record, i| %>
                     <% is_lowest = lowest && record.price.to_f == lowest.to_f %>
                     <tr>
-                      <td class="pt-mono pt-muted"><%= sprintf("%03d", total - i) %></td>
+                      <td class="pt-mono pt-muted"><%= sprintf("%03d", total - (@price_records_pagination[:from] - 1 + i)) %></td>
                       <td class="pt-th-num pt-mono pt-strong" style="<%= 'color: var(--accent-700);' if is_lowest %>">
                         $<%= sprintf("%.2f", record.price) %>
                       </td>
@@ -251,6 +264,7 @@
                 </tbody>
               </table>
             </div>
+            <%= pagination_nav(@price_records_pagination) %>
           </div>
         <% end %>
       </section>

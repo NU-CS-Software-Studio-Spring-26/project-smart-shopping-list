@@ -6,14 +6,17 @@ class ProductsController < ApplicationController
     @products = fuzzy_search(@products, params[:search]) if params[:search].present?
     @products = @products.where(category: params[:category]) if params[:category].present?
     @products = sort_products(@products, params[:sort])
+    @products, @pagination = paginate(@products, per_page: 24)
 
     @categories = Current.user.products.distinct.pluck(:category).compact.sort
   end
 
   def show
-    @price_records = @product.price_records.order(recorded_at: :desc)
-    @chart_data = build_chart_data(@price_records)
+    all_price_records = @product.price_records.order(recorded_at: :desc)
+    @price_records, @price_records_pagination = paginate(all_price_records, per_page: 20)
+    @chart_data = build_chart_data(all_price_records)
     @lowest_price_record = @product.lowest_price_record
+    @deal_advice = DealAdvisor.call(@product)
     # Powers the "🎉 Price alert triggered" banner. Only populated when the
     # most recent alert is within the banner display window (7 days), so
     # the show view can render unconditionally on a non-nil value.

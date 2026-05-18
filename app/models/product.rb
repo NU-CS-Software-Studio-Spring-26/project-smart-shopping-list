@@ -3,11 +3,19 @@ class Product < ApplicationRecord
     has_many :price_records, dependent: :destroy
 
     validates :name, presence: true
+    validates :name, length: { maximum: 140 }
     validates :category, presence: true
+    validates :category, length: { maximum: 80 }
+    validates :description, length: { maximum: 1_000 }, allow_blank: true
+    validates :image_url,
+              length: { maximum: 2_000 },
+              format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" },
+              allow_blank: true
     # source_url is optional at the model level so legacy / seed / manual-only
     # products remain valid. The new-product form makes it required at the UI
     # level (HTML required + ProductsController#create blank check).
     validates :source_url,
+              length: { maximum: 2_000 },
               format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" },
               allow_blank: true
     # target_price is opt-in: a nil value just means "no alert configured".
