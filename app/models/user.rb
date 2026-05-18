@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  class OauthError < StandardError; end
+
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :products, dependent: :destroy
@@ -9,6 +11,14 @@ class User < ApplicationRecord
             presence: true,
             uniqueness: { case_sensitive: false },
             format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
+  validates :provider, length: { maximum: 50 }, allow_blank: true
+  validates :uid, length: { maximum: 255 }, allow_blank: true
+  validates :name, length: { maximum: 120 }, allow_blank: true
+  validates :avatar_url,
+            length: { maximum: 2_000 },
+            format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" },
+            allow_blank: true
+  validates :uid, uniqueness: { scope: :provider }, if: -> { provider.present? && uid.present? }
 
   validates :password, length: { minimum: 8, message: "must be at least 8 characters" }, if: -> { password.present? }
   validate :password_strength, if: -> { password.present? && !oauth_user? }
@@ -46,9 +56,41 @@ class User < ApplicationRecord
     provider.present? && uid.present?
   end
 
+  def self.from_omniauth(auth)
+    provider = auth.provider.to_s
+    uid = auth.uid.to_s
+    info = auth.info
+    email = info.email.to_s.downcase
+
+    raise OauthError, "Google did not return an email address." if email.blank?
+
+    user = find_by(provider: provider, uid: uid) || find_by(email_address: email) || new(email_address: email)
+    user.provider = provider
+    user.uid = uid
+    user.name = info.name if info.respond_to?(:name)
+    user.avatar_url = info.image if info.respond_to?(:image)
+    user.password = generated_oauth_password(email) if user.password_digest.blank?
+    user.password_confirmation = user.password if user.password_digest.blank?
+    user.save!
+    user
+  rescue ActiveRecord::RecordInvalid => e
+    raise OauthError, e.record.errors.full_messages.to_sentence
+  end
+
   private
 
   COMMON_PASSWORDS = %w[password password1 password123 12345678 qwerty123 letmein welcome].freeze
+
+  def self.generated_oauth_password(email = nil)
+    username = email.to_s.split("@").first.downcase
+    loop do
+      password = "Sso!9#{SecureRandom.alphanumeric(24)}"
+      next if password.match?(/(.)\1{2,}/)
+      next if username.present? && password.downcase.include?(username)
+
+      return password
+    end
+  end
 
   def password_strength
     pwd = password.to_s

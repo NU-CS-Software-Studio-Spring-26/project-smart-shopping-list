@@ -2,9 +2,13 @@ class PriceRecord < ApplicationRecord
   belongs_to :product
 
   validates :price, presence: true, numericality: { greater_than: 0 }
-  validates :store_name, presence: true
+  validates :store_name, presence: true, length: { maximum: 120 }
   validates :recorded_at, presence: true
-  validates :url, allow_blank: true, format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" }
+  validates :notes, length: { maximum: 1_000 }, allow_blank: true
+  validates :url,
+            allow_blank: true,
+            length: { maximum: 2_000 },
+            format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" }
 
   before_validation :set_recorded_at
 

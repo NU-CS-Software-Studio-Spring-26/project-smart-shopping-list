@@ -1,0 +1,31 @@
+require "test_helper"
+
+class OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @auth_hash = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "controller-google-123",
+      info: {
+        email: "controller-oauth@example.com",
+        name: "Controller OAuth",
+        image: "https://example.com/controller.png"
+      }
+    )
+  end
+
+  test "google callback signs in a new oauth user" do
+    assert_difference("User.count") do
+      get "/auth/google_oauth2/callback", env: { "omniauth.auth" => @auth_hash }
+    end
+
+    assert_redirected_to root_path
+    assert cookies[:session_id]
+    assert_equal "google_oauth2", User.find_by(email_address: "controller-oauth@example.com").provider
+  end
+
+  test "oauth failure redirects to sign in" do
+    get "/auth/failure"
+
+    assert_redirected_to new_session_path
+  end
+end

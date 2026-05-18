@@ -1,4 +1,4 @@
-class AddOmniauthToUsers < ActiveRecord::Migration[8.1]
+class AddOauthFieldsToUsers < ActiveRecord::Migration[8.1]
   def change
     add_column :users, :provider, :string unless column_exists?(:users, :provider)
     add_column :users, :uid, :string unless column_exists?(:users, :uid)

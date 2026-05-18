@@ -25,7 +25,7 @@ A web app where signed-in users save products they are watching, record prices s
 ## Local setup
 
 This app is built on Rails 8.1 and should be run with the Ruby version in
-`.ruby-version` (`4.0.2`) plus the Bundler version in `Gemfile.lock` (`4.0.9`).
+`.ruby-version` (`4.0.4`) plus the Bundler version in `Gemfile.lock` (`4.0.9`).
 If `bin/rails` reports macOS system Ruby 2.6, switch your Ruby manager to the
 project version before installing gems.
 
@@ -111,6 +111,24 @@ templates render correctly via `bin/rails runner` and the mailer previews
 under `/rails/mailers/price_alert_mailer`, but no SMTP credentials are
 configured. See [`wiki.md` § Price-drop alerts](wiki.md) for the full
 pipeline diagram and implementation notes.
+
+## AI deal recommendations
+
+Product detail pages include a buy-or-wait recommendation from
+`DealAdvisor`. By default it uses a local price-history heuristic so the app
+continues working in development, tests, demos, and production even when no AI
+provider is configured.
+
+To enable the OpenAI-backed recommendation path, set:
+
+```sh
+ENABLE_AI_DEAL_ADVICE=true
+OPENAI_API_KEY=...
+OPENAI_DEAL_ADVISOR_MODEL=gpt-5.4-mini
+```
+
+If the API request times out, fails, or returns an unusable response, the app
+logs the issue and falls back to the local recommendation.
 
 ## Ideas captured from early planning
 
