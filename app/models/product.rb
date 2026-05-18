@@ -1,12 +1,23 @@
 class Product < ApplicationRecord
+    # Column caps mirror the DB check constraints added in
+    # HardenProductAndPriceRecordConstraints. Scraped Amazon / Target / etc.
+    # titles routinely run past 200 chars; rather than reject the save and
+    # show a validation error, we silently truncate in a before_validation
+    # so every save path (scraper, manual form, seeds) stays within bounds.
+    NAME_LIMIT        = 140
+    CATEGORY_LIMIT    = 80
+    DESCRIPTION_LIMIT = 1_000
+
     belongs_to :user
     has_many :price_records, dependent: :destroy
 
+    before_validation :truncate_long_text_fields
+
     validates :name, presence: true
-    validates :name, length: { maximum: 140 }
+    validates :name, length: { maximum: NAME_LIMIT }
     validates :category, presence: true
-    validates :category, length: { maximum: 80 }
-    validates :description, length: { maximum: 1_000 }, allow_blank: true
+    validates :category, length: { maximum: CATEGORY_LIMIT }
+    validates :description, length: { maximum: DESCRIPTION_LIMIT }, allow_blank: true
     validates :image_url,
               length: { maximum: 2_000 },
               format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" },
@@ -122,5 +133,24 @@ class Product < ApplicationRecord
       else
         "Not enough data to determine trend"
       end
+    end
+
+    private
+
+    # Trim scraped/oversized text to the column caps before validations
+    # run so a 250-char Amazon title never causes a save to fail. An
+    # ellipsis marker is appended to make truncation visible to the user.
+    def truncate_long_text_fields
+      truncate_field(:name,        NAME_LIMIT)
+      truncate_field(:category,    CATEGORY_LIMIT)
+      truncate_field(:description, DESCRIPTION_LIMIT)
+    end
+
+    def truncate_field(attr, limit)
+      value = self[attr]
+      return if value.blank?
+      return if value.length <= limit
+
+      self[attr] = value[0, limit - 1].rstrip + "…"
     end
 end
