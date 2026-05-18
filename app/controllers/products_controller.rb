@@ -20,7 +20,7 @@ class ProductsController < ApplicationController
 
   def show
     all_price_records = @product.price_records.order(recorded_at: :desc)
-    @price_records, @price_records_pagination = paginate(all_price_records, per_page: 20)
+    @price_records_pagy, @price_records = pagy(all_price_records, limit: 20)
     @chart_data = build_chart_data(all_price_records)
     @lowest_price_record = @product.lowest_price_record
     @deal_advice = DealAdvisor.call(@product)

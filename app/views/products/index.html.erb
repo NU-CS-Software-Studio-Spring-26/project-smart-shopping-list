@@ -23,7 +23,7 @@
           <% end %>
           <div class="pt-hero-meta">
             <span class="pt-hero-meta-dot"></span>
-            <span><strong><%= @pagination[:total_count] %></strong> <%= "product".pluralize(@pagination[:total_count]) %> tracked</span>
+            <span><strong><%= @pagy&.count || @products.size %></strong> <%= "product".pluralize(@pagy&.count || @products.size) %> tracked</span>
           </div>
         </aside>
       </div>

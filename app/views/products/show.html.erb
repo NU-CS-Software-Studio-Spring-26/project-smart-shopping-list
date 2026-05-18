@@ -220,7 +220,7 @@
             <div class="pt-panel-head">
               <div>
                 <div class="pt-panel-eyebrow">▌ LEDGER</div>
-                <h2 class="pt-panel-title">All observations <span class="pt-mono pt-muted small">· <%= pagination_summary(@price_records_pagination, "observation") %></span></h2>
+                <h2 class="pt-panel-title">All observations <span class="pt-mono pt-muted small">· <%= @price_records_pagy.count %> <%= "observation".pluralize(@price_records_pagy.count) %></span></h2>
               </div>
             </div>
             <div class="pt-table-wrap" style="border-radius: 0; border: none; border-top: 1px solid var(--line-2);">
@@ -237,11 +237,12 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% total = @price_records_pagination[:total_count] %>
+                  <% total = @price_records_pagy.count %>
+                  <% offset = @price_records_pagy.from - 1 %>
                   <% @price_records.each_with_index do |record, i| %>
                     <% is_lowest = lowest && record.price.to_f == lowest.to_f %>
                     <tr>
-                      <td class="pt-mono pt-muted"><%= sprintf("%03d", total - (@price_records_pagination[:from] - 1 + i)) %></td>
+                      <td class="pt-mono pt-muted"><%= sprintf("%03d", total - offset - i) %></td>
                       <td class="pt-th-num pt-mono pt-strong" style="<%= 'color: var(--accent-700);' if is_lowest %>">
                         $<%= sprintf("%.2f", record.price) %>
                       </td>
@@ -264,7 +265,14 @@
                 </tbody>
               </table>
             </div>
-            <%= pagination_nav(@price_records_pagination) %>
+            <% if @price_records_pagy.pages > 1 %>
+              <nav class="pt-pagination" aria-label="Product price history pagination">
+                <%== pagy_nav(@price_records_pagy) %>
+              </nav>
+              <div class="pt-pagination-meta">
+                Page <%= @price_records_pagy.page %> of <%= @price_records_pagy.pages %> · <%= @price_records_pagy.count %> observations
+              </div>
+            <% end %>
           </div>
         <% end %>
       </section>
