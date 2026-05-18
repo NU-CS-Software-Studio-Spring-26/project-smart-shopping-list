@@ -1,0 +1,46 @@
+name: Daily price refresh
+
+# Hits the deployed app's /admin/refresh_prices webhook once a day so that
+# every product's latest price is re-scraped without anyone clicking the
+# "Fetch latest price" button. PriceFetcher.refresh_all already de-dupes
+# unchanged prices, so a daily run is safe even when nothing has changed.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   APP_URL              e.g. https://smart-shoppinglist-6ae31171e85c.herokuapp.com
+#   ADMIN_REFRESH_TOKEN  must match the deployed app's ADMIN_REFRESH_TOKEN env var
+#                        (set on Heroku with `heroku config:set ADMIN_REFRESH_TOKEN=...`)
+
+on:
+  schedule:
+    # 09:00 UTC = 03:00 / 04:00 US Central (depending on DST). Pick a low-
+    # traffic hour so the scrape doesn't compete with real users for the
+    # single web dyno.
+    - cron: "0 9 * * *"
+  # Lets you trigger a run by hand from the Actions tab — useful for
+  # verifying the wiring without waiting until tomorrow morning.
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Hit refresh endpoint
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          ADMIN_REFRESH_TOKEN: ${{ secrets.ADMIN_REFRESH_TOKEN }}
+        run: |
+          if [ -z "$APP_URL" ] || [ -z "$ADMIN_REFRESH_TOKEN" ]; then
+            echo "::error::APP_URL and ADMIN_REFRESH_TOKEN secrets must be set."
+            exit 1
+          fi
+
+          echo "POST $APP_URL/admin/refresh_prices"
+          curl --fail-with-body \
+               --silent --show-error \
+               --max-time 540 \
+               -X POST "$APP_URL/admin/refresh_prices" \
+               -H "X-Admin-Token: $ADMIN_REFRESH_TOKEN" \
+               -H "Accept: application/json"
+          echo

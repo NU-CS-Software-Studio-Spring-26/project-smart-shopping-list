@@ -47,13 +47,26 @@ class PriceFetcher
   # Refresh every product that has a source_url. Use this when products are
   # few and you want each scheduler run to truly re-check them all.
   #
-  # Called by Heroku Scheduler:
+  # Triggered daily by .github/workflows/refresh-prices.yml, which POSTs to
+  # AdminController#refresh_prices. Also runnable manually:
   #   bin/rails runner "PriceFetcher.refresh_all"
   def self.refresh_all
+    started_at = Time.current
+    Rails.logger.info("[PriceFetcher] refresh_all started at #{started_at.iso8601}")
+
+    succeeded = failed = 0
     Product.where.not(source_url: nil).find_each do |product|
       call(product)
+      product.last_fetch_error.present? ? failed += 1 : succeeded += 1
       sleep 1
     end
+
+    duration = (Time.current - started_at).round(1)
+    Rails.logger.info(
+      "[PriceFetcher] refresh_all finished in #{duration}s — " \
+      "succeeded=#{succeeded} failed=#{failed} total=#{succeeded + failed}"
+    )
+    { succeeded: succeeded, failed: failed, duration: duration }
   end
 
   # Refresh only products not fetched within `min_age`. Use this when the
@@ -62,11 +75,23 @@ class PriceFetcher
   #
   #   bin/rails runner "PriceFetcher.refresh_stale"
   def self.refresh_stale(min_age: 2.days)
+    started_at = Time.current
+    Rails.logger.info("[PriceFetcher] refresh_stale(min_age=#{min_age.inspect}) started at #{started_at.iso8601}")
+
+    succeeded = failed = 0
     Product.where.not(source_url: nil)
            .where("last_fetched_at IS NULL OR last_fetched_at < ?", min_age.ago)
            .find_each do |product|
       call(product)
+      product.last_fetch_error.present? ? failed += 1 : succeeded += 1
       sleep 1
     end
+
+    duration = (Time.current - started_at).round(1)
+    Rails.logger.info(
+      "[PriceFetcher] refresh_stale finished in #{duration}s — " \
+      "succeeded=#{succeeded} failed=#{failed} total=#{succeeded + failed}"
+    )
+    { succeeded: succeeded, failed: failed, duration: duration }
   end
 end

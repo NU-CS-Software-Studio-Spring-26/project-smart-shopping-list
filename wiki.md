@@ -47,6 +47,7 @@ Users only ever see and act on their own products; attempting to access another 
 - [x] Bootstrap-based responsive UI
 - [x] Deployed on Heroku
 - [x] Automated tests running on GitHub Actions
+- [x] Daily automatic price refresh (GitHub Actions cron → webhook)
 
 ## Similar products and references
 
@@ -115,3 +116,49 @@ bin/rails test
 git push heroku main
 heroku run rails db:migrate -a smart-shoppinglist
 ```
+
+### Scheduled tasks (daily price refresh)
+
+Each product's latest price is re-scraped once a day so the price-history
+chart stays current without anyone clicking "Fetch latest price" by hand.
+
+We run the schedule from **GitHub Actions cron** rather than from a Heroku
+worker dyno or Heroku Scheduler. This keeps the project free under the
+GitHub Student credit (no extra Heroku worker required) and stays portable
+if we ever migrate off Heroku — only `APP_URL` would need to change.
+
+**How it works:**
+
+1. `.github/workflows/refresh-prices.yml` runs daily at 09:00 UTC.
+2. It POSTs to `https://<app>/admin/refresh_prices` with an
+   `X-Admin-Token` header.
+3. `AdminController#refresh_prices` checks the token and calls
+   `PriceFetcher.refresh_all`, which iterates every product with a
+   `source_url` and writes a new `PriceRecord` only when the price has
+   actually changed (so the chart isn't polluted with duplicates).
+
+**One-time setup:**
+
+```bash
+# 1. Generate a strong shared secret
+openssl rand -hex 32
+
+# 2. Set it on Heroku
+heroku config:set ADMIN_REFRESH_TOKEN=<the-secret> -a smart-shoppinglist
+
+# 3. Add two repo secrets at:
+#    GitHub → Settings → Secrets and variables → Actions
+#      APP_URL              = https://smart-shoppinglist-6ae31171e85c.herokuapp.com
+#      ADMIN_REFRESH_TOKEN  = <same secret>
+```
+
+**Verifying it works:**
+
+- **Manual trigger:** GitHub → Actions tab → "Daily price refresh" →
+  "Run workflow". The job should finish green within a few minutes.
+- **Watch the app logs:** `heroku logs --tail -a smart-shoppinglist`.
+  Look for lines tagged `[PriceFetcher] refresh_all started/finished`.
+- **Local sanity check:**
+  ```bash
+  bin/rails runner "PriceFetcher.refresh_all"
+  ```
