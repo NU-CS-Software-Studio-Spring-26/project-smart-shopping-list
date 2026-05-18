@@ -1,0 +1,17 @@
+Heads up — the price dropped on <%= @product.name %>.
+
+<%= @product.name %> is now $<%= sprintf("%.2f", @price_record.price) %><%= " at #{@price_record.store_name}" if @price_record.store_name.present? %>.
+
+<% if @target_hit %>
+* This is at or below your target price of $<%= sprintf("%.2f", @product.target_price) %>.
+<% end %>
+<% if @history_low %>
+* It's a new all-time low for this product since you started tracking it.
+<% end %>
+
+View on PriceTracker:
+<%= product_url(@product) %>
+
+---
+You're receiving this because you set up price tracking on this product.
+To stop receiving alerts for this item, clear the target price on its edit page.

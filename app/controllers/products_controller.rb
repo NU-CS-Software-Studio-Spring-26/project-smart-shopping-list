@@ -175,8 +175,9 @@ class ProductsController < ApplicationController
   # New form: source_url + category by default. When the scraper fails or the
   # user opts into manual mode, name/description/image_url are also accepted
   # so the user can finish onboarding without a working scrape.
+  # target_price is optional — users may set it now or via the edit form later.
   def create_params
-    params.require(:product).permit(:category, :source_url, :name, :description, :image_url)
+    params.require(:product).permit(:category, :source_url, :name, :description, :image_url, :target_price)
   end
 
   # Map scraper exceptions to a single user-facing sentence. We deliberately
@@ -194,8 +195,10 @@ class ProductsController < ApplicationController
   end
 
   # Edit form keeps everything editable so users can correct scraped values.
+  # target_price is editable here so users can revise their alert threshold
+  # at any time (or clear it by submitting blank).
   def update_params
-    params.require(:product).permit(:name, :category, :description, :image_url, :source_url)
+    params.require(:product).permit(:name, :category, :description, :image_url, :source_url, :target_price)
   end
 
   # Used when the page returns no schema.org "name" — gives the model

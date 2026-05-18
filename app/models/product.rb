@@ -10,6 +10,26 @@ class Product < ApplicationRecord
     validates :source_url,
               format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" },
               allow_blank: true
+    # target_price is opt-in: a nil value just means "no alert configured".
+    # When set, it must be a positive number. We cap it at 10 million to keep
+    # the column inside its decimal(10,2) precision.
+    validates :target_price,
+              numericality: { greater_than: 0, less_than_or_equal_to: 10_000_000 },
+              allow_nil: true
+
+    # True iff the owner has asked to be alerted when the price hits or
+    # drops below `target_price`. Used by PriceAlerter to decide whether to
+    # bother running the rest of the alert evaluation.
+    def target_price_alert_enabled?
+      target_price.present?
+    end
+
+    # Don't email the user more than once per `window`. The 24-hour default
+    # matches PriceAlerter's expectations and gives us room to lengthen the
+    # window later if users complain about noise.
+    def alert_cooldown_active?(window: 24.hours)
+      last_alerted_at.present? && last_alerted_at > window.ago
+    end
 
     def lowest_price
       price_records.minimum(:price)

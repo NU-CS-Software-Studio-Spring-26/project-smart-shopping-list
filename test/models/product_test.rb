@@ -91,4 +91,53 @@ class ProductTest < ActiveSupport::TestCase
 
     assert_match(/trending up/i, @product.price_trend_description)
   end
+
+  # --- Target Price Tests ---
+
+  test "valid when target_price is nil (alerts are opt-in)" do
+    @product.target_price = nil
+    assert @product.valid?
+  end
+
+  test "valid when target_price is a positive number" do
+    @product.target_price = 99.99
+    assert @product.valid?
+  end
+
+  test "invalid when target_price is zero or negative" do
+    @product.target_price = 0
+    assert_not @product.valid?
+    assert_includes @product.errors[:target_price].first, "greater than"
+
+    @product.target_price = -5
+    assert_not @product.valid?
+  end
+
+  test "invalid when target_price exceeds the column precision cap" do
+    @product.target_price = 99_999_999.99
+    assert_not @product.valid?
+  end
+
+  test "alert_cooldown_active? is false when last_alerted_at is nil" do
+    @product.last_alerted_at = nil
+    refute @product.alert_cooldown_active?
+  end
+
+  test "alert_cooldown_active? is true within the 24h window" do
+    @product.last_alerted_at = 1.hour.ago
+    assert @product.alert_cooldown_active?
+  end
+
+  test "alert_cooldown_active? is false after the 24h window" do
+    @product.last_alerted_at = 25.hours.ago
+    refute @product.alert_cooldown_active?
+  end
+
+  test "target_price_alert_enabled? mirrors presence of target_price" do
+    @product.target_price = nil
+    refute @product.target_price_alert_enabled?
+
+    @product.target_price = 1
+    assert @product.target_price_alert_enabled?
+  end
 end
