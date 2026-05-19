@@ -40,7 +40,10 @@ class PriceFetcher
     )
     product
   rescue PriceScrapers::Error => e
-    product.update_columns(last_fetch_error: e.message.to_s.first(250))
+    product.update_columns(
+      last_fetch_error: e.message.to_s.first(250),
+      last_fetched_at: Time.current
+    )
     product
   end
 

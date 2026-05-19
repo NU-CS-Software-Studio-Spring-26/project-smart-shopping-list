@@ -6,6 +6,7 @@ class RefreshPricesJob < ApplicationJob
   ADVISORY_LOCK_KEY = 0x5052_4943_45 # "PRICE"
 
   FAILURE_DETAIL_LIMIT = 100
+  FULL_CYCLE_MAX_BATCHES = 500
 
   def perform(refresh_run_id, full_cycle: false)
     run = PriceRefreshRun.find(refresh_run_id)
@@ -40,7 +41,11 @@ class RefreshPricesJob < ApplicationJob
 
   def run_cycle(full_cycle:)
     started_at = Time.current
-    limit = RefreshSchedule.batch_size
+    limit = if full_cycle
+              Product.refreshable.count.clamp(1, RefreshSchedule.max_batch)
+            else
+              RefreshSchedule.batch_size
+            end
     min_age = RefreshSchedule.stale_after
 
     attempted = succeeded = failed = 0
@@ -64,6 +69,7 @@ class RefreshPricesJob < ApplicationJob
       break unless full_cycle
       break if summary[:attempted].zero?
       break if stale_remaining.zero?
+      break if batches_run >= FULL_CYCLE_MAX_BATCHES
     end
 
     {

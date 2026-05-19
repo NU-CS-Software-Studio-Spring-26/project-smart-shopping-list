@@ -69,6 +69,28 @@ class RefreshPricesJobTest < ActiveJob::TestCase
     assert_equal 0, @run.stale_remaining
   end
 
+  test "full_cycle uses refreshable count as batch limit" do
+    called_with = nil
+    stub_method(PriceFetcher, :refresh_batch, ->(**kwargs) {
+      called_with = kwargs
+      {
+        total: 3,
+        catalog_with_url: 3,
+        batch_size: kwargs[:limit],
+        attempted: 0,
+        succeeded: 0,
+        failed: 0,
+        stale_remaining: 0,
+        failures: [],
+        duration: 0.0
+      }
+    }) do
+      RefreshPricesJob.perform_now(@run.id, full_cycle: true)
+    end
+
+    assert_equal Product.refreshable.count.clamp(1, RefreshSchedule.max_batch), called_with[:limit]
+  end
+
   test "perform skips when advisory lock is not acquired" do
     called = false
     job = RefreshPricesJob.new

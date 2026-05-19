@@ -87,7 +87,9 @@ class PriceFetcherTest < ActiveSupport::TestCase
     stub_method(PriceScrapers, :fetch, ->(*_args, **_kw) { raise PriceScrapers::TransientError, "network blip" }) do
       assert_nothing_raised { PriceFetcher.call(@product) }
     end
-    assert_match(/network blip/, @product.reload.last_fetch_error)
+    @product.reload
+    assert_match(/network blip/, @product.last_fetch_error)
+    assert_not_nil @product.last_fetched_at
   end
 
   test ".call no-ops on a product without source_url (manual-only products are safe)" do
