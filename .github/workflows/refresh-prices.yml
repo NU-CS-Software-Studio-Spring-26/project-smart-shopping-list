@@ -20,7 +20,7 @@ on:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ github.event_name == 'workflow_dispatch' && 45 || 8 }}
+    timeout-minutes: ${{ github.event_name == 'workflow_dispatch' && 120 || 8 }}
 
     steps:
       - name: Trigger refresh
@@ -67,7 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$REFRESH_MODE" = "full-cycle" ]; then
-            deadline=$((SECONDS + 2400))
+            deadline=$((SECONDS + 5400))
           else
             deadline=$((SECONDS + 300))
           fi
@@ -145,7 +145,7 @@ jobs:
               f"| Finished | {data.get('finished_at') or '—'} |",
               f"| Duration | {data.get('duration_seconds', '—')}s |",
               f"| Refreshable catalog | {data.get('total_products', '—')} |",
-              f"| URLs with source (incl. pagination test) | {data.get('catalog_with_url', '—')} |",
+              f"| URLs with source (all accounts) | {data.get('catalog_with_url', '—')} |",
               f"| Per-batch limit | {data.get('batch_size', '—')} |",
               f"| Attempted | {data.get('attempted', 0)} |",
               f"| Succeeded | {data.get('succeeded', 0)} |",

@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Manual full-cycle refresh.** GitHub Actions *Run workflow* sends
   `X-Refresh-Mode: full-cycle`; `RefreshPricesJob` runs batch after batch
   immediately until every refreshable product is updated (one click, not 24).
-- **`Product.refreshable` scope.** Nightly and manual refresh target real
-  user-tracked PDPs only; `paginationtest@example.com` (Pagy volume) is excluded.
+- **`Product.refreshable` scope.** Alias of `scrapeable` — nightly and manual
+  refresh include the pagination load-test catalog (~1,265 PDPs on prod), not
+  just team accounts.
 - **`price_refresh_runs.batches_run`** column for multi-batch manual runs.
 - **Refresh batch observability.** Each cron/manual refresh creates a
   `price_refresh_runs` row; GitHub Actions polls `GET /admin/refresh_runs/:id`
@@ -32,8 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Product.scrapeable` scope.** Cron batches skip non-PDP URLs (`example.com`,
   retailer search pages).
 - **`Product.refreshable` + `RefreshSchedule`.** Batch sizing and
-  `PriceFetcher.refresh_batch` use refreshable count (~15 real products on prod,
-  not 1,265 pagination rows).
+  `PriceFetcher.refresh_batch` use the full scrapeable catalog count (~1,265 on
+  prod including load-test rows).
 - **GitHub Actions refresh workflow** waits for completion (poll up to 40 min for
   manual full-cycle, 5 min for cron) and writes Summary with batches run.
 

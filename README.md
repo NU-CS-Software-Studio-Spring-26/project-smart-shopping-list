@@ -73,8 +73,8 @@ page on the index). Pagination is provided by [Pagy](https://github.com/ddnexus/
 
 ## Automatic daily price refresh
 
-Every **refreshable** product (real user-tracked PDPs; excludes the
-pagination stress-test account) is re-scraped on a nightly schedule. See
+Every **refreshable** product (all scrapeable PDP URLs — team accounts and the
+pagination load-test catalog) is re-scraped on a nightly schedule. See
 [`Product.refreshable`][refreshable] in `app/models/product.rb`.
 
 [refreshable]: app/models/product.rb
@@ -90,9 +90,9 @@ pagination stress-test account) is re-scraped on a nightly schedule. See
   `RefreshPricesJob`, which calls `PriceFetcher.refresh_batch` with a limit from
   [`RefreshSchedule`](app/services/refresh_schedule.rb) based on **refreshable**
   product count. Manual runs loop batches until done; cron runs one batch per tick.
-- **Observability** — the workflow polls `GET /admin/refresh_runs/:id` (up to ~40
-  minutes for manual full-cycle, ~5 minutes for cron), then writes a markdown
-  report to the GitHub Actions **Summary** tab (batches run, attempted /
+- **Observability** — the workflow polls `GET /admin/refresh_runs/:id` (up to ~90
+  minutes for manual full-cycle stress runs, ~5 minutes for cron), then writes a
+  markdown report to the GitHub Actions **Summary** tab (batches run, attempted /
   succeeded / failed, stale remaining, failure list).
 - **Dedup** — a new `PriceRecord` is written **only when the price has actually
   changed**. Per-product failures go to `product.last_fetch_error` and never

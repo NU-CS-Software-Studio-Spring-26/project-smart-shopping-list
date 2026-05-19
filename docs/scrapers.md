@@ -170,21 +170,25 @@ automatically — no code deploy required.
 
 ### 4.1a Which products enter a refresh batch (`Product.refreshable`)
 
-Cron and manual refresh use **`Product.refreshable`**, not every row with a
-`source_url`:
+Cron and manual refresh scrape **`Product.refreshable`**, which is the same set
+as **`Product.scrapeable`** — every account, including the pagination load-test
+user, as long as the row has a real product-detail URL:
 
 | Included | Excluded |
 |---|---|
-| Real team/user products with PDP URLs | `paginationtest@example.com` (Pagy UI volume only) |
-| Passes `Product.scrapeable` checks | `example.com`, `/search?` placeholders |
+| All users' PDP URLs (team + `paginationtest@example.com`) | Blank `source_url` |
+| Amazon `/dp/`, Target `/p/`, Best Buy `.p`, etc. | `example.com` placeholders |
+| | Retailer `/search?` URLs |
 
-Implementation: [`Product.refreshable`](../app/models/product.rb). On production
-this is typically **~15 real products**, not 1,265 pagination rows.
+Implementation: [`Product.refreshable`](../app/models/product.rb) aliases
+[`Product.scrapeable`](../app/models/product.rb). On production this is
+**~1,265 products** (1,250 load-test + ~15 team rows).
 
 **Manual Run workflow** sends `X-Refresh-Mode: full-cycle` — one job runs batch
-after batch **immediately** (no 5-minute gap) until `stale_remaining` is zero.
+after batch **immediately** until the full scrapeable catalog is attempted.
 
-**Nightly cron** sends `X-Refresh-Mode: batch` — one batch per 5-minute tick.
+**Nightly cron** sends `X-Refresh-Mode: batch` — one batch (~53 products) per
+5-minute tick across the 2-hour window.
 
 ### 4.1b Seed & load-test data (real PDP URLs)
 
