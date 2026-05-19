@@ -22,7 +22,8 @@ class RefreshFailureReport
     @by_category[category] += 1
 
     sample_key = "#{category}|#{host}"
-    return if @samples.size >= MAX_SAMPLES && !@samples.key?(sample_key)
+    return if @samples.key?(sample_key)
+    return if @samples.size >= MAX_SAMPLES
 
     @samples[sample_key] = failure.merge(
       "category" => category,

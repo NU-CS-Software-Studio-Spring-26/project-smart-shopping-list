@@ -1,0 +1,9 @@
+# Demo login passwords in seeds/README are intentional local-dev credentials,
+# not production secrets. Real keys (Google OAuth, ADMIN_REFRESH_TOKEN, etc.)
+# live in Heroku/GitHub Secrets env vars only.
+paths-ignore:
+  - README.md
+  - db/seeds.rb
+  - db/seeds/**
+  - wiki.md
+  - test/**
