@@ -133,11 +133,13 @@ if we ever migrate off Heroku — only `APP_URL` would need to change.
 1. `.github/workflows/refresh-prices.yml` runs **every 5 minutes during
    UTC hours 7–8** (≈ 2:00–3:55 AM Chicago CDT).
 2. It POSTs to `https://<app>/admin/refresh_prices` with an
-   `X-Admin-Token` header.
-3. `AdminController#refresh_prices` checks the token, enqueues
-   `RefreshPricesJob`, and returns **202 Accepted** immediately (Heroku
-   web requests must finish within 30 seconds).
-4. The job calls `PriceFetcher.refresh_batch` with a limit computed by
+   `X-Admin-Token` header and `X-Trigger-Source` (`schedule` or `manual`).
+3. `AdminController#refresh_prices` checks the token, creates a
+   `PriceRefreshRun`, enqueues `RefreshPricesJob`, and returns **202
+   Accepted** immediately (Heroku web requests must finish within 30 seconds).
+4. The workflow polls `GET /admin/refresh_runs/:id` until the batch
+   finishes, then writes a markdown report to the run **Summary** tab.
+5. The job calls `PriceFetcher.refresh_batch` with a limit computed by
    `RefreshSchedule` from the current product count — batch size scales
    automatically when load grows. Over 24 ticks in the 2-hour window the
    full catalog is covered. A new `PriceRecord` is written only when the
@@ -164,9 +166,9 @@ heroku config:set ADMIN_REFRESH_TOKEN=<the-secret> -a smart-shoppinglist
 **Verifying it works:**
 
 - **Manual trigger:** GitHub → Actions tab → "Daily price refresh" →
-  "Run workflow". The job should finish green within seconds (HTTP 202).
-- **Watch the app logs:** `heroku logs --tail -a smart-shoppinglist`.
-  Look for `[RefreshPricesJob]` and `[PriceFetcher] refresh_batch finished`.
+  "Run workflow". Open the run → **Summary** for succeeded/failed counts,
+  duration, trigger source, and per-product failure messages.
+- **Watch the app logs:** `heroku logs --tail -a smart-shoppinglist` (optional).
 - **CLI full refresh (emergency):**
   ```bash
   bin/rails runner "PriceFetcher.refresh_all"

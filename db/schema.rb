@@ -10,9 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_19_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_19_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "price_refresh_runs", force: :cascade do |t|
+    t.integer "attempted", default: 0, null: false
+    t.integer "batch_size"
+    t.datetime "created_at", null: false
+    t.decimal "duration_seconds", precision: 8, scale: 1
+    t.datetime "enqueued_at", null: false
+    t.text "error_message"
+    t.integer "failed", default: 0, null: false
+    t.jsonb "failure_details", default: [], null: false
+    t.datetime "finished_at"
+    t.datetime "started_at"
+    t.integer "stale_remaining"
+    t.string "status", default: "pending", null: false
+    t.integer "succeeded", default: 0, null: false
+    t.integer "total_products"
+    t.string "triggered_by", default: "unknown", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enqueued_at"], name: "index_price_refresh_runs_on_enqueued_at"
+    t.index ["status"], name: "index_price_refresh_runs_on_status"
+  end
 
   create_table "price_records", force: :cascade do |t|
     t.datetime "created_at", null: false

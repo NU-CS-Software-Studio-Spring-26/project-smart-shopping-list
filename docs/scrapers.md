@@ -146,9 +146,11 @@ authenticated with a shared secret in the `X-Admin-Token` header.
 3. Heroku router → Rails on the web dyno.
 4. AdminController#refresh_prices:
      a. authenticate_admin_token! (secure_compare; fail-closed)
-     b. RefreshPricesJob.perform_later
-     c. render 202 { ok, status: "enqueued", batch_size, runs_per_cycle }
-5. curl sees HTTP 202 within ~1s → workflow green.
+     b. create PriceRefreshRun (triggered_by from X-Trigger-Source header)
+     c. RefreshPricesJob.perform_later(run.id)
+     d. render 202 { ok, status: "enqueued", run_id, batch_size, runs_per_cycle }
+5. curl sees HTTP 202 within ~1s; workflow polls GET /admin/refresh_runs/:id
+   until the batch finishes (up to 3 minutes).
 
 Meanwhile on the web dyno (async adapter):
 6. RefreshPricesJob acquires a PostgreSQL advisory lock (skip if overlap).
@@ -157,7 +159,9 @@ Meanwhile on the web dyno (async adapter):
 8. PriceFetcher.refresh_batch(limit:, min_age: 23.hours)
       → stalest products first, serial scrape per product, no sleep
       → write PriceRecord only if price changed (dedup)
-9. Log summary: { total, batch_size, succeeded, failed, duration }
+9. Update PriceRefreshRun with summary; log { total, attempted, succeeded,
+      failed, stale_remaining, duration, failures[] }
+10. GitHub Actions writes a markdown report to the run **Summary** tab.
 ```
 
 Over 24 ticks in the 2-hour window, the full catalog is covered even at
@@ -168,8 +172,9 @@ stress-test scale (~1265+ products). When product count doubles,
 `bin/rails runner "PriceFetcher.refresh_all"`.
 
 Per-product failures (timeout, 403, parse error) are caught in
-`PriceFetcher.call` and stored on `last_fetch_error`. The cron tick itself
-stays green as long as the endpoint returns 202.
+`PriceFetcher.call` and stored on `last_fetch_error`. The workflow stays
+green when the batch completes; it fails only on job crash or poll timeout.
+Individual scrape failures appear in the run Summary.
 
 ### 4.2 Tuning (ENV vars on Heroku)
 
@@ -201,10 +206,10 @@ stays green as long as the endpoint returns 202.
    | `ADMIN_REFRESH_TOKEN` | the same `$TOKEN` value as on Heroku |
 
 4. **Verify by manually triggering a run.** GitHub repo → *Actions* tab →
-   *Daily price refresh* → *Run workflow*. The job should finish green
-   within seconds (HTTP 202). Check progress in Heroku logs:
-   `heroku logs --tail -a smart-shoppinglist` — look for
-   `[RefreshPricesJob]` and `[PriceFetcher] refresh_batch finished`.
+   *Daily price refresh* → *Run workflow*. Open the run → **Summary** tab
+   for the batch report (attempted / succeeded / failed / duration / failure
+   list). Heroku logs remain available for deep debugging:
+   `heroku logs --tail -a smart-shoppinglist`.
 
 ### 4.4 Scaling path (L2+)
 
@@ -215,8 +220,8 @@ window, upgrade to Solid Queue + a worker dyno — `RefreshPricesJob` and
 
 ### 4.5 Cost
 
-- **GitHub Actions:** free under the GitHub Student credit. Each tick is
-  ~5–15 seconds (curl waits for 202 only). 24 ticks/night ≈ 6 minutes/night.
+- **GitHub Actions:** free under the GitHub Student credit. Each tick polls
+  for up to ~3 minutes while the batch runs. 24 ticks/night ≈ ~72 minutes/night.
 - **Heroku:** zero additional cost beyond the existing `Eco web $5 + Mini
   Postgres $5 = $10/month`. No worker dyno, no Scheduler add-on, no
   one-off dyno hours consumed.

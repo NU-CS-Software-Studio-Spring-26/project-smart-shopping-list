@@ -58,19 +58,36 @@ class PriceFetcher
                    .limit(limit)
 
     succeeded = failed = 0
+    failures = []
     scope.find_each do |product|
       call(product)
-      product.last_fetch_error.present? ? failed += 1 : succeeded += 1
+      if product.last_fetch_error.present?
+        failed += 1
+        failures << {
+          "product_id" => product.id,
+          "name" => product.name,
+          "error" => product.last_fetch_error
+        }
+      else
+        succeeded += 1
+      end
       sleep sleep_between if sleep_between.positive?
     end
+
+    stale_remaining = Product.where.not(source_url: nil)
+                             .where("last_fetched_at IS NULL OR last_fetched_at < ?", min_age.ago)
+                             .count
 
     duration = (Time.current - started_at).round(1)
     summary = {
       total: total,
       batch_size: limit,
       runs_per_cycle: RefreshSchedule.runs_per_cycle,
+      attempted: succeeded + failed,
       succeeded: succeeded,
       failed: failed,
+      stale_remaining: stale_remaining,
+      failures: failures,
       duration: duration
     }
     Rails.logger.info("[PriceFetcher] refresh_batch finished — #{summary.inspect}")

@@ -68,11 +68,13 @@ price* by hand.
 - **Worker** — `AdminController#refresh_prices` returns **202 Accepted**
   immediately and enqueues `RefreshPricesJob`, which calls
   `PriceFetcher.refresh_batch` with a limit auto-calculated by
-  `RefreshSchedule` from the current product count. Over 24 ticks in the
-  2-hour window the full catalog is covered. A new `PriceRecord` is written
-  **only when the price has actually changed** (dedup). Per-product
-  failures are captured in `product.last_fetch_error` and never crash the
-  cron tick.
+  `RefreshSchedule` from the current product count. Each run is recorded in
+  `price_refresh_runs`; the workflow polls until the batch finishes and writes
+  a report to the GitHub Actions **Summary** tab (attempted, succeeded,
+  failed, duration, failure list). Over 24 ticks in the 2-hour window the
+  full catalog is covered. A new `PriceRecord` is written **only when the
+  price has actually changed** (dedup). Per-product failures are captured in
+  `product.last_fetch_error` and never crash the batch.
 
 We picked GitHub Actions cron over Solid Queue + a Heroku worker dyno
 because it stays inside the GitHub Student `$13/month` credit, keeps the

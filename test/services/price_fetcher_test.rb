@@ -230,9 +230,26 @@ class PriceFetcherTest < ActiveSupport::TestCase
       )
     }) do
       summary = PriceFetcher.refresh_batch(limit: 5, min_age: 1.day, sleep_between: 0)
+      assert_kind_of Integer, summary[:attempted]
       assert_kind_of Integer, summary[:succeeded]
       assert_kind_of Integer, summary[:failed]
+      assert_kind_of Integer, summary[:stale_remaining]
+      assert_kind_of Array, summary[:failures]
       assert_kind_of Float, summary[:duration]
+    end
+  end
+
+  test ".refresh_batch records failure details when scrape errors" do
+    @product.update_columns(source_url: "https://example.com/bad", last_fetched_at: 2.days.ago)
+
+    stub_method(PriceScrapers, :fetch, ->(*_args, **_kw) {
+      raise PriceScrapers::TransientError, "network blip"
+    }) do
+      summary = PriceFetcher.refresh_batch(limit: 5, min_age: 1.day, sleep_between: 0)
+      assert_equal 1, summary[:failed]
+      assert_equal 1, summary[:failures].size
+      assert_equal @product.id, summary[:failures].first["product_id"]
+      assert_match(/network blip/, summary[:failures].first["error"])
     end
   end
 end

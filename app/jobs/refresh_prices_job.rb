@@ -5,8 +5,17 @@ class RefreshPricesJob < ApplicationJob
   # run outlasts the cron interval. No Redis required.
   ADVISORY_LOCK_KEY = 0x5052_4943_45 # "PRICE"
 
-  def perform
+  def perform(refresh_run_id)
+    run = PriceRefreshRun.find(refresh_run_id)
+    run.update!(status: "running", started_at: Time.current)
+
     unless acquire_lock
+      run.update!(
+        status: "skipped_overlap",
+        total_products: Product.where.not(source_url: nil).count,
+        batch_size: RefreshSchedule.batch_size,
+        finished_at: Time.current
+      )
       Rails.logger.warn("[RefreshPricesJob] skipped_due_to_overlap — previous batch still running")
       return
     end
@@ -18,7 +27,15 @@ class RefreshPricesJob < ApplicationJob
         min_age: RefreshSchedule.stale_after,
         sleep_between: 0
       )
-      Rails.logger.info("[RefreshPricesJob] #{summary.inspect}")
+      run.apply_summary!(summary)
+      Rails.logger.info("[RefreshPricesJob] run=#{run.id} #{summary.inspect}")
+    rescue StandardError => e
+      run.update!(
+        status: "failed",
+        error_message: e.message.to_s.first(500),
+        finished_at: Time.current
+      )
+      raise
     ensure
       release_lock
     end

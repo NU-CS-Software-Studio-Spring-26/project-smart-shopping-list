@@ -21,4 +21,5 @@ Rails.application.routes.draw do
   # Webhook hit by .github/workflows/refresh-prices.yml on a daily cron.
   # Auth is by shared secret (X-Admin-Token header), not by cookie session.
   post "admin/refresh_prices", to: "admin#refresh_prices"
+  get "admin/refresh_runs/:id", to: "admin#refresh_run"
 end

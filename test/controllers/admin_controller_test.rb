@@ -55,15 +55,62 @@ class AdminControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "POST /admin/refresh_prices with the right token enqueues RefreshPricesJob and returns 202" do
-    assert_enqueued_with(job: RefreshPricesJob) do
-      post "/admin/refresh_prices", headers: { "X-Admin-Token" => GOOD_TOKEN }
+    assert_difference "PriceRefreshRun.count", 1 do
+      assert_enqueued_with(job: RefreshPricesJob) do
+        post "/admin/refresh_prices",
+             headers: {
+               "X-Admin-Token" => GOOD_TOKEN,
+               "X-Trigger-Source" => "manual"
+             }
+      end
     end
 
     assert_response :accepted
     body = JSON.parse(response.body)
     assert_equal true, body["ok"]
     assert_equal "enqueued", body["status"]
+    assert body["run_id"].present?
     assert_equal RefreshSchedule.batch_size, body["batch_size"]
     assert_equal RefreshSchedule.runs_per_cycle, body["runs_per_cycle"]
+
+    run = PriceRefreshRun.find(body["run_id"])
+    assert_equal "manual", run.triggered_by
+    assert_equal "pending", run.status
+  end
+
+  test "GET /admin/refresh_runs/:id returns run JSON with admin token" do
+    run = PriceRefreshRun.create!(
+      triggered_by: "schedule",
+      status: "completed",
+      batch_size: 10,
+      attempted: 5,
+      succeeded: 4,
+      failed: 1,
+      enqueued_at: Time.current,
+      finished_at: Time.current,
+      failure_details: [ { "product_id" => 1, "name" => "X", "error" => "timeout" } ]
+    )
+
+    get "/admin/refresh_runs/#{run.id}", headers: { "X-Admin-Token" => GOOD_TOKEN }
+    assert_response :success
+
+    body = JSON.parse(response.body)
+    assert_equal run.id, body["id"]
+    assert_equal "schedule", body["triggered_by"]
+    assert_equal "completed", body["status"]
+    assert_equal 4, body["succeeded"]
+    assert_equal 1, body["failed"]
+    assert_equal 1, body["failure_details"].size
+  end
+
+  test "GET /admin/refresh_runs/:id without token is 401" do
+    run = PriceRefreshRun.create!(
+      triggered_by: "schedule",
+      status: "pending",
+      enqueued_at: Time.current
+    )
+
+    get "/admin/refresh_runs/#{run.id}"
+    assert_response :unauthorized
   end
 end

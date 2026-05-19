@@ -1,11 +1,11 @@
 class AdminController < ApplicationController
-  # External cron (GitHub Actions) calls this with no session and no CSRF
-  # token — it authenticates with a shared secret in the `X-Admin-Token`
+  # External cron (GitHub Actions) calls these with no session and no CSRF
+  # token — they authenticate with a shared secret in the `X-Admin-Token`
   # header. Skip the cookie-based auth + CSRF protection accordingly.
-  allow_unauthenticated_access only: :refresh_prices
-  skip_forgery_protection only: :refresh_prices
+  allow_unauthenticated_access only: %i[refresh_prices refresh_run]
+  skip_forgery_protection only: %i[refresh_prices refresh_run]
 
-  before_action :authenticate_admin_token!, only: :refresh_prices
+  before_action :authenticate_admin_token!, only: %i[refresh_prices refresh_run]
 
   # POST /admin/refresh_prices
   #
@@ -14,13 +14,29 @@ class AdminController < ApplicationController
   # products serially exceeds that, so the actual work runs in
   # RefreshPricesJob on the web dyno's async adapter.
   def refresh_prices
-    RefreshPricesJob.perform_later
+    run = PriceRefreshRun.create!(
+      triggered_by: request.headers["X-Trigger-Source"].presence || "unknown",
+      status: "pending",
+      batch_size: RefreshSchedule.batch_size,
+      enqueued_at: Time.current
+    )
+
+    RefreshPricesJob.perform_later(run.id)
     render json: {
       ok: true,
       status: "enqueued",
+      run_id: run.id,
       batch_size: RefreshSchedule.batch_size,
       runs_per_cycle: RefreshSchedule.runs_per_cycle
     }, status: :accepted
+  end
+
+  # GET /admin/refresh_runs/:id
+  #
+  # Poll endpoint for GitHub Actions after POST /admin/refresh_prices.
+  def refresh_run
+    run = PriceRefreshRun.find(params[:id])
+    render json: run.as_api_json
   end
 
   private
