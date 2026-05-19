@@ -1,9 +1,12 @@
 require "test_helper"
 
 class PriceFetcherTest < ActiveSupport::TestCase
+  SCRAPEABLE_URL = "https://www.amazon.com/dp/B000TEST01".freeze
+  SCRAPEABLE_BAD_URL = "https://www.amazon.com/dp/B000BAD001".freeze
+
   setup do
     @product = products(:one)
-    @product.update_columns(source_url: "https://www.example.com/p/123")
+    @product.update_columns(source_url: SCRAPEABLE_URL)
   end
 
   def stub_fetch(price:, title: "Stubbed Title", image_url: "https://img/x.jpg", store: "Example", &block)
@@ -197,11 +200,11 @@ class PriceFetcherTest < ActiveSupport::TestCase
   test ".refresh_batch refreshes up to limit stale products oldest-first" do
     stale = Product.create!(
       user: users(:one), name: "Stale", category: "Electronics",
-      source_url: "https://example.com/stale", last_fetched_at: 3.days.ago
+      source_url: "https://www.amazon.com/dp/B000STALE1", last_fetched_at: 3.days.ago
     )
     fresh = Product.create!(
       user: users(:one), name: "Fresh", category: "Electronics",
-      source_url: "https://example.com/fresh", last_fetched_at: 1.hour.ago
+      source_url: "https://www.amazon.com/dp/B000FRESH1", last_fetched_at: 1.hour.ago
     )
 
     fetched = []
@@ -240,7 +243,7 @@ class PriceFetcherTest < ActiveSupport::TestCase
   end
 
   test ".refresh_batch records failure details when scrape errors" do
-    @product.update_columns(source_url: "https://example.com/bad", last_fetched_at: 2.days.ago)
+    @product.update_columns(source_url: SCRAPEABLE_BAD_URL, last_fetched_at: 2.days.ago)
 
     stub_method(PriceScrapers, :fetch, ->(*_args, **_kw) {
       raise PriceScrapers::TransientError, "network blip"
