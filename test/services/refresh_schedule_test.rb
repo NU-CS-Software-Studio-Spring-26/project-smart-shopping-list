@@ -47,10 +47,15 @@ class RefreshScheduleTest < ActiveSupport::TestCase
 
   test "batch_size respects REFRESH_BATCH_MAX cap" do
     ENV["REFRESH_BATCH_MAX"] = "3"
+    ENV["REFRESH_WINDOW_HOURS"] = "1"
+    ENV["REFRESH_INTERVAL_MINUTES"] = "30"
     user = users(:one)
     20.times do |i|
       user.products.create!(name: "Cap#{i}", category: "Books", source_url: "https://example.com/c/#{i}")
     end
+    total = Product.where.not(source_url: nil).count
+    uncapped = (total.to_f / RefreshSchedule.runs_per_cycle).ceil
+    assert_operator uncapped, :>, RefreshSchedule.max_batch
     assert_equal 3, RefreshSchedule.batch_size
   end
 end

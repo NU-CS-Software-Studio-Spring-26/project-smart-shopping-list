@@ -29,7 +29,7 @@ class RefreshSchedule
   def self.runs_per_cycle
     window = window_hours.hours
     interval = interval_minutes.minutes
-    [(window / interval).floor, 1].max
+    [ (window / interval).floor, 1 ].max
   end
 
   def self.batch_size

@@ -21,13 +21,19 @@ class RefreshPricesJobTest < ActiveJob::TestCase
   end
 
   test "perform skips when advisory lock is held" do
-    RefreshPricesJob.new.send(:acquire_lock)
+    lock_key = RefreshPricesJob::ADVISORY_LOCK_KEY
+    holder = ActiveRecord::Base.connection_pool.checkout
+    assert holder.select_value("SELECT pg_try_advisory_lock(#{lock_key})")
+
     called = false
     stub_method(PriceFetcher, :refresh_batch, ->(**_kwargs) { called = true }) do
       RefreshPricesJob.perform_now
     end
     refute called
   ensure
-    RefreshPricesJob.new.send(:release_lock)
+    if defined?(holder) && holder
+      holder.select_value("SELECT pg_advisory_unlock(#{lock_key})")
+      ActiveRecord::Base.connection_pool.checkin(holder)
+    end
   end
 end
