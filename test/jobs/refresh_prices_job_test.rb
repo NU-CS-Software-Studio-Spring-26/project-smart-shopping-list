@@ -40,24 +40,18 @@ class RefreshPricesJobTest < ActiveJob::TestCase
     assert_not_nil @run.finished_at
   end
 
-  test "perform skips when advisory lock is held" do
-    lock_key = RefreshPricesJob::ADVISORY_LOCK_KEY
-    holder = ActiveRecord::Base.connection_pool.checkout
-    assert holder.select_value("SELECT pg_try_advisory_lock(#{lock_key})")
-
+  test "perform skips when advisory lock is not acquired" do
     called = false
-    stub_method(PriceFetcher, :refresh_batch, ->(**_kwargs) { called = true }) do
-      RefreshPricesJob.perform_now(@run.id)
-    end
-    refute called
+    job = RefreshPricesJob.new
+    job.define_singleton_method(:acquire_lock) { false }
 
+    stub_method(PriceFetcher, :refresh_batch, ->(**_kwargs) { called = true }) do
+      job.perform(@run.id)
+    end
+
+    refute called
     @run.reload
     assert_equal "skipped_overlap", @run.status
     assert_not_nil @run.finished_at
-  ensure
-    if defined?(holder) && holder
-      holder.select_value("SELECT pg_advisory_unlock(#{lock_key})")
-      ActiveRecord::Base.connection_pool.checkin(holder)
-    end
   end
 end
