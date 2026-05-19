@@ -50,9 +50,10 @@ class PriceFetcher
   # without redeploying when load grows.
   def self.refresh_batch(limit:, min_age: 23.hours, sleep_between: 0)
     started_at = Time.current
-    total = Product.where.not(source_url: nil).count
+    total = Product.scrapeable.count
+    catalog_with_url = Product.with_trackable_url.count
 
-    scope = Product.where.not(source_url: nil)
+    scope = Product.scrapeable
                    .where("last_fetched_at IS NULL OR last_fetched_at < ?", min_age.ago)
                    .order(Arel.sql("last_fetched_at ASC NULLS FIRST"))
                    .limit(limit)
@@ -74,13 +75,14 @@ class PriceFetcher
       sleep sleep_between if sleep_between.positive?
     end
 
-    stale_remaining = Product.where.not(source_url: nil)
+    stale_remaining = Product.scrapeable
                              .where("last_fetched_at IS NULL OR last_fetched_at < ?", min_age.ago)
                              .count
 
     duration = (Time.current - started_at).round(1)
     summary = {
       total: total,
+      catalog_with_url: catalog_with_url,
       batch_size: limit,
       runs_per_cycle: RefreshSchedule.runs_per_cycle,
       attempted: succeeded + failed,

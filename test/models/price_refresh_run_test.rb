@@ -11,6 +11,7 @@ class PriceRefreshRunTest < ActiveSupport::TestCase
 
     run.apply_summary!(
       total: 100,
+      catalog_with_url: 1200,
       batch_size: 5,
       attempted: 5,
       succeeded: 4,

@@ -135,6 +135,32 @@ class Product < ApplicationRecord
       end
     end
 
+    # Products with a source_url present (includes load-test / seed rows).
+    scope :with_trackable_url, -> { where.not(source_url: [ nil, "" ]) }
+
+    # Subset whose URLs point at real product pages we can scrape. Excludes:
+    #   - example.com placeholders (pagination stress-test account)
+    #   - retailer /search? URLs used by db/seeds.rb for volume, not PDPs
+    scope :scrapeable, -> {
+      with_trackable_url
+        .where.not("source_url ILIKE ?", "%example.com%")
+        .where.not("source_url ILIKE ?", "%/search?%")
+        .where.not("source_url ILIKE ?", "%/s?k=%")
+    }
+
+    def self.scrape_excluded?(url)
+      u = url.to_s
+      return true if u.blank?
+      return true if u.include?("example.com")
+      return true if u.match?(%r{/search[?]}i) || u.match?(%r{/s[?]k=}i)
+
+      false
+    end
+
+    def scrapeable?
+      source_url.present? && !self.class.scrape_excluded?(source_url)
+    end
+
     private
 
     # Trim scraped/oversized text to the column caps before validations

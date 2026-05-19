@@ -12,7 +12,7 @@ class RefreshPricesJob < ApplicationJob
     unless acquire_lock
       run.update!(
         status: "skipped_overlap",
-        total_products: Product.where.not(source_url: nil).count,
+        total_products: Product.scrapeable.count,
         batch_size: RefreshSchedule.batch_size,
         finished_at: Time.current
       )

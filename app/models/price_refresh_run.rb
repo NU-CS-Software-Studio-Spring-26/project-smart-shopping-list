@@ -15,6 +15,7 @@ class PriceRefreshRun < ApplicationRecord
     update!(
       status: "completed",
       total_products: summary[:total],
+      catalog_with_url: summary[:catalog_with_url],
       batch_size: summary[:batch_size],
       attempted: summary[:attempted],
       succeeded: summary[:succeeded],
@@ -32,6 +33,7 @@ class PriceRefreshRun < ApplicationRecord
       triggered_by: triggered_by,
       status: status,
       total_products: total_products,
+      catalog_with_url: catalog_with_url,
       batch_size: batch_size,
       attempted: attempted,
       succeeded: succeeded,

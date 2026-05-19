@@ -164,9 +164,12 @@ Meanwhile on the web dyno (async adapter):
 10. GitHub Actions writes a markdown report to the run **Summary** tab.
 ```
 
-Over 24 ticks in the 2-hour window, the full catalog is covered even at
-stress-test scale (~1265+ products). When product count doubles,
-`batch_size` doubles automatically — no code deploy required.
+Over 24 ticks in the 2-hour window, the full **scrapeable** catalog is
+covered even when load-test rows (example.com placeholders, `/search?` seed
+URLs) remain in the database for pagination stress tests. Those rows are
+skipped by `Product.scrapeable` and never enter a refresh batch. When
+scrapeable product count doubles, `batch_size` doubles automatically — no
+code deploy required.
 
 `PriceFetcher.refresh_all` remains available for CLI/emergency use:
 `bin/rails runner "PriceFetcher.refresh_all"`.

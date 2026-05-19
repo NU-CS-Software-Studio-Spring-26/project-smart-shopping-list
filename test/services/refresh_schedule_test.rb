@@ -20,24 +20,30 @@ class RefreshScheduleTest < ActiveSupport::TestCase
     assert_equal 24, RefreshSchedule.runs_per_cycle
   end
 
-  test "batch_size scales with product count" do
+  test "batch_size scales with scrapeable product count" do
     user = users(:one)
     47.times do |i|
-      user.products.create!(name: "P#{i}", category: "Electronics", source_url: "https://example.com/p/#{i}")
+      user.products.create!(
+        name: "P#{i}",
+        category: "Electronics",
+        source_url: "https://www.amazon.com/dp/B000#{format('%03d', i)}"
+      )
     end
-    # fixtures: products(:one) has source_url from price_fetcher setup elsewhere;
-    # count all with source_url
-    total = Product.where.not(source_url: nil).count
+    total = Product.scrapeable.count
     expected = (total.to_f / 24).ceil
     assert_equal expected, RefreshSchedule.batch_size
   end
 
-  test "batch_size increases when product count grows" do
+  test "batch_size increases when scrapeable product count grows" do
     user = users(:one)
-    before = Product.where.not(source_url: nil).count
+    before = Product.scrapeable.count
     size_before = RefreshSchedule.batch_size
 
-    user.products.create!(name: "Grow", category: "Books", source_url: "https://example.com/grow")
+    user.products.create!(
+      name: "Grow",
+      category: "Books",
+      source_url: "https://www.bestbuy.com/site/item/123.p"
+    )
 
     size_after = RefreshSchedule.batch_size
     expected = ((before + 1).to_f / RefreshSchedule.runs_per_cycle).ceil.clamp(1, RefreshSchedule.max_batch)
@@ -51,11 +57,28 @@ class RefreshScheduleTest < ActiveSupport::TestCase
     ENV["REFRESH_INTERVAL_MINUTES"] = "30"
     user = users(:one)
     20.times do |i|
-      user.products.create!(name: "Cap#{i}", category: "Books", source_url: "https://example.com/c/#{i}")
+      user.products.create!(
+        name: "Cap#{i}",
+        category: "Books",
+        source_url: "https://www.walmart.com/ip/item-#{i}/123"
+      )
     end
-    total = Product.where.not(source_url: nil).count
+    total = Product.scrapeable.count
     uncapped = (total.to_f / RefreshSchedule.runs_per_cycle).ceil
     assert_operator uncapped, :>, RefreshSchedule.max_batch
     assert_equal 3, RefreshSchedule.batch_size
+  end
+
+  test "batch_size ignores example.com load-test URLs" do
+    user = users(:one)
+    size_before = RefreshSchedule.batch_size
+    50.times do |i|
+      user.products.create!(
+        name: "Fake#{i}",
+        category: "Books",
+        source_url: "https://example.com/p/#{i}"
+      )
+    end
+    assert_equal size_before, RefreshSchedule.batch_size
   end
 end

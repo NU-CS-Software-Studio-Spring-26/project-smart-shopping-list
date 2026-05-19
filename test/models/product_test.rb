@@ -187,4 +187,15 @@ class ProductTest < ActiveSupport::TestCase
   ensure
     PriceRecord.alerter_callback_enabled = true
   end
+
+  test "scrapeable excludes example.com and search URLs" do
+    @product.source_url = "https://www.amazon.com/dp/B123"
+    assert @product.scrapeable?
+
+    @product.source_url = "https://example.com/p/1"
+    refute @product.scrapeable?
+
+    @product.source_url = "https://www.amazon.com/search?q=phone"
+    refute @product.scrapeable?
+  end
 end

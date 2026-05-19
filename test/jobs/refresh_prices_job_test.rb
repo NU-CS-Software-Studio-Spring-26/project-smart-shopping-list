@@ -18,6 +18,7 @@ class RefreshPricesJobTest < ActiveJob::TestCase
       called_with = kwargs
       {
         total: 1,
+        catalog_with_url: 1,
         batch_size: kwargs[:limit],
         attempted: 1,
         succeeded: 1,
