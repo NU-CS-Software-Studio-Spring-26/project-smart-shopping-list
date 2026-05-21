@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>PriceTracker</title>
+    <title><%= content_for?(:title) ? "#{content_for(:title)} · PriceTracker" : "PriceTracker" %></title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/icon.png">
     <link rel="manifest" href="/manifest.webmanifest">
