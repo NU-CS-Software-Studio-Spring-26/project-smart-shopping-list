@@ -11,7 +11,7 @@
   </section>
 
   <section class="container-xl pt-content">
-    <%= form_with url: assistant_path, method: :get, local: true, class: "pt-assistant-form" do |f| %>
+    <%= form_with url: assistant_path, method: :get, local: true, class: "pt-assistant-form", data: { controller: "loading-button", action: "submit->loading-button#busy" } do |f| %>
       <div class="pt-field">
         <label class="pt-field-label" for="q">Your question</label>
         <%= f.text_field :q,
@@ -23,7 +23,9 @@
               maxlength: 240 %>
       </div>
       <div class="pt-form-actions" style="margin-top: 12px;">
-        <%= f.submit "Ask", class: "pt-btn pt-btn-primary pt-btn-lg" %>
+        <%= f.submit "Ask",
+              class: "pt-btn pt-btn-primary pt-btn-lg",
+              data: { loading_button_target: "submit", busy_label: "Thinking…" } %>
         <% if @query.present? %>
           <%= link_to "Clear", assistant_path, class: "pt-link-btn" %>
         <% end %>
