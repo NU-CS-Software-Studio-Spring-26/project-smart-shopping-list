@@ -1,12 +1,14 @@
 namespace :mailer do
+  SMOKE_TEST_EMAIL = "nicole732470@gmail.com"
+
   desc "Send a sample price-drop alert (requires SMTP_ADDRESS + SMTP_PASSWORD)"
   task smoke_test: :environment do
     unless MailerSettings.smtp_configured?
       abort "Set SMTP_ADDRESS and SMTP_PASSWORD (and MAILER_FROM, APP_URL) before running this task."
     end
 
-    user = User.order(:id).first
-    abort "No users in database." unless user
+    user = User.find_by(email_address: SMOKE_TEST_EMAIL)
+    abort "User #{SMOKE_TEST_EMAIL} not found — sign up on production first." unless user
 
     product = user.products.where.not(target_price: nil).first ||
               user.products.create!(
@@ -26,7 +28,7 @@ namespace :mailer do
     PriceRecord.alerter_callback_enabled = false
     mail = PriceAlertMailer.price_drop(product, record, reasons: [ :target_hit ])
     mail.deliver_now
-    puts "Sent price alert email to #{user.email_address}"
+    puts "Sent price alert email to #{mail.to.join(', ')}"
   ensure
     PriceRecord.alerter_callback_enabled = true
   end
