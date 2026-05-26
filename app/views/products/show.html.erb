@@ -84,12 +84,23 @@
               <dd class="pt-mono"><%= time_ago_in_words(@product.created_at) %> ago</dd>
             </dl>
 
-            <% if @product.last_fetch_error.present? %>
+            <% if @product.show_refresh_failure? %>
               <div class="pt-flash" role="alert" style="border-left: 3px solid var(--orange); margin-top: 12px;">
                 <span class="pt-flash-icon" style="background: var(--orange);">!</span>
                 <div class="pt-flash-body">
-                  <div class="pt-flash-label">REFRESH FAILED</div>
-                  <div class="pt-flash-msg"><%= @product.last_fetch_error %></div>
+                  <div class="pt-flash-label">AUTOMATIC REFRESH FAILED</div>
+                  <div class="pt-flash-msg">
+                    <%= @product.last_fetch_error %>
+                    <span class="pt-muted small">Manual price entries are unaffected.</span>
+                  </div>
+                </div>
+              </div>
+            <% elsif !@product.auto_refresh? %>
+              <div class="pt-flash" role="status" style="border-left: 3px solid var(--muted-2); margin-top: 12px;">
+                <span class="pt-flash-icon" style="background: var(--muted-2);">i</span>
+                <div class="pt-flash-body">
+                  <div class="pt-flash-label">MANUAL PRICE TRACKING</div>
+                  <div class="pt-flash-msg">Automatic refresh is off. Use “Log a price” to update this product.</div>
                 </div>
               </div>
             <% end %>
@@ -133,7 +144,7 @@
             <% end %>
 
             <div class="pt-prod-actions">
-              <% if @product.source_url.present? %>
+              <% if @product.auto_refresh? && @product.scrapeable? %>
                 <%= button_to fetch_price_product_path(@product), method: :post,
                       class: "pt-btn pt-btn-primary pt-btn-block",
                       data: { turbo_confirm: "Fetch the latest price from the source URL? This may take a few seconds." },

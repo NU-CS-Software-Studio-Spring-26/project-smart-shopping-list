@@ -42,6 +42,8 @@ class ProductsController < ApplicationController
     # Manual mode: user filled in name/details by hand, skip the scraper.
     if @manual || @product.name.present?
       @manual = true
+      @product.auto_refresh = false
+      @product.last_fetch_error = nil
       if @product.save
         return redirect_to @product, notice: "Product added."
       else
@@ -76,7 +78,11 @@ class ProductsController < ApplicationController
           source:      "scraped"
         )
       end
-      @product.update_columns(last_fetched_at: Time.current, last_fetch_error: nil)
+      @product.update_columns(
+        last_fetched_at: Time.current,
+        last_fetch_error: nil,
+        auto_refresh: true
+      )
       redirect_to @product, notice: "Product added! We grabbed its details from the page."
     else
       render :new, status: :unprocessable_entity
@@ -101,8 +107,8 @@ class ProductsController < ApplicationController
   # Synchronous "Fetch latest price" button on the product detail page.
   # Blocks the request for up to ~5s while we hit the source URL.
   def fetch_price
-    if @product.source_url.blank?
-      return redirect_to @product, alert: "This product has no source URL to refresh."
+    unless @product.auto_refresh? && @product.scrapeable?
+      return redirect_to @product, alert: "Automatic refresh is off for this product. Log a price manually instead."
     end
 
     PriceFetcher.call(@product)
@@ -212,7 +218,7 @@ class ProductsController < ApplicationController
   # target_price is editable here so users can revise their alert threshold
   # at any time (or clear it by submitting blank).
   def update_params
-    params.require(:product).permit(:name, :category, :description, :image_url, :source_url, :target_price)
+    params.require(:product).permit(:name, :category, :description, :image_url, :source_url, :target_price, :auto_refresh)
   end
 
   # Used when the page returns no schema.org "name" — gives the model

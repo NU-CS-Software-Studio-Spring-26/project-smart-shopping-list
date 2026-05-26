@@ -36,6 +36,24 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to product_url(Product.last)
     assert_equal "Stubbed Test Product", Product.last.name
     assert_equal "scraped", Product.last.price_records.first.source
+    assert Product.last.auto_refresh?
+  end
+
+  test "manual create disables auto_refresh" do
+    assert_difference("Product.count") do
+      post products_url, params: {
+        manual: "1",
+        product: {
+          name: "Hand-entered widget",
+          category: "Electronics",
+          source_url: "https://shop.example.com/widget"
+        }
+      }
+    end
+    product = Product.last
+    assert_redirected_to product_url(product)
+    refute product.auto_refresh?
+    assert_nil product.last_fetch_error
   end
 
   test "should show product" do
@@ -174,6 +192,30 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     get product_url(@product)
     assert_response :success
     assert_no_match "PRICE ALERT TRIGGERED", response.body
+  end
+
+  test "show does not render refresh failure banner when auto_refresh is off" do
+    @product.update_columns(
+      source_url: "https://www.amazon.com/dp/B123",
+      auto_refresh: false,
+      last_fetch_error: "HTTP 503 from retailer"
+    )
+    get product_url(@product)
+    assert_response :success
+    assert_no_match "AUTOMATIC REFRESH FAILED", response.body
+    assert_match "MANUAL PRICE TRACKING", response.body
+  end
+
+  test "show renders refresh failure banner only when auto_refresh is on" do
+    @product.update_columns(
+      source_url: "https://www.amazon.com/dp/B123",
+      auto_refresh: true,
+      last_fetch_error: "HTTP 503 from retailer"
+    )
+    get product_url(@product)
+    assert_response :success
+    assert_match "AUTOMATIC REFRESH FAILED", response.body
+    assert_match "Manual price entries are unaffected", response.body
   end
 
   test "index card shows target chip when target_price is set and no recent alert" do

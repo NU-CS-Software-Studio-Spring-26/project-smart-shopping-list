@@ -199,7 +199,7 @@ class ProductTest < ActiveSupport::TestCase
     refute @product.scrapeable?
   end
 
-  test "refreshable matches scrapeable including load test account" do
+  test "refreshable is scrapeable with auto_refresh enabled" do
     user = User.create!(
       email_address: Product::PAGINATION_TEST_EMAIL,
       password: "Pagy123!",
@@ -210,8 +210,41 @@ class ProductTest < ActiveSupport::TestCase
       category: "Books",
       source_url: "https://www.amazon.com/dp/B091G65HH6"
     )
+    manual = user.products.create!(
+      name: "Manual only",
+      category: "Books",
+      source_url: "https://www.amazon.com/dp/B091G65HH6",
+      auto_refresh: false
+    )
 
     assert_equal 1, Product.refreshable.where(user_id: user.id).count
-    assert_equal Product.scrapeable.count, Product.refreshable.count
+    refute_includes Product.refreshable, manual
+    assert_equal Product.scrapeable.where(auto_refresh: true).count, Product.refreshable.count
+  end
+
+  test "show_refresh_failure? is false when auto_refresh is off" do
+    @product.update_columns(
+      auto_refresh: false,
+      last_fetch_error: "HTTP 503"
+    )
+    refute @product.show_refresh_failure?
+  end
+
+  test "show_refresh_failure? is true when auto_refresh is on and error present" do
+    @product.update_columns(
+      auto_refresh: true,
+      last_fetch_error: "HTTP 503"
+    )
+    assert @product.show_refresh_failure?
+  end
+
+  test "clearing auto_refresh clears last_fetch_error on save" do
+    @product.update_columns(
+      source_url: "https://www.amazon.com/dp/B123",
+      auto_refresh: true,
+      last_fetch_error: "timeout"
+    )
+    @product.update!(auto_refresh: false)
+    assert_nil @product.last_fetch_error
   end
 end

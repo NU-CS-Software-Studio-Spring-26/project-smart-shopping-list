@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_19_230000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_26_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_230000) do
   end
 
   create_table "products", force: :cascade do |t|
+    t.boolean "auto_refresh", default: true, null: false
     t.string "category", null: false
     t.datetime "created_at", null: false
     t.text "description"

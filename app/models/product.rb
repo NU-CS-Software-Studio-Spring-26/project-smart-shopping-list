@@ -12,6 +12,8 @@ class Product < ApplicationRecord
     has_many :price_records, dependent: :destroy
 
     before_validation :truncate_long_text_fields
+    before_save :clear_fetch_error_when_not_auto_refreshing
+    before_validation :disable_auto_refresh_without_url, on: :update
 
     validates :name, presence: true
     validates :name, length: { maximum: NAME_LIMIT }
@@ -148,9 +150,9 @@ class Product < ApplicationRecord
         .where.not("source_url ILIKE ?", "%/s?k=%")
     }
 
-    # Every scrapeable product is eligible for cron/manual refresh — including
-    # the pagination stress-test account (real PDP URLs at load-test volume).
-    scope :refreshable, -> { scrapeable }
+    # Scrapeable products with auto_refresh enabled — cron and admin refresh
+    # skip manual-only trackers (auto_refresh: false).
+    scope :refreshable, -> { scrapeable.where(auto_refresh: true) }
 
     # Stable identifier for the Pagy load-test user (seeds / rake tasks).
     PAGINATION_TEST_EMAIL = "paginationtest@example.com"
@@ -168,7 +170,26 @@ class Product < ApplicationRecord
       source_url.present? && !self.class.scrape_excluded?(source_url)
     end
 
+    # Only surface cron / "Fetch latest" failures when we actually attempt
+    # automatic refresh. Manual-only products should not show REFRESH FAILED.
+    def show_refresh_failure?
+      auto_refresh? && last_fetch_error.present?
+    end
+
     private
+
+    def disable_auto_refresh_without_url
+      return if source_url.present?
+
+      self.auto_refresh = false
+      self.last_fetch_error = nil
+    end
+
+    def clear_fetch_error_when_not_auto_refreshing
+      return if auto_refresh?
+
+      self.last_fetch_error = nil
+    end
 
     # Trim scraped/oversized text to the column caps before validations
     # run so a 250-char Amazon title never causes a save to fail. An

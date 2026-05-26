@@ -126,6 +126,16 @@
     </div>
 
     <div class="pt-field">
+      <label class="pt-field-label">
+        <%= f.check_box :auto_refresh, disabled: product.source_url.blank? %>
+        Automatically refresh price from URL
+      </label>
+      <div class="pt-field-hint">
+        Turn off if you only log prices manually. Nightly refresh and “Fetch latest” will be skipped.
+      </div>
+    </div>
+
+    <div class="pt-field">
       <label class="pt-field-label" for="product_description">Description</label>
       <%= f.text_area :description, class: "pt-input", rows: 3, maxlength: 1000 %>
     </div>
