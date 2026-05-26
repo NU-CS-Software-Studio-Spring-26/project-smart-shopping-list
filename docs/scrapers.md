@@ -193,8 +193,9 @@ after batch **immediately** until the full scrapeable catalog is attempted.
 ### 4.1b Seed & load-test data (real PDP URLs)
 
 Local and CI seeds ([`db/seeds.rb`](../db/seeds.rb)) pull from
-[`db/seeds/real_product_catalog.rb`](../db/seeds/real_product_catalog.rb) — 49
-unique retailer PDP links (Amazon, Best Buy, Walmart, Lululemon, etc.), cycled to
+[`db/seeds/real_product_catalog.rb`](../db/seeds/real_product_catalog.rb) — 57
+unique retailer PDP links (Amazon, Best Buy, Walmart, Lululemon, Costco,
+Home Depot, Lowe's, B&H Photo, Etsy, IKEA, Macy's, REI, etc.), cycled to
  exceed 1,000 products for Pagy stress tests.
 
 **Production:** do **not** run `db:seed:replant` on Heroku (destroys real users).
@@ -329,6 +330,37 @@ Rich Results require it. The same parser handles all of these.
 | Nike, Adidas | Standard JSON-LD |
 | Lululemon | Salesforce Commerce default |
 | Macy's, Nordstrom, REI | Standard JSON-LD |
+
+**Note:** Many of these sites emit valid JSON-LD but block datacenter IP
+ranges (Heroku, GitHub Actions, AWS). A URL that returns HTTP 403 from the
+app server may still work when you paste it from a home network. That is bot
+management, not a missing adapter.
+
+### A.1 — Retailers in the seed catalog (`real_product_catalog.rb`)
+
+These PDP URLs are cycled through dev/CI seeds and the pagination load-test
+account. They represent the retailers we document and demo most often:
+
+| Store | # URLs in catalog |
+|---|---|
+| Amazon | 18 |
+| Best Buy | 14 |
+| Lululemon | 5 |
+| Walmart | 5 |
+| Apple Store | 3 |
+| Newegg | 2 |
+| Nike | 1 |
+| Adidas | 1 |
+| Costco | 1 |
+| Home Depot | 1 |
+| Lowe's | 1 |
+| B&H Photo | 1 |
+| Etsy | 1 |
+| IKEA | 1 |
+| Macy's | 1 |
+| REI | 1 |
+
+**Total:** 57 unique PDP URLs across 16 retailers.
 
 ### B — Has its own adapter
 

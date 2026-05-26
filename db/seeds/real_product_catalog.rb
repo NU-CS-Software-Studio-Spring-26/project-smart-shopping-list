@@ -112,7 +112,24 @@ module RealProductCatalog
     Entry.new("CeraVe moisturizing cream", "Beauty",
               "https://www.amazon.com/dp/B00TTD9BRC", "Amazon", 14, 20),
     Entry.new("Olaplex No.3 hair perfector", "Beauty",
-              "https://www.amazon.com/dp/B00SNM5US4", "Amazon", 24, 30)
+              "https://www.amazon.com/dp/B00SNM5US4", "Amazon", 24, 30),
+
+    Entry.new("Kirkland Signature premium big roll paper towels 12-roll", "Other",
+              "https://www.costco.com/kirkland-signature-premium-big-roll-paper-towels-12-roll.product.100839793.html", "Costco", 22, 28),
+    Entry.new("Ryobi ONE+ 18V cordless drill/driver kit", "Other",
+              "https://www.homedepot.com/p/Ryobi-ONE-18V-Cordless-Drill-Driver-Kit-with-1-5-Ah-Battery-and-Charger-PCL206K1/327087007", "Home Depot", 59, 89),
+    Entry.new("DEWALT 20V MAX cordless drill/driver kit", "Other",
+              "https://www.lowes.com/pd/DEWALT-20V-MAX-Cordless-Drill-Driver-Kit-1-5Ah-Battery/5014294965", "Lowe's", 99, 149),
+    Entry.new("Sony WH-1000XM5 wireless noise-canceling headphones", "Electronics",
+              "https://www.bhphotovideo.com/c/product/1800889-REG/sony_wh_1000xm5_b_wh_1000xm5_wireless_noise_canceling.html", "B&H Photo", 278, 399),
+    Entry.new("Personalized leather wallet", "Clothing & Shoes",
+              "https://www.etsy.com/listing/1306828752/personalized-leather-wallet-mens-wallet", "Etsy", 25, 45),
+    Entry.new("BILLY bookcase white", "Other",
+              "https://www.ikea.com/us/en/p/billy-bookcase-white-00263850/", "IKEA", 59, 79),
+    Entry.new("Levi's 501 Original Fit men's jeans", "Clothing & Shoes",
+              "https://www.macys.com/shop/product/levis-mens-501-original-fit-jeans?ID=11565337", "Macy's", 49, 69),
+    Entry.new("YETI Rambler 26 oz bottle", "Sports & Outdoors",
+              "https://www.rei.com/product/222106/yeti-rambler-26-oz-bottle", "REI", 34, 40)
   ].freeze
 
   def self.sample

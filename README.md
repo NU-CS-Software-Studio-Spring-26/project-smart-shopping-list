@@ -46,14 +46,15 @@ After running `bin/rails db:seed` the following accounts are available:
 
 | Email | Password | Notes |
 |---|---|---|
-| `demo@example.com` | `TrackSave!123` | Full real-product catalog (49 unique PDP URLs) |
+| `demo@example.com` | `TrackSave!123` | Full real-product catalog (57 unique PDP URLs) |
 | `shopper1@example.com` … `shopper39@example.com` | `Shopper!#{n}A#{((n-1) % 9) + 1}z` | 39 load-test users × 30 products each — catalog cycles so pagination stays >1,000 rows |
 | `paginationtest@example.com` | `Pagy123!` | 1,250 products for Pagy stress tests (same real PDP catalog, recreated by `db:seed`) |
 
 All seeded `source_url` values point at **real retailer product detail pages**
-(Amazon `/dp/…`, Best Buy `/site/…/….p`, Walmart `/ip/…`, Lululemon, etc.).
+(Amazon `/dp/…`, Best Buy `/site/…/….p`, Walmart `/ip/…`, Lululemon, Costco,
+Home Depot, etc.).
 The canonical list lives in [`db/seeds/real_product_catalog.rb`](db/seeds/real_product_catalog.rb)
-(49 unique PDP URLs, cycled for volume). Seeds **do not** use `example.com`
+(57 unique PDP URLs, cycled for volume). Seeds **do not** use `example.com`
 placeholders or retailer `/search?` links.
 
 Re-seed locally with `bin/rails db:seed:replant` (wipes **all** local users/products).
