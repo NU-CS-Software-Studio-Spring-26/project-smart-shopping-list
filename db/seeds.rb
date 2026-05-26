@@ -15,7 +15,7 @@ demo_user = User.create!(
 )
 puts "  demo login: demo@example.com / #{demo_password}"
 
-notes_options = [
+NOTES_OPTIONS = [
   "Black Friday deal",
   "Holiday sale",
   "Limited time offer",
@@ -23,7 +23,7 @@ notes_options = [
   "Regular price",
   "Clearance",
   ""
-]
+].freeze
 
 LOAD_TEST_USER_COUNT = 39
 PRODUCTS_PER_USER = 30
@@ -75,7 +75,7 @@ def seed_product_for_user!(user, catalog_index, label_suffix: nil)
       store_name: entry.store_name,
       url: entry.source_url,
       recorded_at: (record_index * rand(3..9) + rand(1..3)).days.ago,
-      notes: notes_options.sample,
+      notes: NOTES_OPTIONS.sample,
       source: [ "manual", "scraped" ].sample
     )
   end

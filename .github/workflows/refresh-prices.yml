@@ -69,7 +69,8 @@ jobs:
           if [ "$REFRESH_MODE" = "full-cycle" ]; then
             deadline=$((SECONDS + 5400))
           else
-            deadline=$((SECONDS + 300))
+            # Batch can take ~limit × 5s scrape timeout plus dyno cold start.
+            deadline=$((SECONDS + 600))
           fi
           status="pending"
 

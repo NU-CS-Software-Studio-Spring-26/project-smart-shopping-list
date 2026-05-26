@@ -102,6 +102,15 @@ class PriceFetcherTest < ActiveSupport::TestCase
     assert_equal 0, manual_product.reload.price_records.where(source: "scraped").count
   end
 
+  test ".call no-ops when auto_refresh is disabled" do
+    @product.update_columns(source_url: "https://example.com/manual-track", auto_refresh: false)
+
+    stub_method(PriceScrapers, :fetch, ->(*) { raise "scrape should not have been attempted" }) do
+      assert_nothing_raised { PriceFetcher.call(@product) }
+    end
+    assert_nil @product.reload.last_fetch_error
+  end
+
   test ".refresh_stale only touches products that haven't been fetched in min_age" do
     fresh = Product.create!(
       user: users(:one), name: "Fresh", category: "Electronics",

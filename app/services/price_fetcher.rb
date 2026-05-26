@@ -15,6 +15,7 @@ class PriceFetcher
   # Returns the product (always), so callers can chain or inspect.
   def self.call(product)
     return product if product.source_url.blank?
+    return product unless product.auto_refresh?
 
     result = PriceScrapers.fetch(product.source_url, timeout: 5)
 
