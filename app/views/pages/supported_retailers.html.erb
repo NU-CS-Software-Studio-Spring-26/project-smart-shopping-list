@@ -5,18 +5,49 @@
       <div class="pt-eyebrow">Retailers</div>
       <h1 class="pt-h1">Supported sites</h1>
       <p class="pt-hero-note">
-        Paste a product detail page link — we try to fetch the title, image, and price automatically.
-        Most major stores work out of the box; a few need a manual price entry.
+        Paste a product detail page link — we try JSON-LD, Open Graph tags, and microdata.
+        <%= tested_retailers.size %> retailers are in our seed catalog and CI fixtures
+        (including Lululemon and Amazon).
       </p>
     </div>
   </section>
 
   <section class="container-xl pt-content pt-retailers">
+    <div class="pt-retailers-panel pt-retailers-panel-featured">
+      <div class="pt-retailers-panel-head">
+        <div>
+          <h2 class="pt-retailers-title">Tested in PriceTracker</h2>
+          <p class="pt-retailers-lede">
+            Real product URLs in our seed catalog — used for demos, pagination tests, and scraper fixtures.
+            Lululemon is our primary JSON-LD test site.
+          </p>
+        </div>
+        <span class="pt-retailers-count"><%= tested_retailers.size %> sites</span>
+      </div>
+
+      <ul class="pt-retailer-grid">
+        <% tested_retailers.each do |retailer| %>
+          <li class="pt-retailer-chip<%= ' pt-retailer-chip-highlight' if retailer.name == 'Lululemon' %>">
+            <div class="pt-retailer-chip-top">
+              <span class="pt-retailer-name"><%= retailer.name %></span>
+              <span class="pt-retailer-badge <%= retailer_badge_class(retailer.badge) %>">
+                <%= retailer_badge_label(retailer.badge) %>
+              </span>
+            </div>
+            <span class="pt-retailer-domain"><%= retailer.domain %></span>
+            <span class="pt-retailer-hint"><%= retailer.hint %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
     <div class="pt-retailers-panel">
       <div class="pt-retailers-panel-head">
         <div>
-          <h2 class="pt-retailers-title">Auto-fetch</h2>
-          <p class="pt-retailers-lede">These retailers usually work when you paste a product link.</p>
+          <h2 class="pt-retailers-title">Also expected to work</h2>
+          <p class="pt-retailers-lede">
+            Same generic scraper — not in our seed catalog yet, but should work on standard product pages.
+          </p>
         </div>
         <span class="pt-retailers-count"><%= auto_fetch_retailers.size %> sites</span>
       </div>
@@ -26,7 +57,9 @@
           <li class="pt-retailer-chip">
             <div class="pt-retailer-chip-top">
               <span class="pt-retailer-name"><%= retailer.name %></span>
-              <span class="pt-retailer-badge pt-retailer-badge-auto">Auto</span>
+              <span class="pt-retailer-badge <%= retailer_badge_class(retailer.badge) %>">
+                <%= retailer_badge_label(retailer.badge) %>
+              </span>
             </div>
             <span class="pt-retailer-domain"><%= retailer.domain %></span>
             <span class="pt-retailer-hint"><%= retailer.hint %></span>
@@ -36,40 +69,60 @@
     </div>
 
     <div class="pt-retailers-duo">
-      <div class="pt-retailers-panel pt-retailers-panel-featured">
+      <div class="pt-retailers-panel pt-retailers-panel-muted">
         <div class="pt-retailers-panel-head">
           <div>
-            <h2 class="pt-retailers-title">Amazon</h2>
-            <p class="pt-retailers-lede">Uses a dedicated scraper for Amazon’s layout and pricing markup.</p>
+            <h2 class="pt-retailers-title">Manual price entry</h2>
+            <p class="pt-retailers-lede">Save the product link — enter prices yourself.</p>
           </div>
-          <span class="pt-retailer-badge pt-retailer-badge-amazon">Dedicated</span>
+          <span class="pt-retailers-count"><%= manual_retailers.size %> sites</span>
         </div>
-        <p class="pt-retailers-feature-copy">
-          Any Amazon product URL with an ASIN (<span class="pt-mono">/dp/…</span> or
-          <span class="pt-mono">/gp/product/…</span>) is supported across regional domains.
-        </p>
+        <ul class="pt-retailer-grid pt-retailer-grid-compact">
+          <% manual_retailers.each do |retailer| %>
+            <li class="pt-retailer-chip">
+              <div class="pt-retailer-chip-top">
+                <span class="pt-retailer-name"><%= retailer.name %></span>
+                <span class="pt-retailer-badge <%= retailer_badge_class(retailer.badge) %>">
+                  <%= retailer_badge_label(retailer.badge) %>
+                </span>
+              </div>
+              <span class="pt-retailer-domain"><%= retailer.domain %></span>
+              <span class="pt-retailer-hint"><%= retailer.hint %></span>
+            </li>
+          <% end %>
+        </ul>
       </div>
 
       <div class="pt-retailers-panel pt-retailers-panel-muted">
         <div class="pt-retailers-panel-head">
           <div>
-            <h2 class="pt-retailers-title">Target</h2>
-            <p class="pt-retailers-lede">Track the product, enter prices yourself for now.</p>
+            <h2 class="pt-retailers-title">Often blocked or inconsistent</h2>
+            <p class="pt-retailers-lede">May work from a home browser; nightly cloud refresh often fails.</p>
           </div>
-          <span class="pt-retailer-badge pt-retailer-badge-manual">Manual</span>
+          <span class="pt-retailers-count"><%= limited_retailers.size %> sites</span>
         </div>
-        <p class="pt-retailers-feature-copy">
-          Target no longer puts prices in the page HTML we receive. You can still save the link,
-          name, and image — then log prices with the manual entry form.
-        </p>
+        <ul class="pt-retailer-grid pt-retailer-grid-compact">
+          <% limited_retailers.each do |retailer| %>
+            <li class="pt-retailer-chip pt-retailer-chip-muted">
+              <div class="pt-retailer-chip-top">
+                <span class="pt-retailer-name"><%= retailer.name %></span>
+                <span class="pt-retailer-badge <%= retailer_badge_class(retailer.badge) %>">
+                  <%= retailer_badge_label(retailer.badge) %>
+                </span>
+              </div>
+              <span class="pt-retailer-domain"><%= retailer.domain %></span>
+              <span class="pt-retailer-hint"><%= retailer.hint %></span>
+            </li>
+          <% end %>
+        </ul>
       </div>
     </div>
 
     <div class="pt-retailers-footnote">
       <p>
-        <strong>Other stores:</strong> many Shopify and smaller shops work too — we read JSON-LD,
-        Open Graph tags, and microdata before giving up. Nightly refresh runs from the cloud;
-        some sites may block server requests even when a link works from your browser.
+        <strong>Everything else:</strong> paste any product detail URL and we'll try all three parser layers.
+        Full technical notes live in
+        <%= link_to "docs/scrapers.md", "https://github.com/NU-CS-Software-Studio-Spring-26/project-smart-shopping-list/blob/main/docs/scrapers.md", target: "_blank", rel: "noopener noreferrer", class: "pt-inline-link" %>.
       </p>
       <% if authenticated? %>
         <%= link_to new_product_path, class: "pt-btn pt-btn-primary" do %>

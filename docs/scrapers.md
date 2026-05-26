@@ -362,7 +362,8 @@ account. They represent the retailers we document and demo most often:
 | Macy's | 1 |
 | REI | 1 |
 
-**Total:** 57 unique PDP URLs across 16 retailers.
+**Total:** 57 unique PDP URLs across 16 retailers. The in-app list lives at
+[`/supported`](../config/routes.rb) ([`SupportedRetailersHelper`](../app/helpers/supported_retailers_helper.rb)).
 
 ### B — Has its own adapter
 
