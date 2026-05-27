@@ -23,6 +23,9 @@
 
 .env
 
+# Sprint write-ups kept locally only
+/SPRINT_SUMMARY.md
+
 # Ignore frontend dependencies
 /node_modules
 /yarn-error.log
