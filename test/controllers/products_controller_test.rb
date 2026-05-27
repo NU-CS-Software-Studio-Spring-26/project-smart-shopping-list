@@ -88,8 +88,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   test "show links to price history export" do
     get product_url(@product)
     assert_response :success
-    assert_match "Export price history", response.body
     assert_match export_product_path(@product, format: :csv), response.body
+    assert_match export_product_path(@product, format: :pdf), response.body
   end
 
   test "index filters by tag" do
