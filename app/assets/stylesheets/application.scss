@@ -1415,3 +1415,141 @@ body {
 @media (max-width: 560px) {
   .pt-report-grid { grid-template-columns: 1fr; }
 }
+
+// ── Subtabs (All Products / Folders) ────────────────────────────────────────
+.pt-subtabs-wrap {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.pt-subtabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 4px;
+}
+.pt-subtab {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 18px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted-2);
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s;
+  &:hover { color: var(--ink); }
+  &.pt-subtab-active {
+    color: var(--accent-700);
+    border-bottom-color: var(--accent-700);
+  }
+}
+
+// ── Folder index grid ────────────────────────────────────────────────────────
+.pt-folder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.pt-folder-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 18px 16px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s;
+  &:hover { box-shadow: var(--shadow-md); }
+}
+.pt-folder-card-icon {
+  flex-shrink: 0;
+  color: var(--accent-700);
+  margin-top: 2px;
+}
+.pt-folder-card-body { flex: 1; min-width: 0; }
+.pt-folder-card-name { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
+.pt-folder-card-link { color: var(--ink); text-decoration: none; &:hover { color: var(--accent-700); } }
+.pt-folder-card-desc { margin: 0 0 6px; font-size: 0.82rem; color: var(--muted-2); }
+.pt-folder-card-count { font-size: 0.8rem; color: var(--muted-2); }
+.pt-folder-card-actions { display: flex; gap: 4px; flex-shrink: 0; margin-top: 2px; }
+
+// ── Folder show ──────────────────────────────────────────────────────────────
+.pt-folder-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.pt-folder-add-bar {
+  padding: 10px 0;
+}
+.pt-folder-add-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.pt-folder-add-select { flex: 1; min-width: 200px; max-width: 400px; }
+
+// ── Folder chips on product show page ───────────────────────────────────────
+.pt-folder-section { padding: 4px 0 8px; }
+.pt-folder-section-head { margin-bottom: 8px; }
+.pt-folder-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.pt-folder-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-50, #eff6ff);
+  border: 1px solid var(--accent-200, #bfdbfe);
+  border-radius: 999px;
+  padding: 3px 10px 3px 10px;
+  font-size: 0.8rem;
+}
+.pt-folder-chip-name {
+  color: var(--accent-700);
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+.pt-folder-chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted-2);
+  padding: 0 0 0 2px;
+  font-size: 1rem;
+  line-height: 1;
+  &:hover { color: var(--danger, #dc2626); }
+}
+.pt-folder-add-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pt-folder-add-chip {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  color: var(--muted-2);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  &:hover { border-color: var(--accent-700); color: var(--accent-700); }
+}
+
+// ── Form card ────────────────────────────────────────────────────────────────
+.pt-form-card {
+  max-width: 560px;
+}
+.pt-btn-sm {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+.pt-btn-danger-ghost {
+  color: var(--danger, #dc2626);
+  border-color: var(--danger, #dc2626);
+  background: transparent;
+  &:hover { background: #fef2f2; }
+}

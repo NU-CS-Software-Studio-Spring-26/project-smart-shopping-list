@@ -1,0 +1,24 @@
+<%= form_with model: folder, class: "pt-form" do |f| %>
+  <% if folder.errors.any? %>
+    <div class="pt-form-errors">
+      <% folder.errors.full_messages.each do |msg| %>
+        <p><%= msg %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="pt-form-group">
+    <%= f.label :name, "Folder name", class: "pt-label" %>
+    <%= f.text_field :name, class: "pt-input", placeholder: "e.g. Festival outfit, New house…", autofocus: true %>
+  </div>
+
+  <div class="pt-form-group">
+    <%= f.label :description, "Description (optional)", class: "pt-label" %>
+    <%= f.text_area :description, class: "pt-input", rows: 2, placeholder: "What's this folder for?" %>
+  </div>
+
+  <div class="pt-form-actions">
+    <%= f.submit class: "pt-btn pt-btn-primary" %>
+    <%= link_to "Cancel", folders_path, class: "pt-btn pt-btn-ghost" %>
+  </div>
+<% end %>

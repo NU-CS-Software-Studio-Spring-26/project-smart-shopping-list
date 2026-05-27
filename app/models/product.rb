@@ -12,6 +12,8 @@ class Product < ApplicationRecord
 
     belongs_to :user
     has_many :price_records, dependent: :destroy
+    has_many :folder_products, dependent: :destroy
+    has_many :folders, through: :folder_products
 
     before_validation :truncate_long_text_fields
     before_validation :normalize_tags

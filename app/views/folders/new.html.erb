@@ -1,0 +1,16 @@
+<% content_for :title, "New Folder" %>
+<main class="pt-page">
+  <section class="pt-hero">
+    <div class="container-xl">
+      <div class="pt-eyebrow">Folders</div>
+      <h1 class="pt-h1">Create a folder</h1>
+      <p class="pt-hero-note">Group your tracked products into folders like "New house" or "Festival outfit".</p>
+    </div>
+  </section>
+
+  <section class="container-xl pt-content">
+    <div class="pt-form-card">
+      <%= render "form", folder: @folder %>
+    </div>
+  </section>
+</main>

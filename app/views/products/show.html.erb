@@ -175,6 +175,46 @@
                 <%= link_to "Delete", @product, data: { turbo_method: :delete, turbo_confirm: "Delete this product and all its price records?" }, class: "pt-link-btn pt-link-btn-danger" %>
               </div>
             </div>
+
+            <div class="pt-rule"></div>
+
+            <div class="pt-folder-section">
+              <div class="pt-folder-section-head">
+                <span class="pt-stat-label">FOLDERS</span>
+              </div>
+              <% user_folders = Current.user.folders.order(:name) %>
+              <% product_folder_ids = @product.folder_ids %>
+              <% if @product.folders.any? %>
+                <div class="pt-folder-chips">
+                  <% @product.folders.each do |folder| %>
+                    <span class="pt-folder-chip">
+                      <%= link_to folder.name, folder, class: "pt-folder-chip-name" %>
+                      <%= button_to "×",
+                            folder_folder_product_path(folder, @product),
+                            method: :delete,
+                            class: "pt-folder-chip-remove",
+                            aria: { label: "Remove from #{folder.name}" } %>
+                    </span>
+                  <% end %>
+                </div>
+              <% end %>
+              <% available_folders = user_folders.reject { |f| product_folder_ids.include?(f.id) } %>
+              <% if available_folders.any? %>
+                <div class="pt-folder-add-inline">
+                  <% available_folders.each do |folder| %>
+                    <%= button_to "+ #{folder.name}",
+                          folder_folder_products_path(folder),
+                          params: { product_id: @product.id },
+                          method: :post,
+                          class: "pt-folder-add-chip" %>
+                  <% end %>
+                </div>
+              <% end %>
+              <% if user_folders.empty? %>
+                <%= link_to "+ Create a folder", new_folder_path, class: "pt-muted small pt-inline-link" %>
+              <% end %>
+            </div>
+          </div>
           </div>
         </div>
       </aside>

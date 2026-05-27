@@ -1,0 +1,78 @@
+<% content_for :title, "Folders" %>
+<main class="pt-page">
+  <section class="pt-hero">
+    <div class="container-xl">
+      <div class="pt-hero-grid">
+        <div>
+          <div class="pt-eyebrow">Your products</div>
+          <h1 class="pt-h1">Folders</h1>
+          <p class="pt-hero-note">Group products into folders like "New house" or "Festival outfit".</p>
+        </div>
+        <aside class="pt-hero-cta">
+          <%= link_to new_folder_path, class: "pt-hero-add" do %>
+            <span class="pt-hero-add-plus" aria-hidden="true"><%= render "shared/icon", name: "plus", size: 22 %></span>
+            <span class="pt-hero-add-body">
+              <span class="pt-hero-add-eyebrow">Organise</span>
+              <span class="pt-hero-add-title">New folder</span>
+              <span class="pt-hero-add-sub">Create a folder and add products to it.</span>
+            </span>
+            <span class="pt-hero-add-arrow" aria-hidden="true"><%= render "shared/icon", name: "arrow-right", size: 20 %></span>
+          <% end %>
+          <div class="pt-hero-meta">
+            <span class="pt-hero-meta-dot"></span>
+            <span><strong><%= @folders.size %></strong> <%= "folder".pluralize(@folders.size) %></span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <div class="pt-subtabs-wrap">
+    <div class="container-xl">
+      <div class="pt-subtabs">
+        <%= link_to "All Products", products_path, class: "pt-subtab" %>
+        <%= link_to "Folders", folders_path, class: "pt-subtab pt-subtab-active" %>
+      </div>
+    </div>
+  </div>
+
+  <section class="container-xl pt-content">
+    <% if @folders.any? %>
+      <div class="pt-folder-grid">
+        <% @folders.each do |folder| %>
+          <article class="pt-folder-card">
+            <div class="pt-folder-card-icon">
+              <%= render "shared/icon", name: "folder", size: 32 %>
+            </div>
+            <div class="pt-folder-card-body">
+              <h3 class="pt-folder-card-name">
+                <%= link_to folder.name, folder, class: "pt-folder-card-link" %>
+              </h3>
+              <% if folder.description.present? %>
+                <p class="pt-folder-card-desc"><%= folder.description %></p>
+              <% end %>
+              <span class="pt-folder-card-count"><%= folder.products.size %> <%= "product".pluralize(folder.products.size) %></span>
+            </div>
+            <div class="pt-folder-card-actions">
+              <%= link_to edit_folder_path(folder), class: "pt-icon-btn", aria: { label: "Edit #{folder.name}" } do %>
+                <%= render "shared/icon", name: "edit", size: 16 %>
+              <% end %>
+              <%= link_to folder,
+                    data: { turbo_method: :delete, turbo_confirm: "Delete \"#{folder.name}\"? Products won't be deleted." },
+                    class: "pt-icon-btn pt-icon-btn-danger",
+                    aria: { label: "Delete #{folder.name}" } do %>
+                <%= render "shared/icon", name: "trash", size: 16 %>
+              <% end %>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="pt-empty">
+        <div class="pt-empty-icon"><%= render "shared/icon", name: "folder", size: 48 %></div>
+        <p class="pt-empty-text">No folders yet.</p>
+        <%= link_to "Create your first folder", new_folder_path, class: "pt-btn pt-btn-primary" %>
+      </div>
+    <% end %>
+  </section>
+</main>

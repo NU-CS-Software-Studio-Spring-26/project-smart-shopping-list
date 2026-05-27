@@ -1,0 +1,96 @@
+<% content_for :title, @folder.name %>
+<main class="pt-page">
+  <section class="pt-hero">
+    <div class="container-xl">
+      <div class="pt-hero-grid">
+        <div>
+          <div class="pt-eyebrow"><%= link_to "Folders", folders_path, class: "pt-inline-link" %></div>
+          <h1 class="pt-h1"><%= @folder.name %></h1>
+          <% if @folder.description.present? %>
+            <p class="pt-hero-note"><%= @folder.description %></p>
+          <% end %>
+        </div>
+        <aside class="pt-hero-cta">
+          <div class="pt-hero-meta">
+            <span class="pt-hero-meta-dot"></span>
+            <span><strong><%= @products_in_folder.size %></strong> <%= "product".pluralize(@products_in_folder.size) %></span>
+          </div>
+          <div class="pt-folder-actions">
+            <%= link_to edit_folder_path(@folder), class: "pt-btn pt-btn-ghost pt-btn-sm" do %>
+              <%= render "shared/icon", name: "edit", size: 14 %> Edit folder
+            <% end %>
+            <%= link_to @folder, data: { turbo_method: :delete, turbo_confirm: "Delete \"#{@folder.name}\"? Products won't be deleted." }, class: "pt-btn pt-btn-danger-ghost pt-btn-sm" do %>
+              <%= render "shared/icon", name: "trash", size: 14 %> Delete
+            <% end %>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <% if @products_not_in_folder.any? %>
+    <section class="pt-toolbar-wrap">
+      <div class="container-xl">
+        <div class="pt-folder-add-bar">
+          <%= form_with url: folder_folder_products_path(@folder), method: :post, class: "pt-folder-add-form" do |f| %>
+            <%= f.select :product_id,
+                  @products_not_in_folder.map { |p| [ p.name, p.id ] },
+                  { prompt: "Choose a product to add…" },
+                  class: "pt-input pt-folder-add-select" %>
+            <%= f.submit "Add to folder", class: "pt-btn pt-btn-primary pt-btn-sm" %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+
+  <section class="container-xl pt-content">
+    <% if @products_in_folder.any? %>
+      <div class="pt-grid">
+        <% @products_in_folder.each do |product| %>
+          <% latest = product.latest_price %>
+          <article class="pt-card">
+            <%= link_to product_path(product), class: "pt-card-media", style: "text-decoration: none; color: inherit;" do %>
+              <% if product.image_url.present? %>
+                <%= image_tag product.image_url, alt: product.name %>
+              <% else %>
+                <div class="pt-img-fallback"><%= render "shared/icon", name: "package", size: 48 %></div>
+              <% end %>
+              <div class="pt-card-media-shade"></div>
+              <span class="pt-tag pt-tag-overlay"><%= product.category %></span>
+            <% end %>
+            <div class="pt-card-body">
+              <h3 class="pt-card-title">
+                <%= link_to product.name, product, style: "text-decoration: none; color: inherit;" %>
+              </h3>
+              <div class="pt-card-price-row">
+                <div class="pt-card-price">
+                  <% if latest %>$<%= sprintf("%.2f", latest) %><% else %>—<% end %>
+                </div>
+              </div>
+            </div>
+            <div class="pt-card-foot">
+              <%= link_to "View details →", product, class: "pt-link-btn pt-link-btn-strong", aria: { label: "View details for #{product.name}" } %>
+              <%= link_to folder_folder_products_path(@folder, product),
+                    data: { turbo_method: :delete, turbo_confirm: "Remove \"#{product.name}\" from this folder?" },
+                    class: "pt-btn pt-btn-danger-ghost pt-btn-sm",
+                    aria: { label: "Remove #{product.name} from folder" } do %>
+                <%= render "shared/icon", name: "x", size: 14 %> Remove
+              <% end %>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="pt-empty">
+        <div class="pt-empty-icon"><%= render "shared/icon", name: "folder", size: 48 %></div>
+        <p class="pt-empty-text">This folder is empty.</p>
+        <% if @products_not_in_folder.any? %>
+          <p class="pt-muted">Use the dropdown above to add products.</p>
+        <% else %>
+          <%= link_to "Add a product", new_product_path, class: "pt-btn pt-btn-primary" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+</main>

@@ -14,6 +14,9 @@ Rails.application.routes.draw do
     end
   end
   resources :price_records, only: [ :index, :show, :edit, :update, :destroy ]
+  resources :folders do
+    resources :folder_products, only: [ :create, :destroy ]
+  end
   get "reports", to: "reports#index", as: :reports
   get "budgetplanner", to: "budget_planner#index", as: :budget_planner
   get "ask",           to: "assistant#index",      as: :assistant

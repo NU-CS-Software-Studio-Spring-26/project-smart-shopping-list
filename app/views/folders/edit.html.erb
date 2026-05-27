@@ -1,0 +1,15 @@
+<% content_for :title, "Edit #{@folder.name}" %>
+<main class="pt-page">
+  <section class="pt-hero">
+    <div class="container-xl">
+      <div class="pt-eyebrow">Folders</div>
+      <h1 class="pt-h1">Edit folder</h1>
+    </div>
+  </section>
+
+  <section class="container-xl pt-content">
+    <div class="pt-form-card">
+      <%= render "form", folder: @folder %>
+    </div>
+  </section>
+</main>
