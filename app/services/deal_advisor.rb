@@ -18,7 +18,10 @@ class DealAdvisor
   Advice = Data.define(:label, :summary, :source)
 
   ENDPOINT      = "https://openrouter.ai/api/v1/chat/completions"
-  DEFAULT_MODEL = "meta-llama/llama-3.3-70b-instruct:free"
+  # Default to a cascade — OpenRouter tries each model in order, falling
+  # through 429 / 5xx automatically until one responds. Big models give
+  # the best reasoning; the tiny Liquid one is the always-available safety net.
+  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free,liquid/lfm-2.5-1.2b-instruct:free"
   CACHE_TTL     = 6.hours
 
   def self.call(product)
@@ -88,8 +91,12 @@ class DealAdvisor
     Rails.logger.info("[DealAdvisor] cache persist failed: #{e.class}: #{e.message}")
   end
 
-  def model
-    ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
+  # OpenRouter accepts either { model: "x" } or { models: ["a", "b"] }. Always
+  # send the array so we get auto-fallback through transient provider 429s.
+  def model_list
+    raw = ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
+    list = raw.split(",").map(&:strip).reject(&:empty?)
+    list.empty? ? [ DEFAULT_MODEL.split(",").first ] : list
   end
 
   def ai_advice
@@ -100,7 +107,7 @@ class DealAdvisor
     request["HTTP-Referer"]  = ENV.fetch("APP_URL", "https://smart-shoppinglist-6ae31171e85c.herokuapp.com")
     request["X-Title"]       = "PriceTracker"
     request.body = {
-      model: model,
+      models: model_list,
       messages: [ { role: "user", content: prompt } ],
       max_tokens: 160,
       temperature: 0.2

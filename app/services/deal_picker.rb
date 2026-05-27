@@ -21,7 +21,10 @@ class DealPicker
   Pick = Data.define(:product, :reason, :source)
 
   ENDPOINT      = "https://openrouter.ai/api/v1/chat/completions"
-  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free"
+  # Cascade: try the best model first, fall through 429s automatically via
+  # OpenRouter's `models` array routing. Final entry is the always-available
+  # tiny Liquid model so the AI label fires even under heavy load.
+  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free,liquid/lfm-2.5-1.2b-instruct:free"
   MAX_PICKS     = 3
   MAX_CANDIDATES_FOR_PROMPT = 20
 
@@ -54,8 +57,10 @@ class DealPicker
     flag.blank? || ActiveModel::Type::Boolean.new.cast(flag)
   end
 
-  def model
-    ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
+  def model_list
+    raw = ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
+    list = raw.split(",").map(&:strip).reject(&:empty?)
+    list.empty? ? [ DEFAULT_MODEL.split(",").first ] : list
   end
 
   def ai_picks
@@ -66,7 +71,7 @@ class DealPicker
     request["HTTP-Referer"]  = ENV.fetch("APP_URL", "https://smart-shoppinglist-6ae31171e85c.herokuapp.com")
     request["X-Title"]       = "PriceTracker"
     request.body = {
-      model: model,
+      models: model_list,
       messages: [ { role: "user", content: prompt } ],
       max_tokens: 280,
       temperature: 0.2

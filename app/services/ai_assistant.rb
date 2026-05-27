@@ -16,7 +16,10 @@ class AiAssistant
   Answer = Data.define(:summary, :picks, :source)
 
   ENDPOINT      = "https://openrouter.ai/api/v1/chat/completions"
-  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free"
+  # Multi-model cascade — OpenRouter tries each in order, falling through
+  # 429 / 5xx automatically. Last entry is the small Liquid model that
+  # almost always has capacity, so we still produce an AI answer under load.
+  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free,liquid/lfm-2.5-1.2b-instruct:free"
   MAX_PICKS     = 3
   MAX_CANDIDATES_FOR_PROMPT = 30
 
@@ -50,8 +53,10 @@ class AiAssistant
     flag.blank? || ActiveModel::Type::Boolean.new.cast(flag)
   end
 
-  def model
-    ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
+  def model_list
+    raw = ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
+    list = raw.split(",").map(&:strip).reject(&:empty?)
+    list.empty? ? [ DEFAULT_MODEL.split(",").first ] : list
   end
 
   def empty_answer
@@ -83,7 +88,7 @@ class AiAssistant
     request["HTTP-Referer"]  = ENV.fetch("APP_URL", "https://smart-shoppinglist-6ae31171e85c.herokuapp.com")
     request["X-Title"]       = "PriceTracker"
     request.body = {
-      model: model,
+      models: model_list,
       messages: [ { role: "user", content: prompt } ],
       max_tokens: 320,
       temperature: 0.3
