@@ -24,7 +24,11 @@ class LlmClient
   GEMINI_ENDPOINT     = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
   OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
 
-  GEMINI_DEFAULT_MODEL     = "gemma-4-26b-a4b-it"
+  # Gemini free tier is per-model, ~20 RPM each. Listing two models gives us
+  # ~40 RPM headroom on bursty traffic. Flash-lite first because it's the
+  # fastest; Gemma-26B is the higher-quality fallback when Flash-lite is
+  # temporarily throttled.
+  GEMINI_DEFAULT_MODEL     = "gemini-2.5-flash-lite,gemma-4-26b-a4b-it"
   OPENROUTER_DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free,liquid/lfm-2.5-1.2b-instruct:free"
 
   THOUGHT_RE = /<thought>.*?<\/thought>/m
