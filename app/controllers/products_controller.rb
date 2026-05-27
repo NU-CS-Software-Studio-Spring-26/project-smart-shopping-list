@@ -141,6 +141,7 @@ class ProductsController < ApplicationController
     end
 
     PriceFetcher.call(@product)
+    @product.reload
 
     if @product.last_fetch_error.present?
       redirect_to @product, alert: "Couldn't refresh: #{@product.last_fetch_error}"

@@ -19,4 +19,9 @@ class PriceScrapers::LululemonUrlTest < ActiveSupport::TestCase
       "https://shop.lululemon.com/p/ultralight-wovenair-jacket/dsn0kocspb-md"
     ], PriceScrapers::LululemonUrl.candidates(old)
   end
+
+  test "md_style_fallback leaves mixed-case style ids unchanged" do
+    url = "https://shop.lululemon.com/p/everywhere-belt-bag-1L/LU9CBHS"
+    assert_nil PriceScrapers::LululemonUrl.md_style_fallback(url)
+  end
 end

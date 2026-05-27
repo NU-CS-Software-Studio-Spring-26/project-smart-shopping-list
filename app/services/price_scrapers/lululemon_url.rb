@@ -19,13 +19,14 @@ module PriceScrapers
       list.uniq
     end
 
-    # Append "-md" to a bare alphanumeric style id in the final path segment.
+    # Append "-md" to a bare lowercase style id in the final path segment.
+    # Mixed-case ids (e.g. LU9CBHS) are left alone — they still use the legacy path shape.
     def md_style_fallback(url)
       uri = URI.parse(url.to_s)
       segments = uri.path.split("/")
       style_id = segments.last
       return nil if style_id.blank?
-      return nil unless style_id.match?(/\A[a-z0-9]+\z/i)
+      return nil unless style_id.match?(/\A[a-z0-9]+\z/)
       return nil if style_id.include?("-")
 
       segments[-1] = "#{style_id}-md"
@@ -33,6 +34,11 @@ module PriceScrapers
       uri.to_s
     rescue URI::InvalidURIError
       nil
+    end
+
+    def upgrade_source_url!(url)
+      fallback = md_style_fallback(url)
+      fallback.presence || url.to_s
     end
   end
 end

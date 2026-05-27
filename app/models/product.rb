@@ -15,6 +15,7 @@ class Product < ApplicationRecord
 
     before_validation :truncate_long_text_fields
     before_validation :normalize_tags
+    before_validation :canonicalize_lululemon_source_url
     before_save :clear_fetch_error_when_not_auto_refreshing
     before_validation :disable_auto_refresh_without_url, on: :update
 
@@ -240,5 +241,13 @@ class Product < ApplicationRecord
       return if value.length <= limit
 
       self[attr] = value[0, limit - 1].rstrip + "…"
+    end
+
+    def canonicalize_lululemon_source_url
+      return if source_url.blank?
+      return unless PriceScrapers::LululemonUrl.host?(source_url)
+
+      canonical = PriceScrapers::LululemonUrl.upgrade_source_url!(source_url)
+      self.source_url = canonical if canonical != source_url
     end
 end

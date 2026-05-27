@@ -21,6 +21,24 @@ class PriceFetcherTest < ActiveSupport::TestCase
     stub_method(PriceScrapers, :fetch, ->(_url, **_opts) { result }, &block)
   end
 
+  test ".call upgrades legacy Lululemon URLs before fetching" do
+    old = "https://shop.lululemon.com/p/ultralight-wovenair-jacket/dsn0kocspb"
+    expected = "https://shop.lululemon.com/p/ultralight-wovenair-jacket/dsn0kocspb-md"
+    @product.update_columns(source_url: old, auto_refresh: true)
+
+    fetched_urls = []
+    stub_method(PriceScrapers, :fetch, lambda { |url, **_opts|
+      fetched_urls << url
+      PriceScrapers::Result.new(price: BigDecimal("118.00"), currency: "USD", title: "Jacket", store_name: "Lululemon")
+    }) do
+      PriceFetcher.call(@product)
+    end
+
+    @product.reload
+    assert_equal expected, @product.source_url
+    assert_equal [ expected ], fetched_urls
+  end
+
   test ".call creates a scraped PriceRecord and updates last_fetched_at" do
     initial_count = @product.price_records.count
 

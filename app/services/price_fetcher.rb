@@ -17,6 +17,8 @@ class PriceFetcher
     return product if product.source_url.blank?
     return product unless product.auto_refresh?
 
+    upgrade_lululemon_source_url!(product)
+
     result = PriceScrapers.fetch(product.source_url, timeout: 5)
     apply_resolved_source_url!(product, result)
 
@@ -171,5 +173,15 @@ class PriceFetcher
     product.update_column(:source_url, result.resolved_url)
   end
 
-  private_class_method :failure_detail_for, :host_from_source_url, :apply_resolved_source_url!
+  def self.upgrade_lululemon_source_url!(product)
+    return unless PriceScrapers::LululemonUrl.host?(product.source_url)
+
+    canonical = PriceScrapers::LululemonUrl.upgrade_source_url!(product.source_url)
+    return if canonical == product.source_url
+
+    product.source_url = canonical
+    product.update_column(:source_url, canonical)
+  end
+
+  private_class_method :failure_detail_for, :host_from_source_url, :apply_resolved_source_url!, :upgrade_lululemon_source_url!
 end
