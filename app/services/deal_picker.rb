@@ -1,31 +1,16 @@
-require "net/http"
-require "json"
-
 # AI-curated list of the strongest deals from a user's affordable products.
 #
-# Given a set of products that fit a budget, asks an LLM (OpenRouter, same
-# credentials as DealAdvisor) to pick the 3 most worth grabbing right now,
-# with one-sentence reasoning per pick that cites real numbers from each
-# product's price history.
+# Given a set of products that fit a budget, asks an LLM (via LlmClient, which
+# chains Gemini → OpenRouter → heuristic) to pick the 3 most worth grabbing
+# right now, with one-sentence reasoning per pick that cites real numbers from
+# each product's price history.
 #
-# Returns an array of Pick structs. Falls back to a deterministic heuristic
-# (top 3 by absolute savings from the historical peak) if:
-#   - OPENROUTER_API_KEY is missing
-#   - ENABLE_AI_DEAL_ADVICE is set to "false"
-#   - the LLM call times out, errors, or returns an unparseable body
-#   - the candidate list is shorter than 2 products
-#
-# The view never sees a nil — it always gets at least the heuristic picks
-# so the panel renders consistently regardless of the AI's state.
+# The view never sees a nil — it always gets at least the heuristic picks so
+# the panel renders consistently regardless of the AI's state.
 class DealPicker
   Pick = Data.define(:product, :reason, :source)
 
-  ENDPOINT      = "https://openrouter.ai/api/v1/chat/completions"
-  # Cascade: try the best model first, fall through 429s automatically via
-  # OpenRouter's `models` array routing. Final entry is the always-available
-  # tiny Liquid model so the AI label fires even under heavy load.
-  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free,liquid/lfm-2.5-1.2b-instruct:free"
-  MAX_PICKS     = 3
+  MAX_PICKS = 3
   MAX_CANDIDATES_FOR_PROMPT = 20
 
   def self.call(products, budget:)
@@ -51,41 +36,11 @@ class DealPicker
   private
 
   def ai_enabled?
-    return false if ENV["OPENROUTER_API_KEY"].blank?
-
-    flag = ENV["ENABLE_AI_DEAL_ADVICE"]
-    flag.blank? || ActiveModel::Type::Boolean.new.cast(flag)
-  end
-
-  def model_list
-    raw = ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
-    list = raw.split(",").map(&:strip).reject(&:empty?)
-    list.empty? ? [ DEFAULT_MODEL.split(",").first ] : list
+    LlmClient.enabled?
   end
 
   def ai_picks
-    uri = URI(ENDPOINT)
-    request = Net::HTTP::Post.new(uri)
-    request["Authorization"] = "Bearer #{ENV.fetch('OPENROUTER_API_KEY')}"
-    request["Content-Type"]  = "application/json"
-    request["HTTP-Referer"]  = ENV.fetch("APP_URL", "https://smart-shoppinglist-6ae31171e85c.herokuapp.com")
-    request["X-Title"]       = "PriceTracker"
-    request.body = {
-      models: model_list,
-      messages: [ { role: "user", content: prompt } ],
-      max_tokens: 280,
-      temperature: 0.2
-    }.to_json
-
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true, open_timeout: 3, read_timeout: 10) do |http|
-      http.request(request)
-    end
-
-    raise "OpenRouter request failed with HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
-
-    text = JSON.parse(response.body).dig("choices", 0, "message", "content").to_s.strip
-    raise "OpenRouter response did not include text" if text.blank?
-
+    text = LlmClient.complete(prompt: prompt, max_tokens: 280, temperature: 0.2, request_timeout: 12)
     parsed = parse(text)
     raise "Could not match any AI picks to products" if parsed.empty?
 

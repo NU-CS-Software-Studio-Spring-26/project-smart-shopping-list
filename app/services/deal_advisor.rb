@@ -1,28 +1,16 @@
-require "net/http"
-require "json"
-
 # AI-powered "should I buy now?" advisor.
 #
-# Reads a product's price history and asks an LLM (via OpenRouter, which
-# speaks the OpenAI chat-completions wire format) for one of three takes:
-# buy now, wait, or watch. When the LLM is unreachable / disabled / misbehaving
-# the service falls back to a deterministic heuristic that compares the latest
-# price to the lowest seen and a recent average. Either way the controller
-# always gets a usable Advice struct — the product page never breaks.
-#
-# Env vars:
-#   OPENROUTER_API_KEY     — required to enable the AI path.
-#   ENABLE_AI_DEAL_ADVICE  — set to "false" to force the heuristic.
-#   OPENROUTER_MODEL       — override the default model slug.
+# Reads a product's price history and asks an LLM (via LlmClient, which
+# routes through Gemini → OpenRouter → heuristic) for one of three takes:
+# buy now, wait, or watch. When every provider is unreachable / disabled /
+# misbehaving the service falls back to a deterministic heuristic that
+# compares the latest price to the lowest seen and a recent average. Either
+# way the controller always gets a usable Advice struct — the product page
+# never breaks.
 class DealAdvisor
   Advice = Data.define(:label, :summary, :source)
 
-  ENDPOINT      = "https://openrouter.ai/api/v1/chat/completions"
-  # Default to a cascade — OpenRouter tries each model in order, falling
-  # through 429 / 5xx automatically until one responds. Big models give
-  # the best reasoning; the tiny Liquid one is the always-available safety net.
-  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free,liquid/lfm-2.5-1.2b-instruct:free"
-  CACHE_TTL     = 6.hours
+  CACHE_TTL = 6.hours
 
   def self.call(product)
     new(product).call
@@ -55,10 +43,7 @@ class DealAdvisor
   attr_reader :product
 
   def ai_enabled?
-    return false if ENV["OPENROUTER_API_KEY"].blank?
-
-    enable_flag = ENV["ENABLE_AI_DEAL_ADVICE"]
-    enable_flag.blank? || ActiveModel::Type::Boolean.new.cast(enable_flag)
+    LlmClient.enabled?
   end
 
   # Return a cached AI advice struct iff it exists, is fresh (within
@@ -91,37 +76,8 @@ class DealAdvisor
     Rails.logger.info("[DealAdvisor] cache persist failed: #{e.class}: #{e.message}")
   end
 
-  # OpenRouter accepts either { model: "x" } or { models: ["a", "b"] }. Always
-  # send the array so we get auto-fallback through transient provider 429s.
-  def model_list
-    raw = ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
-    list = raw.split(",").map(&:strip).reject(&:empty?)
-    list.empty? ? [ DEFAULT_MODEL.split(",").first ] : list
-  end
-
   def ai_advice
-    uri = URI(ENDPOINT)
-    request = Net::HTTP::Post.new(uri)
-    request["Authorization"] = "Bearer #{ENV.fetch('OPENROUTER_API_KEY')}"
-    request["Content-Type"]  = "application/json"
-    request["HTTP-Referer"]  = ENV.fetch("APP_URL", "https://smart-shoppinglist-6ae31171e85c.herokuapp.com")
-    request["X-Title"]       = "PriceTracker"
-    request.body = {
-      models: model_list,
-      messages: [ { role: "user", content: prompt } ],
-      max_tokens: 160,
-      temperature: 0.2
-    }.to_json
-
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true, open_timeout: 3, read_timeout: 8) do |http|
-      http.request(request)
-    end
-
-    raise "OpenRouter request failed with HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
-
-    text = JSON.parse(response.body).dig("choices", 0, "message", "content").to_s.strip
-    raise "OpenRouter response did not include text" if text.blank?
-
+    text = LlmClient.complete(prompt: prompt, max_tokens: 160, temperature: 0.2, request_timeout: 10)
     Advice.new(label: "AI deal read", summary: text.squish, source: "ai")
   end
 

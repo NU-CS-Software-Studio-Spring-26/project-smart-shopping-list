@@ -1,26 +1,18 @@
-require "net/http"
-require "json"
-
 # Free-text shopping assistant. Takes a natural-language question from the
 # user ("what should I buy under $200?", "show me good headphone deals",
 # "anything dropped recently?") plus a snapshot of their watchlist and asks
-# an LLM via OpenRouter to surface 3 specific picks from that watchlist
-# with one-line reasoning each.
+# an LLM via LlmClient (Gemini → OpenRouter → heuristic) to surface 3
+# specific picks from that watchlist with one-line reasoning each.
 #
-# Graceful degradation: if the AI key is missing, AI is disabled, the
-# request fails, or the response is unparseable, we fall back to keyword
-# matching against product names + categories so the user still gets a
-# useful answer. The view always renders an Answer struct.
+# Graceful degradation: if every provider is unreachable, disabled, or
+# returns an unparseable body, we fall back to keyword matching against
+# product names + categories so the user still gets a useful answer. The
+# view always renders an Answer struct.
 class AiAssistant
   Pick   = Data.define(:product, :reason)
   Answer = Data.define(:summary, :picks, :source)
 
-  ENDPOINT      = "https://openrouter.ai/api/v1/chat/completions"
-  # Multi-model cascade — OpenRouter tries each in order, falling through
-  # 429 / 5xx automatically. Last entry is the small Liquid model that
-  # almost always has capacity, so we still produce an AI answer under load.
-  DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free,meta-llama/llama-3.3-70b-instruct:free,liquid/lfm-2.5-1.2b-instruct:free"
-  MAX_PICKS     = 3
+  MAX_PICKS = 3
   MAX_CANDIDATES_FOR_PROMPT = 30
 
   def self.call(query:, products:)
@@ -47,16 +39,7 @@ class AiAssistant
   private
 
   def ai_enabled?
-    return false if ENV["OPENROUTER_API_KEY"].blank?
-
-    flag = ENV["ENABLE_AI_DEAL_ADVICE"]
-    flag.blank? || ActiveModel::Type::Boolean.new.cast(flag)
-  end
-
-  def model_list
-    raw = ENV["OPENROUTER_MODEL"].presence || DEFAULT_MODEL
-    list = raw.split(",").map(&:strip).reject(&:empty?)
-    list.empty? ? [ DEFAULT_MODEL.split(",").first ] : list
+    LlmClient.enabled?
   end
 
   def empty_answer
@@ -81,28 +64,7 @@ class AiAssistant
   end
 
   def ai_answer
-    uri = URI(ENDPOINT)
-    request = Net::HTTP::Post.new(uri)
-    request["Authorization"] = "Bearer #{ENV.fetch('OPENROUTER_API_KEY')}"
-    request["Content-Type"]  = "application/json"
-    request["HTTP-Referer"]  = ENV.fetch("APP_URL", "https://smart-shoppinglist-6ae31171e85c.herokuapp.com")
-    request["X-Title"]       = "PriceTracker"
-    request.body = {
-      models: model_list,
-      messages: [ { role: "user", content: prompt } ],
-      max_tokens: 320,
-      temperature: 0.3
-    }.to_json
-
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true, open_timeout: 3, read_timeout: 12) do |http|
-      http.request(request)
-    end
-
-    raise "OpenRouter request failed with HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
-
-    text = JSON.parse(response.body).dig("choices", 0, "message", "content").to_s.strip
-    raise "OpenRouter response did not include text" if text.blank?
-
+    text = LlmClient.complete(prompt: prompt, max_tokens: 320, temperature: 0.3, request_timeout: 14)
     parsed = parse(text)
     raise "No matchable picks in AI response" if parsed.picks.empty?
 
