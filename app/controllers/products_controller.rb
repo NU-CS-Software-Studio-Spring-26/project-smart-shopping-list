@@ -221,14 +221,35 @@ class ProductsController < ApplicationController
   # Map scraper exceptions to a single user-facing sentence. We deliberately
   # don't surface raw exception text (DNS errors, "getaddrinfo(3)", HTTP codes)
   # to end users — those belong in logs, not in a flash banner.
+  # Retailers known to block all automated scraping with bot-defence tooling
+  # (Cloudflare / Akamai / PerimeterX). We can't fetch them server-side at
+  # all, so we tell the user up front rather than letting them retry forever.
+  BLOCKED_RETAILER_HOSTS = {
+    "apple.com"    => "Apple",
+    "target.com"   => "Target",
+    "homedepot.com" => "The Home Depot",
+    "nordstrom.com" => "Nordstrom"
+  }.freeze
+
   def friendly_scrape_error(error)
+    host = begin
+      URI.parse(@product.source_url).host.to_s.sub(/\Awww\./, "").downcase
+    rescue URI::InvalidURIError
+      ""
+    end
+
+    blocked = BLOCKED_RETAILER_HOSTS.find { |suffix, _| host.end_with?(suffix) }
+    if blocked
+      return "#{blocked.last} blocks automated lookups, so we can't auto-fetch this product. Fill in the details below and we'll still save the link so you can log prices manually."
+    end
+
     case error
     when PriceScrapers::TransientError
-      "We couldn't reach that site right now."
+      "We couldn't reach that site right now — try again in a moment, or fill in the details below to add it manually."
     when PriceScrapers::PermanentError
-      "That URL didn't work — the page may not exist or the site may be blocking automated lookups."
+      "That URL didn't work — the page may not exist or the site may be blocking automated lookups. Use the form below to add the product manually."
     else
-      "We couldn't read product details from that page."
+      "We couldn't read product details from that page. The form is pre-filled in manual mode below — finish entering the details and we'll save it."
     end
   end
 
