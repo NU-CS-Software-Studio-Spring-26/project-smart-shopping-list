@@ -10,6 +10,28 @@ class ProductTest < ActiveSupport::TestCase
     assert @product.valid?
   end
 
+  test "normalizes comma separated tags" do
+    @product.tags_input = " Gifts, school, gifts,  URGENT "
+    @product.valid?
+
+    assert_equal [ "gifts", "school", "urgent" ], @product.tags
+  end
+
+  test "limits saved tags" do
+    @product.tags_input = "one,two,three,four,five,six,seven,eight,nine"
+    @product.valid?
+
+    assert_equal 8, @product.tags.size
+    refute_includes @product.tags, "nine"
+  end
+
+  test "rejects overly long tags" do
+    @product.tags_input = "this-tag-name-is-far-too-long-for-the-chip-ui"
+
+    assert_not @product.valid?
+    assert_includes @product.errors[:tags].first, "32 characters"
+  end
+
   test "invalid without name" do
     @product.name = ""
     assert_not @product.valid?

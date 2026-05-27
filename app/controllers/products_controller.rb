@@ -5,6 +5,7 @@ class ProductsController < ApplicationController
     scope = Current.user.products.includes(:price_records)
     scope = fuzzy_search(scope, params[:search]) if params[:search].present?
     scope = scope.where(category: params[:category]) if params[:category].present?
+    scope = scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
     scope = sort_products(scope, params[:sort])
 
     # The "price_asc/price_desc" sort path uses GROUP BY products.id, which
@@ -13,9 +14,11 @@ class ProductsController < ApplicationController
     count_scope = Current.user.products
     count_scope = fuzzy_search(count_scope, params[:search]) if params[:search].present?
     count_scope = count_scope.where(category: params[:category]) if params[:category].present?
+    count_scope = count_scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
 
     @pagy, @products = pagy(scope, count: count_scope.count, limit: 24)
     @categories = Current.user.products.distinct.pluck(:category).compact.sort
+    @tags = Current.user.products.pluck(:tags).flatten.uniq.sort
   end
 
   def show
@@ -111,6 +114,14 @@ class ProductsController < ApplicationController
               disposition: "attachment"
   end
 
+  def export_watchlist
+    products = Current.user.products.includes(:price_records).order(:category, :name)
+    send_data WatchlistExport.to_csv(products),
+              filename: "price-tracker-watchlist.csv",
+              type: "text/csv; charset=utf-8",
+              disposition: "attachment"
+  end
+
   # Synchronous "Fetch latest price" button on the product detail page.
   # Blocks the request for up to ~5s while we hit the source URL.
   def fetch_price
@@ -189,8 +200,8 @@ class ProductsController < ApplicationController
     tokens.inject(scope) do |s, token|
       pattern = "%#{token}%"
       s.where(
-        "LOWER(name) LIKE ? OR LOWER(category) LIKE ? OR LOWER(description) LIKE ?",
-        pattern, pattern, pattern
+        "LOWER(name) LIKE ? OR LOWER(category) LIKE ? OR LOWER(description) LIKE ? OR array_to_string(tags, ' ') LIKE ?",
+        pattern, pattern, pattern, pattern
       )
     end
   end
@@ -204,7 +215,7 @@ class ProductsController < ApplicationController
   # so the user can finish onboarding without a working scrape.
   # target_price is optional — users may set it now or via the edit form later.
   def create_params
-    params.require(:product).permit(:category, :source_url, :name, :description, :image_url, :target_price)
+    params.require(:product).permit(:category, :source_url, :name, :description, :image_url, :target_price, :tags_input)
   end
 
   # Map scraper exceptions to a single user-facing sentence. We deliberately
@@ -225,7 +236,7 @@ class ProductsController < ApplicationController
   # target_price is editable here so users can revise their alert threshold
   # at any time (or clear it by submitting blank).
   def update_params
-    params.require(:product).permit(:name, :category, :description, :image_url, :source_url, :target_price, :auto_refresh)
+    params.require(:product).permit(:name, :category, :description, :image_url, :source_url, :target_price, :auto_refresh, :tags_input)
   end
 
   def export_filename(product)

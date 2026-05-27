@@ -55,6 +55,13 @@
           <div class="pt-prod-body">
             <span class="pt-tag"><%= @product.category %></span>
             <h1 class="pt-prod-title"><%= @product.name %></h1>
+            <% if @product.tags.any? %>
+              <div class="pt-tag-list" style="margin: -4px 0 10px;">
+                <% @product.tags.each do |tag| %>
+                  <%= link_to tag, products_path(tag: tag), class: "pt-mini-tag" %>
+                <% end %>
+              </div>
+            <% end %>
             <% if @product.description.present? %>
               <p class="pt-prod-desc"><%= @product.description %></p>
             <% end %>

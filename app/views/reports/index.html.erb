@@ -1,0 +1,149 @@
+<% content_for :title, "Reports" %>
+<main class="pt-page">
+  <section class="pt-hero">
+    <div class="container-xl">
+      <div class="pt-hero-grid">
+        <div>
+          <div class="pt-eyebrow">Reports</div>
+          <h1 class="pt-h1">Watchlist performance</h1>
+          <p class="pt-hero-note">
+            Review current value, target-price wins, deal movement, and how your products are distributed by category and tag.
+          </p>
+        </div>
+        <aside class="pt-hero-cta">
+          <%= link_to export_watchlist_products_path(format: :csv), class: "pt-hero-add" do %>
+            <span class="pt-hero-add-plus" aria-hidden="true"><%= render "shared/icon", name: "download", size: 22 %></span>
+            <span class="pt-hero-add-body">
+              <span class="pt-hero-add-eyebrow">Export data</span>
+              <span class="pt-hero-add-title">Download watchlist CSV</span>
+              <span class="pt-hero-add-sub">Includes latest price, lowest price, target price, tags, and source URLs.</span>
+            </span>
+            <span class="pt-hero-add-arrow" aria-hidden="true"><%= render "shared/icon", name: "arrow-right", size: 20 %></span>
+          <% end %>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-xl pt-content">
+    <% if @products.empty? %>
+      <div class="pt-empty">
+        <div class="pt-empty-icon"><%= render "shared/icon", name: "package", size: 32 %></div>
+        <h3>No products to report yet.</h3>
+        <p>Add products to build your first watchlist report.</p>
+        <%= link_to "Add a product", new_product_path, class: "pt-btn pt-btn-primary" %>
+      </div>
+    <% else %>
+      <div class="pt-report-grid">
+        <div class="pt-report-stat">
+          <div class="pt-stat-label">PRODUCTS TRACKED</div>
+          <div class="pt-report-number"><%= @total_products %></div>
+        </div>
+        <div class="pt-report-stat">
+          <div class="pt-stat-label">CURRENT WATCHLIST VALUE</div>
+          <div class="pt-report-number">$<%= sprintf("%.2f", @tracked_value) %></div>
+        </div>
+        <div class="pt-report-stat">
+          <div class="pt-stat-label">AT OR BELOW TARGET</div>
+          <div class="pt-report-number" style="color: var(--green);"><%= @below_target_count %></div>
+        </div>
+        <div class="pt-report-stat">
+          <div class="pt-stat-label">BIGGEST DROP FROM HIGH</div>
+          <div class="pt-report-number" style="color: var(--accent-700);">
+            <% if @biggest_drop %>
+              $<%= sprintf("%.2f", @biggest_drop.last) %>
+            <% else %>
+              -
+            <% end %>
+          </div>
+          <% if @biggest_drop %>
+            <div class="pt-muted small"><%= link_to @biggest_drop.first.name, @biggest_drop.first, class: "pt-link" %></div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="pt-report-panels">
+        <section class="pt-panel">
+          <div class="pt-panel-head">
+            <div>
+              <div class="pt-panel-eyebrow">CATEGORY MIX</div>
+              <h2 class="pt-panel-title">Products by category</h2>
+            </div>
+          </div>
+          <div class="pt-chart-wrap" style="padding: 0 22px 22px;">
+            <%= pie_chart @category_chart_data, height: "260px", donut: true %>
+          </div>
+        </section>
+
+        <section class="pt-panel">
+          <div class="pt-panel-head">
+            <div>
+              <div class="pt-panel-eyebrow">KEYWORDS</div>
+              <h2 class="pt-panel-title">Products by tag</h2>
+            </div>
+          </div>
+          <% if @tag_chart_data.any? %>
+            <div class="pt-chart-wrap" style="padding: 0 22px 22px;">
+              <%= column_chart @tag_chart_data, height: "260px" %>
+            </div>
+          <% else %>
+            <div class="pt-empty-filter" style="margin: 0 22px 22px;">
+              <h3>No tags yet.</h3>
+              <p>Add tags to products to see keyword distribution.</p>
+            </div>
+          <% end %>
+        </section>
+      </div>
+
+      <section class="pt-panel" style="margin-top: 28px;">
+        <div class="pt-panel-head">
+          <div>
+            <div class="pt-panel-eyebrow">DEAL RANKING</div>
+            <h2 class="pt-panel-title">Top watchlist opportunities</h2>
+          </div>
+        </div>
+        <% if @best_deals.any? %>
+          <div class="pt-table-wrap" style="border-radius: 0; border: none; border-top: 1px solid var(--line-2);">
+            <table class="pt-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Tags</th>
+                  <th class="pt-th-num">Latest</th>
+                  <th class="pt-th-num">Lowest</th>
+                  <th class="pt-th-num">Target</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @best_deals.each do |product, _score| %>
+                  <tr>
+                    <td><%= link_to product.name, product, class: "pt-link-strong", style: "text-decoration:none;color:inherit;" %></td>
+                    <td>
+                      <% if product.tags.any? %>
+                        <div class="pt-tag-list">
+                          <% product.tags.each do |tag| %>
+                            <%= link_to tag, products_path(tag: tag), class: "pt-mini-tag" %>
+                          <% end %>
+                        </div>
+                      <% else %>
+                        <span class="pt-muted small">-</span>
+                      <% end %>
+                    </td>
+                    <td class="pt-th-num pt-mono">$<%= sprintf("%.2f", product.latest_price) %></td>
+                    <td class="pt-th-num pt-mono">$<%= sprintf("%.2f", product.lowest_price) %></td>
+                    <td class="pt-th-num pt-mono"><%= product.target_price.present? ? "$#{sprintf('%.2f', product.target_price)}" : "-" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="pt-empty-filter" style="margin: 0 22px 22px;">
+            <h3>No price observations yet.</h3>
+            <p>Log or fetch prices to build deal rankings.</p>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+  </section>
+</main>

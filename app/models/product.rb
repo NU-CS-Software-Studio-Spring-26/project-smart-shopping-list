@@ -7,11 +7,14 @@ class Product < ApplicationRecord
     NAME_LIMIT        = 140
     CATEGORY_LIMIT    = 80
     DESCRIPTION_LIMIT = 1_000
+    TAG_LIMIT         = 32
+    MAX_TAGS          = 8
 
     belongs_to :user
     has_many :price_records, dependent: :destroy
 
     before_validation :truncate_long_text_fields
+    before_validation :normalize_tags
     before_save :clear_fetch_error_when_not_auto_refreshing
     before_validation :disable_auto_refresh_without_url, on: :update
 
@@ -20,6 +23,7 @@ class Product < ApplicationRecord
     validates :category, presence: true
     validates :category, length: { maximum: CATEGORY_LIMIT }
     validates :description, length: { maximum: DESCRIPTION_LIMIT }, allow_blank: true
+    validate :tags_are_reasonable
     validates :image_url,
               length: { maximum: 2_000 },
               format: { with: %r{\Ahttps?://[^\s]+\z}i, message: "must start with http:// or https://" },
@@ -170,6 +174,14 @@ class Product < ApplicationRecord
       source_url.present? && !self.class.scrape_excluded?(source_url)
     end
 
+    def tags_input
+      defined?(@tags_input) ? @tags_input : tags.join(", ")
+    end
+
+    def tags_input=(value)
+      @tags_input = value
+    end
+
     # Only surface cron / "Fetch latest" failures when we actually attempt
     # automatic refresh. Manual-only products should not show REFRESH FAILED.
     def show_refresh_failure?
@@ -189,6 +201,28 @@ class Product < ApplicationRecord
       return if auto_refresh?
 
       self.last_fetch_error = nil
+    end
+
+    def normalize_tags
+      raw_tags = if defined?(@tags_input)
+        @tags_input.to_s.split(",")
+      else
+        tags
+      end
+
+      self.tags = Array(raw_tags)
+        .map { |tag| tag.to_s.strip.downcase }
+        .reject(&:blank?)
+        .uniq
+        .first(MAX_TAGS)
+    end
+
+    def tags_are_reasonable
+      tags.each do |tag|
+        next if tag.length <= TAG_LIMIT
+
+        errors.add(:tags, "must be #{TAG_LIMIT} characters or fewer")
+      end
     end
 
     # Trim scraped/oversized text to the column caps before validations

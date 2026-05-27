@@ -63,6 +63,17 @@
       <%= f.select :category, categories, { prompt: "Select a category" }, class: "pt-select pt-input pt-input-block", required: true %>
     </div>
 
+    <div class="pt-field">
+      <label class="pt-field-label" for="product_tags_input">
+        Tags <span class="pt-field-req">optional</span>
+      </label>
+      <%= f.text_field :tags_input,
+            class: "pt-input",
+            placeholder: "school, gifts, urgent",
+            maxlength: 280 %>
+      <div class="pt-field-hint">Separate tags with commas. We'll use them for filtering and reports.</div>
+    </div>
+
     <% if manual %>
       <div class="pt-field">
         <label class="pt-field-label" for="product_name">
@@ -113,6 +124,17 @@
         Category <span class="pt-field-req">required</span>
       </label>
       <%= f.select :category, categories, { prompt: "Select a category" }, class: "pt-select pt-input pt-input-block", required: true %>
+    </div>
+
+    <div class="pt-field">
+      <label class="pt-field-label" for="product_tags_input">
+        Tags <span class="pt-field-req">optional</span>
+      </label>
+      <%= f.text_field :tags_input,
+            class: "pt-input",
+            placeholder: "school, gifts, urgent",
+            maxlength: 280 %>
+      <div class="pt-field-hint">Separate tags with commas. Up to eight tags are saved per product.</div>
     </div>
 
     <div class="pt-field">
