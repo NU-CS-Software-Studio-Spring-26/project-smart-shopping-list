@@ -28,6 +28,10 @@ gem "httparty"
 # Charts on the product detail page (price history)
 gem "chartkick"
 
+# PDF generation for price-history exports
+gem "prawn", "~> 2.5"
+gem "prawn-table", "~> 0.2"
+
 # Pagination
 gem "pagy", "~> 9.3"
 

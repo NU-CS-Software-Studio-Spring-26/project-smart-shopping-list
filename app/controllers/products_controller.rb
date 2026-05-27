@@ -108,10 +108,20 @@ class ProductsController < ApplicationController
   end
 
   def export
-    send_data PriceHistoryExport.to_csv(@product),
-              filename: "#{export_filename(@product)}-price-history.csv",
-              type: "text/csv; charset=utf-8",
-              disposition: "attachment"
+    respond_to do |format|
+      format.csv do
+        send_data PriceHistoryExport.to_csv(@product),
+                  filename: "#{export_filename(@product)}-price-history.csv",
+                  type: "text/csv; charset=utf-8",
+                  disposition: "attachment"
+      end
+      format.pdf do
+        send_data PriceHistoryExport.to_pdf(@product),
+                  filename: "#{export_filename(@product)}-price-history.pdf",
+                  type: "application/pdf",
+                  disposition: "attachment"
+      end
+    end
   end
 
   def export_watchlist
