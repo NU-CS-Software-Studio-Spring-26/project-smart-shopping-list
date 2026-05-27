@@ -38,31 +38,70 @@
 
   <section class="container-xl pt-content">
     <% if @folders.any? %>
-      <div class="pt-folder-grid">
+      <div class="pt-grid">
         <% @folders.each do |folder| %>
-          <article class="pt-folder-card">
-            <div class="pt-folder-card-icon">
-              <%= render "shared/icon", name: "folder", size: 32 %>
-            </div>
-            <div class="pt-folder-card-body">
-              <h3 class="pt-folder-card-name">
-                <%= link_to folder.name, folder, class: "pt-folder-card-link" %>
+          <% cover_images = folder.products.select { |p| p.image_url.present? }.first(4) %>
+          <% count = folder.products.size %>
+          <article class="pt-card pt-folder-album-card">
+            <%# Collage header — links to folder %>
+            <%= link_to folder, class: "pt-card-media pt-folder-collage", "aria-label": folder.name do %>
+              <% if cover_images.empty? %>
+                <div class="pt-folder-collage-empty">
+                  <%= render "shared/icon", name: "folder", size: 48 %>
+                </div>
+              <% elsif cover_images.size == 1 %>
+                <div class="pt-folder-collage-1">
+                  <%= image_tag cover_images[0].image_url, alt: cover_images[0].name %>
+                </div>
+              <% elsif cover_images.size == 2 %>
+                <div class="pt-folder-collage-2">
+                  <% cover_images.each do |p| %>
+                    <%= image_tag p.image_url, alt: p.name %>
+                  <% end %>
+                </div>
+              <% elsif cover_images.size == 3 %>
+                <div class="pt-folder-collage-3">
+                  <% cover_images.each do |p| %>
+                    <%= image_tag p.image_url, alt: p.name %>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="pt-folder-collage-4">
+                  <% cover_images.each do |p| %>
+                    <%= image_tag p.image_url, alt: p.name %>
+                  <% end %>
+                </div>
+              <% end %>
+              <div class="pt-card-media-shade"></div>
+            <% end %>
+
+            <%# Card body %>
+            <div class="pt-card-body">
+              <h3 class="pt-card-title">
+                <%= link_to folder.name, folder, style: "text-decoration: none; color: inherit;" %>
               </h3>
               <% if folder.description.present? %>
-                <p class="pt-folder-card-desc"><%= folder.description %></p>
+                <p class="pt-folder-album-desc"><%= folder.description %></p>
               <% end %>
-              <span class="pt-folder-card-count"><%= folder.products.size %> <%= "product".pluralize(folder.products.size) %></span>
+              <div class="pt-folder-album-meta">
+                <span class="pt-folder-album-count"><%= count %> <%= "product".pluralize(count) %></span>
+              </div>
             </div>
-            <div class="pt-folder-card-actions">
-              <%= link_to edit_folder_path(folder), class: "pt-icon-btn", aria: { label: "Edit #{folder.name}" } do %>
-                <%= render "shared/icon", name: "edit", size: 16 %>
-              <% end %>
-              <%= link_to folder,
-                    data: { turbo_method: :delete, turbo_confirm: "Delete \"#{folder.name}\"? Products won't be deleted." },
-                    class: "pt-icon-btn pt-icon-btn-danger",
-                    aria: { label: "Delete #{folder.name}" } do %>
-                <%= render "shared/icon", name: "trash", size: 16 %>
-              <% end %>
+
+            <%# Footer actions %>
+            <div class="pt-card-foot">
+              <%= link_to "Open folder →", folder, class: "pt-link-btn pt-link-btn-strong", aria: { label: "Open #{folder.name}" } %>
+              <div class="pt-row-actions">
+                <%= link_to edit_folder_path(folder), class: "pt-icon-btn", aria: { label: "Edit #{folder.name}" } do %>
+                  <%= render "shared/icon", name: "edit", size: 16 %>
+                <% end %>
+                <%= link_to folder,
+                      data: { turbo_method: :delete, turbo_confirm: "Delete \"#{folder.name}\"? Products won't be deleted." },
+                      class: "pt-icon-btn pt-icon-btn-danger",
+                      aria: { label: "Delete #{folder.name}" } do %>
+                  <%= render "shared/icon", name: "trash", size: 16 %>
+                <% end %>
+              </div>
             </div>
           </article>
         <% end %>

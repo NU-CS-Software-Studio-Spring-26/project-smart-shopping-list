@@ -2,7 +2,7 @@ class FoldersController < ApplicationController
   before_action :set_folder, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @folders = Current.user.folders.order(:name)
+    @folders = Current.user.folders.order(:name).includes(:products)
   end
 
   def show

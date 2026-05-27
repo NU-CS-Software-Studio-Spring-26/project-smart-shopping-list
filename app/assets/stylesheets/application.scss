@@ -1443,35 +1443,89 @@ body {
   }
 }
 
-// ── Folder index grid ────────────────────────────────────────────────────────
-.pt-folder-grid {
+// ── Folder album cards (index) ───────────────────────────────────────────────
+.pt-folder-album-card {
+  // inherits all .pt-card styles — just override the cursor so the whole
+  // card doesn't look clickable (individual links inside are clickable)
+  cursor: default;
+}
+
+// Collage header — reuses .pt-card-media sizing/overflow
+.pt-folder-collage {
+  display: block;
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--bg-2);
+  overflow: hidden;
+  border-bottom: 1px solid var(--line-2);
+  text-decoration: none;
+
+  img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(.2,.7,.2,1);
+    display: block;
+  }
+  &:hover img { transform: scale(1.04); }
+}
+
+// Empty state — folder icon centered
+.pt-folder-collage-empty {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted-2);
+  background: var(--bg-2);
+}
+
+// 1 image — full bleed
+.pt-folder-collage-1 {
+  width: 100%; height: 100%;
+  img { width: 100%; height: 100%; }
+}
+
+// 2 images — side by side
+.pt-folder-collage-2 {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+  width: 100%; height: 100%;
+  gap: 2px;
+  img { width: 100%; height: 100%; }
 }
-.pt-folder-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 18px 16px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.15s;
-  &:hover { box-shadow: var(--shadow-md); }
+
+// 3 images — top row 2 cols, bottom full width
+.pt-folder-collage-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%; height: 100%;
+  gap: 2px;
+  img { width: 100%; height: 100%; }
+  img:last-child {
+    grid-column: 1 / -1;
+  }
 }
-.pt-folder-card-icon {
-  flex-shrink: 0;
-  color: var(--accent-700);
-  margin-top: 2px;
+
+// 4 images — 2×2 grid (Spotify style)
+.pt-folder-collage-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%; height: 100%;
+  gap: 2px;
+  img { width: 100%; height: 100%; }
 }
-.pt-folder-card-body { flex: 1; min-width: 0; }
-.pt-folder-card-name { margin: 0 0 4px; font-size: 1rem; font-weight: 600; }
-.pt-folder-card-link { color: var(--ink); text-decoration: none; &:hover { color: var(--accent-700); } }
-.pt-folder-card-desc { margin: 0 0 6px; font-size: 0.82rem; color: var(--muted-2); }
-.pt-folder-card-count { font-size: 0.8rem; color: var(--muted-2); }
-.pt-folder-card-actions { display: flex; gap: 4px; flex-shrink: 0; margin-top: 2px; }
+
+.pt-folder-album-desc {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  color: var(--muted-2);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.pt-folder-album-meta { margin-top: 4px; }
+.pt-folder-album-count { font-size: 0.8rem; color: var(--muted-2); }
 
 // ── Folder show ──────────────────────────────────────────────────────────────
 .pt-folder-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
