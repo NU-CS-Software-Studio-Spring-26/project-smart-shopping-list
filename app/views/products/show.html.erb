@@ -143,7 +143,7 @@
                   <span class="pt-ai-spark" aria-hidden="true">✦</span>
                   <span><%= @deal_advice.label %></span>
                   <% if @deal_advice.source == "local" %>
-                    <span class="pt-ai-fallback" title="OpenRouter didn't respond — showing a heuristic instead. Refresh in a minute to retry the AI.">OpenRouter unavailable · using heuristic</span>
+                    <span class="pt-ai-fallback" title="All AI providers (Gemini + OpenRouter) failed or rate-limited — showing a heuristic instead. Refresh in a minute to retry.">AI unavailable · using heuristic</span>
                   <% end %>
                 </div>
                 <p><%= @deal_advice.summary %></p>

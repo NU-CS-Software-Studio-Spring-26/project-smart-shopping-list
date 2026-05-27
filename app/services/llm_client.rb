@@ -103,8 +103,13 @@ class LlmClient
   end
 
   # Both Gemini and OpenRouter accept OpenAI-style chat completion bodies.
-  # OpenRouter supports a `models` array natively. Gemini only takes a
-  # single `model`, so when we have a cascade we walk it one model at a time.
+  # OpenRouter supports a `models` array natively, so its whole cascade
+  # counts as one HTTP request. Gemini only takes a single `model`, so when
+  # GEMINI_MODEL contains multiple comma-separated models we walk them one
+  # at a time — but the per-model timeout is **halved** so the worst-case
+  # Gemini budget stays under @request_timeout. Without this cap, two
+  # serial Gemini attempts at the full read_timeout would already exceed
+  # Heroku's 30-second router limit before OpenRouter even gets a chance.
   def call_provider(provider)
     if provider[:name] == "openrouter"
       post_chat(provider, body: {
@@ -112,17 +117,19 @@ class LlmClient
         messages: [ { role: "user", content: @prompt } ],
         max_tokens: @max_tokens,
         temperature: @temperature
-      })
+      }, read_timeout: @request_timeout)
     else
+      models = provider[:models]
+      per_model_timeout = (@request_timeout.to_f / [ models.size, 1 ].max).ceil.clamp(4, 14)
       last = nil
-      provider[:models].each do |model|
+      models.each do |model|
         begin
           return post_chat(provider, body: {
             model: model,
             messages: [ { role: "user", content: @prompt } ],
             max_tokens: @max_tokens,
             temperature: @temperature
-          })
+          }, read_timeout: per_model_timeout)
         rescue StandardError => e
           last = e
           next
@@ -132,7 +139,7 @@ class LlmClient
     end
   end
 
-  def post_chat(provider, body:)
+  def post_chat(provider, body:, read_timeout:)
     uri = URI(provider[:endpoint])
     request = Net::HTTP::Post.new(uri)
     request["Authorization"] = "Bearer #{provider[:api_key]}"
@@ -140,7 +147,7 @@ class LlmClient
     (provider[:extra_headers] || {}).each { |k, v| request[k] = v }
     request.body = body.to_json
 
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true, open_timeout: 3, read_timeout: @request_timeout) do |http|
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true, open_timeout: 5, read_timeout: read_timeout) do |http|
       http.request(request)
     end
 
