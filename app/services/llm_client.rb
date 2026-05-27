@@ -114,6 +114,11 @@ class LlmClient
   # Gemini budget stays under @request_timeout. Without this cap, two
   # serial Gemini attempts at the full read_timeout would already exceed
   # Heroku's 30-second router limit before OpenRouter even gets a chance.
+  # OpenRouter accepts a `models:` array and handles fallback itself, so its
+  # whole cascade is one HTTP request. Gemini only takes a single `model`, so
+  # we iterate. The first Gemini model gets a short budget (it's usually fast
+  # and we want to fail through to the next quickly if it 429s); the last
+  # model gets the remainder so a slow-but-available model can still complete.
   def call_provider(provider)
     if provider[:name] == "openrouter"
       post_chat(provider, body: {
@@ -124,16 +129,20 @@ class LlmClient
       }, read_timeout: @request_timeout)
     else
       models = provider[:models]
-      per_model_timeout = (@request_timeout.to_f / [ models.size, 1 ].max).ceil.clamp(4, 14)
       last = nil
-      models.each do |model|
+      models.each_with_index do |model, i|
+        # Fast-fail every model except the last so we don't burn the whole
+        # budget waiting on a single slow model when a fallback is ready.
+        is_last = (i == models.size - 1)
+        budget = is_last ? @request_timeout : [ (@request_timeout * 0.35).to_i, 6 ].max
+
         begin
           return post_chat(provider, body: {
             model: model,
             messages: [ { role: "user", content: @prompt } ],
             max_tokens: @max_tokens,
             temperature: @temperature
-          }, read_timeout: per_model_timeout)
+          }, read_timeout: budget)
         rescue StandardError => e
           last = e
           next
