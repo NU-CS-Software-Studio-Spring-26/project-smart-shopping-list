@@ -10,33 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
-
-  create_table "price_refresh_runs", force: :cascade do |t|
-    t.integer "attempted", default: 0, null: false
-    t.integer "batch_size"
-    t.integer "batches_run", default: 1, null: false
-    t.integer "catalog_with_url"
-    t.datetime "created_at", null: false
-    t.decimal "duration_seconds", precision: 8, scale: 1
-    t.datetime "enqueued_at", null: false
-    t.text "error_message"
-    t.integer "failed", default: 0, null: false
-    t.jsonb "failure_details", default: [], null: false
-    t.jsonb "failure_summary", default: {}, null: false
-    t.datetime "finished_at"
-    t.datetime "started_at"
-    t.integer "stale_remaining"
-    t.string "status", default: "pending", null: false
-    t.integer "succeeded", default: 0, null: false
-    t.integer "total_products"
-    t.string "triggered_by", default: "unknown", null: false
-    t.datetime "updated_at", null: false
-    t.index ["enqueued_at"], name: "index_price_refresh_runs_on_enqueued_at"
-    t.index ["status"], name: "index_price_refresh_runs_on_status"
-  end
 
   create_table "price_records", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -57,7 +33,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200000) do
     t.check_constraint "url IS NULL OR char_length(url::text) <= 2000", name: "price_records_url_length"
   end
 
+  create_table "price_refresh_runs", force: :cascade do |t|
+    t.integer "attempted", default: 0, null: false
+    t.integer "batch_size"
+    t.integer "batches_run", default: 1, null: false
+    t.integer "catalog_with_url"
+    t.datetime "created_at", null: false
+    t.decimal "duration_seconds", precision: 8, scale: 1
+    t.datetime "enqueued_at", null: false
+    t.text "error_message"
+    t.integer "failed", default: 0, null: false
+    t.jsonb "failure_details", default: [], null: false
+    t.jsonb "failure_summary", default: {}, null: false
+    t.datetime "finished_at"
+    t.integer "stale_remaining"
+    t.datetime "started_at"
+    t.string "status", default: "pending", null: false
+    t.integer "succeeded", default: 0, null: false
+    t.integer "total_products"
+    t.string "triggered_by", default: "unknown", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enqueued_at"], name: "index_price_refresh_runs_on_enqueued_at"
+    t.index ["status"], name: "index_price_refresh_runs_on_status"
+  end
+
   create_table "products", force: :cascade do |t|
+    t.datetime "advisor_generated_at"
+    t.string "advisor_source"
+    t.text "advisor_summary"
     t.boolean "auto_refresh", default: true, null: false
     t.string "category", null: false
     t.datetime "created_at", null: false
@@ -68,12 +71,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200000) do
     t.datetime "last_fetched_at"
     t.string "name", null: false
     t.string "source_url"
+    t.string "tags", default: [], null: false, array: true
     t.decimal "target_price", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["category"], name: "index_products_on_category"
     t.index ["created_at"], name: "index_products_on_created_at"
     t.index ["source_url"], name: "index_products_on_source_url"
+    t.index ["tags"], name: "index_products_on_tags", using: :gin
     t.index ["user_id"], name: "index_products_on_user_id"
     t.check_constraint "char_length(category::text) <= 80", name: "products_category_length"
     t.check_constraint "char_length(name::text) <= 140", name: "products_name_length"

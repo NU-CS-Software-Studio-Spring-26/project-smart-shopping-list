@@ -23,6 +23,12 @@ Deployed at <https://smart-shoppinglist-6ae31171e85c.herokuapp.com/>.
 - **Price history CSV export.** Product detail pages now include a downloadable
   price-history report with product, category, store, price, source, timestamp,
   URL, and notes for every observation.
+- **Tags and keyword filtering.** Products can now be tagged with comma-separated
+  keywords and filtered from the product index.
+- **Reports dashboard.** `/reports` summarizes watchlist value, target-price
+  wins, category mix, tag distribution, and ranked deal opportunities.
+- **Full watchlist CSV export.** Users can download their complete watchlist
+  with tags, latest/lowest prices, targets, source URLs, and refresh status.
 - **Manual full-cycle refresh.** GitHub Actions *Run workflow* sends
   `X-Refresh-Mode: full-cycle`; `RefreshPricesJob` runs batch after batch
   immediately until every refreshable product is updated (one click, not 24).

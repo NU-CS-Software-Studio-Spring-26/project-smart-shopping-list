@@ -42,7 +42,7 @@
                   class: "pt-search-input",
                   data: { action: "input->auto-submit#queue" } %>
             <% if params[:search].present? %>
-              <%= link_to "×", products_path(params.permit(:category, :sort).to_h), class: "pt-search-clear", "aria-label": "Clear search" %>
+              <%= link_to "×", products_path(params.permit(:category, :tag, :sort).to_h), class: "pt-search-clear", "aria-label": "Clear search" %>
             <% end %>
           </div>
 
@@ -50,6 +50,13 @@
             <label class="pt-filter-label" for="category">Category</label>
             <%= f.select :category,
                   options_for_select([ [ "All", "" ] ] + @categories, params[:category]),
+                  {}, class: "pt-select", data: { action: "change->auto-submit#submitNow" } %>
+          </div>
+
+          <div class="pt-filter-group">
+            <label class="pt-filter-label" for="tag">Tag</label>
+            <%= f.select :tag,
+                  options_for_select([ [ "All", "" ] ] + @tags.map { |tag| [ tag, tag ] }, params[:tag]),
                   {}, class: "pt-select", data: { action: "change->auto-submit#submitNow" } %>
           </div>
 
@@ -70,7 +77,9 @@
                   {}, class: "pt-select", data: { action: "change->auto-submit#submitNow" } %>
           </div>
 
-          <% if params[:search].present? || params[:category].present? || (params[:sort].present? && params[:sort] != "newest") %>
+          <%= link_to "Export watchlist", export_watchlist_products_path(format: :csv), class: "pt-link-btn pt-link-btn-strong" %>
+
+          <% if params[:search].present? || params[:category].present? || params[:tag].present? || (params[:sort].present? && params[:sort] != "newest") %>
             <%= link_to "Clear filters", products_path, class: "pt-link-btn pt-link-btn-strong" %>
           <% end %>
 
@@ -133,6 +142,14 @@
               <h3 class="pt-card-title">
                 <%= link_to product.name, product, style: "text-decoration: none; color: inherit;" %>
               </h3>
+
+              <% if product.tags.any? %>
+                <div class="pt-tag-list">
+                  <% product.tags.each do |tag| %>
+                    <%= link_to tag, products_path(tag: tag), class: "pt-mini-tag" %>
+                  <% end %>
+                </div>
+              <% end %>
 
               <div class="pt-card-price-row">
                 <div class="pt-card-price-block">

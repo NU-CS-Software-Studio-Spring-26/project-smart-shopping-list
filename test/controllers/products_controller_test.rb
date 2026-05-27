@@ -40,6 +40,29 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert Product.last.auto_refresh?
   end
 
+  test "should create product with tags" do
+    fake_result = PriceScrapers::Result.new(
+      price:      BigDecimal("9.99"),
+      currency:   "USD",
+      title:      "Tagged Product",
+      image_url:  "https://example.com/x.jpg",
+      store_name: "Example",
+      fetched_at: Time.current
+    )
+    stub_method(PriceScrapers, :fetch, ->(_url, **_opts) { fake_result }) do
+      post products_url, params: {
+        product: {
+          source_url: "https://www.example.com/p/123",
+          category: "Electronics",
+          tags_input: "School, Gifts"
+        }
+      }
+    end
+
+    assert_redirected_to product_url(Product.last)
+    assert_equal [ "school", "gifts" ], Product.last.tags
+  end
+
   test "manual create disables auto_refresh" do
     assert_difference("Product.count") do
       post products_url, params: {
@@ -69,6 +92,17 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_match export_product_path(@product, format: :csv), response.body
   end
 
+  test "index filters by tag" do
+    @user.products.create!(name: "Dorm Lamp", category: "Electronics", tags_input: "school")
+    @user.products.create!(name: "Birthday Book", category: "Books", tags_input: "gifts")
+
+    get products_url, params: { tag: "school" }
+
+    assert_response :success
+    assert_match "Dorm Lamp", response.body
+    assert_no_match "Birthday Book", response.body
+  end
+
   test "should export price history csv" do
     get export_product_url(@product, format: :csv)
     assert_response :success
@@ -81,6 +115,23 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Sample Product One", csv.first["Product"]
     assert_equal "Electronics", csv.first["Category"]
     assert_equal "9.99", csv.first["Price"]
+  end
+
+  test "should export full watchlist csv" do
+    @product.update!(tags_input: "school, gifts", target_price: 25)
+
+    get export_watchlist_products_url(format: :csv)
+
+    assert_response :success
+    assert_equal "text/csv", response.media_type
+    assert_match "attachment", response.headers["Content-Disposition"]
+    assert_match "price-tracker-watchlist.csv", response.headers["Content-Disposition"]
+
+    csv = CSV.parse(response.body, headers: true)
+    assert_includes csv.headers, "Latest price"
+    row = csv.find { |r| r["Product"] == @product.name }
+    assert_equal "school, gifts", row["Tags"]
+    assert_equal "25.00", row["Target price"]
   end
 
   test "should not export another user's product" do

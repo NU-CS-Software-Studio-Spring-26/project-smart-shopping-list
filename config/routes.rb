@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   root "products#index"
   resources :products do
+    get :export_watchlist, on: :collection
     resources :price_records, only: [ :new, :create ]
     member do
       get :export
@@ -13,6 +14,7 @@ Rails.application.routes.draw do
     end
   end
   resources :price_records, only: [ :index, :show, :edit, :update, :destroy ]
+  get "reports", to: "reports#index", as: :reports
   get "budgetplanner", to: "budget_planner#index", as: :budget_planner
   get "ask",           to: "assistant#index",      as: :assistant
 
