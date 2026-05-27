@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
   before_action :set_product, only: [ :show, :edit, :update, :destroy, :fetch_price, :export ]
 
   def index
-    scope = Current.user.products.includes(:price_records)
+    scope = Current.user.products.preload(:price_records)
     scope = fuzzy_search(scope, params[:search]) if params[:search].present?
     scope = scope.where(category: params[:category]) if params[:category].present?
     scope = scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
