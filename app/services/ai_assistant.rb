@@ -64,7 +64,7 @@ class AiAssistant
   end
 
   def ai_answer
-    text = LlmClient.complete(prompt: prompt, max_tokens: 320, temperature: 0.3, request_timeout: 14)
+    text = LlmClient.complete(prompt: prompt, max_tokens: 320, temperature: 0.3, request_timeout: 28)
     parsed = parse(text)
     raise "No matchable picks in AI response" if parsed.picks.empty?
 

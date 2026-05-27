@@ -40,7 +40,7 @@ class DealPicker
   end
 
   def ai_picks
-    text = LlmClient.complete(prompt: prompt, max_tokens: 280, temperature: 0.2, request_timeout: 12)
+    text = LlmClient.complete(prompt: prompt, max_tokens: 280, temperature: 0.2, request_timeout: 25)
     parsed = parse(text)
     raise "Could not match any AI picks to products" if parsed.empty?
 

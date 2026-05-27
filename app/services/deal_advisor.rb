@@ -77,7 +77,7 @@ class DealAdvisor
   end
 
   def ai_advice
-    text = LlmClient.complete(prompt: prompt, max_tokens: 160, temperature: 0.2, request_timeout: 10)
+    text = LlmClient.complete(prompt: prompt, max_tokens: 160, temperature: 0.2, request_timeout: 22)
     Advice.new(label: "AI deal read", summary: text.squish, source: "ai")
   end
 

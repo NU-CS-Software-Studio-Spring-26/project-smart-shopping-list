@@ -29,7 +29,10 @@ class LlmClient
 
   THOUGHT_RE = /<thought>.*?<\/thought>/m
 
-  def self.complete(prompt:, max_tokens: 256, temperature: 0.2, request_timeout: 12)
+  # Default read_timeout of 25s — Gemma 4 26B routinely takes 8–15s end-to-end,
+  # especially on the larger AiAssistant prompts. Callers can raise this further
+  # if they're rendering inline on a page that already has heavy work.
+  def self.complete(prompt:, max_tokens: 256, temperature: 0.2, request_timeout: 25)
     new(prompt: prompt, max_tokens: max_tokens, temperature: temperature, request_timeout: request_timeout).complete
   end
 
