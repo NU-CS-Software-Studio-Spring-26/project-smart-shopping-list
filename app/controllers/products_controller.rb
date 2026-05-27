@@ -17,6 +17,7 @@ class ProductsController < ApplicationController
     count_scope = count_scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
 
     @pagy, @products = pagy(scope, count: count_scope.count, limit: 24)
+    @products.load
     @categories = Current.user.products.distinct.pluck(:category).compact.sort
     @tags = Current.user.products.pluck(:tags).flatten.uniq.sort
   end
