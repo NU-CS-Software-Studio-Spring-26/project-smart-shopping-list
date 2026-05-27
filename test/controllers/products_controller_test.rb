@@ -1,4 +1,5 @@
 require "test_helper"
+require "csv"
 
 class ProductsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -59,6 +60,32 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   test "should show product" do
     get product_url(@product)
     assert_response :success
+  end
+
+  test "show links to price history export" do
+    get product_url(@product)
+    assert_response :success
+    assert_match "Export price history", response.body
+    assert_match export_product_path(@product, format: :csv), response.body
+  end
+
+  test "should export price history csv" do
+    get export_product_url(@product, format: :csv)
+    assert_response :success
+    assert_equal "text/csv", response.media_type
+    assert_match "attachment", response.headers["Content-Disposition"]
+    assert_match "sample-product-one-price-history.csv", response.headers["Content-Disposition"]
+
+    csv = CSV.parse(response.body, headers: true)
+    assert_equal [ "Product", "Category", "Store", "Price", "Source", "Recorded at", "URL", "Notes" ], csv.headers
+    assert_equal "Sample Product One", csv.first["Product"]
+    assert_equal "Electronics", csv.first["Category"]
+    assert_equal "9.99", csv.first["Price"]
+  end
+
+  test "should not export another user's product" do
+    get export_product_url(products(:two), format: :csv)
+    assert_response :not_found
   end
 
   test "should get edit" do

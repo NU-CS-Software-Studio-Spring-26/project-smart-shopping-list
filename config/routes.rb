@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :products do
     resources :price_records, only: [ :new, :create ]
     member do
+      get :export
       post :fetch_price
     end
   end

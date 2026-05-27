@@ -152,6 +152,9 @@
                   ↻ Fetch latest from source
                 <% end %>
               <% end %>
+              <%= link_to export_product_path(@product, format: :csv), class: "pt-btn pt-btn-secondary pt-btn-block" do %>
+                <span class="pt-btn-icon"><%= render "shared/icon", name: "download", size: 14 %></span> Export price history
+              <% end %>
               <%= link_to new_product_price_record_path(@product), class: "pt-btn pt-btn-secondary pt-btn-block" do %>
                 <span class="pt-btn-icon">+</span> Log a price
               <% end %>
