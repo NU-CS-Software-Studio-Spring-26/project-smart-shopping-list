@@ -194,44 +194,6 @@ class ProductsController < ApplicationController
     end
   end
 
-  # Sort options exposed on the products index page. Anything not in this
-  # whitelist falls back to "newest first" so users can't inject SQL via params.
-  SORT_OPTIONS = {
-    "newest"     => "products.created_at DESC",
-    "oldest"     => "products.created_at ASC",
-    "name_asc"   => "LOWER(products.name) ASC",
-    "name_desc"  => "LOWER(products.name) DESC",
-    "price_asc"  => "latest_price ASC NULLS LAST",
-    "price_desc" => "latest_price DESC NULLS LAST"
-  }.freeze
-
-  def sort_products(scope, key)
-    order_clause = SORT_OPTIONS[key] || SORT_OPTIONS["newest"]
-
-    if order_clause.start_with?("latest_price")
-      scope
-        .left_joins(:price_records)
-        .select("products.*, MAX(price_records.price) AS latest_price")
-        .group("products.id")
-        .order(Arel.sql(order_clause))
-    else
-      scope.order(Arel.sql(order_clause))
-    end
-  end
-
-  def fuzzy_search(scope, query)
-    tokens = query.to_s.downcase.split(/\s+/).reject(&:blank?)
-    return scope if tokens.empty?
-
-    tokens.inject(scope) do |s, token|
-      pattern = "%#{token}%"
-      s.where(
-        "LOWER(name) LIKE ? OR LOWER(category) LIKE ? OR LOWER(description) LIKE ? OR array_to_string(tags, ' ') LIKE ?",
-        pattern, pattern, pattern, pattern
-      )
-    end
-  end
-
   def set_product
     @product = Current.user.products.find(params[:id])
   end

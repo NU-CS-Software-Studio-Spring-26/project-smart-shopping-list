@@ -6,9 +6,24 @@ class FoldersController < ApplicationController
   end
 
   def show
-    @products_in_folder = @folder.products.order(:name)
+    scope = @folder.products
+    scope = fuzzy_search(scope, params[:search]) if params[:search].present?
+    scope = scope.where(category: params[:category]) if params[:category].present?
+    scope = scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
+    scope = sort_products(scope, params[:sort])
+
+    count_scope = @folder.products
+    count_scope = fuzzy_search(count_scope, params[:search]) if params[:search].present?
+    count_scope = count_scope.where(category: params[:category]) if params[:category].present?
+    count_scope = count_scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
+
+    @pagy, @products_in_folder = pagy(scope, count: count_scope.count, limit: 24)
+    @products_in_folder.load
+
+    @categories = @folder.products.distinct.pluck(:category).compact.sort
+    @tags = @folder.products.pluck(:tags).flatten.uniq.sort
     @products_not_in_folder = Current.user.products
-                                          .where.not(id: @products_in_folder.select(:id))
+                                          .where.not(id: @folder.products.select(:id))
                                           .order(:name)
   end
 

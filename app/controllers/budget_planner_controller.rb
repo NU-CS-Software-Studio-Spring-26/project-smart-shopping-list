@@ -1,8 +1,12 @@
 class BudgetPlannerController < ApplicationController
   def index
     @budget = params[:budget].presence&.to_f
+    @folders = Current.user.folders.order(:name)
+    @selected_folder = @folders.find { |f| f.id.to_s == params[:folder_id].to_s } if params[:folder_id].present?
 
-    all = Current.user.products
+    base_scope = @selected_folder ? @selected_folder.products : Current.user.products
+
+    all = base_scope
       .joins(:price_records)
       .select("products.*, MIN(price_records.price) AS lowest_price_seen")
       .group("products.id")

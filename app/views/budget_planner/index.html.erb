@@ -15,6 +15,20 @@
         <aside class="pt-hero-cta">
           <%= form_with url: budget_planner_path, method: :get, local: true do |f| %>
             <div class="pt-budget-card" style="background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 22px; box-shadow: 0 8px 22px -16px rgba(15,23,42,0.25); display:flex; flex-direction:column; gap:14px;">
+              <% if @folders.any? %>
+                <div>
+                  <label for="folder_id" style="font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase; display:block; margin-bottom:6px;">
+                    Shop from
+                  </label>
+                  <%= f.select :folder_id,
+                        options_for_select(
+                          [ [ "All products", "" ] ] + @folders.map { |folder| [ folder.name, folder.id ] },
+                          @selected_folder&.id
+                        ),
+                        {},
+                        style: "width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:8px; font-size:0.95rem; background:var(--bg);" %>
+                </div>
+              <% end %>
               <label for="budget" style="font-size: 12px; font-weight: 600; color: var(--ink); letter-spacing: 0.06em; text-transform: uppercase;">
                 Your spending limit
               </label>
@@ -65,6 +79,12 @@
 
       <%# Budget summary bar %>
       <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:32px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;">
+        <% if @selected_folder %>
+          <div style="flex:1;min-width:140px;">
+            <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Folder</div>
+            <div style="font-size:1.1rem;font-weight:600;"><%= link_to @selected_folder.name, @selected_folder, style: "color:var(--accent-700);text-decoration:none;" %></div>
+          </div>
+        <% end %>
         <div style="flex:1;min-width:140px;">
           <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Spending limit</div>
           <div style="font-size:1.6rem;font-weight:700;">$<%= sprintf("%.2f", @budget) %></div>
