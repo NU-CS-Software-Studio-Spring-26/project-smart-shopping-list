@@ -369,7 +369,8 @@ account. They represent the retailers we document and demo most often:
 
 | Site | Adapter | Why custom |
 |---|---|---|
-| Amazon | `AmazonAdapter` | Inconsistent JSON-LD; uses `#corePriceDisplay_desktop_feature_div .a-offscreen` and similar fallbacks. Aggressive bot detection, but our usage volume is well below their thresholds. |
+| Amazon | `AmazonAdapter` | Inconsistent JSON-LD; CSS price selectors. |
+| Lululemon | `LululemonAdapter` | JSON-LD via `JsonLdAdapter`, plus automatic retry when legacy style ids (e.g. `dsn0kocspb`) must be rewritten to the current suffix form (`dsn0kocspb-md`). Successful fetches update `product.source_url` to the resolved URL. |
 
 ### C — Likely to need work
 

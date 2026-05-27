@@ -18,6 +18,7 @@ class PriceFetcher
     return product unless product.auto_refresh?
 
     result = PriceScrapers.fetch(product.source_url, timeout: 5)
+    apply_resolved_source_url!(product, result)
 
     if result.price.present?
       last_scraped = product.price_records
@@ -28,7 +29,7 @@ class PriceFetcher
         product.price_records.create!(
           price:       result.price,
           store_name:  result.store_name,
-          url:         product.source_url,
+          url:         result.resolved_url.presence || product.source_url,
           recorded_at: result.fetched_at,
           source:      "scraped"
         )
@@ -162,5 +163,13 @@ class PriceFetcher
     "unknown"
   end
 
-  private_class_method :failure_detail_for, :host_from_source_url
+  def self.apply_resolved_source_url!(product, result)
+    return if result.resolved_url.blank?
+    return if result.resolved_url == product.source_url
+
+    product.source_url = result.resolved_url
+    product.update_column(:source_url, result.resolved_url)
+  end
+
+  private_class_method :failure_detail_for, :host_from_source_url, :apply_resolved_source_url!
 end

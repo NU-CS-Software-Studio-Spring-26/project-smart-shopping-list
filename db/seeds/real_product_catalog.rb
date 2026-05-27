@@ -34,7 +34,7 @@ module RealProductCatalog
     Entry.new("Define Oversized Jacket Mesh", "Clothing & Shoes",
               "https://shop.lululemon.com/p/define-oversized-jacket-mesh/m5feallqal", "Lululemon", 98, 128),
     Entry.new("Ultralight WovenAir Jacket", "Clothing & Shoes",
-              "https://shop.lululemon.com/p/ultralight-wovenair-jacket/dsn0kocspb", "Lululemon", 118, 148),
+              "https://shop.lululemon.com/p/ultralight-wovenair-jacket/dsn0kocspb-md", "Lululemon", 118, 148),
     Entry.new("Align High-Rise Pant 25\"", "Clothing & Shoes",
               "https://shop.lululemon.com/p/align-high-rise-pant-25/L7B5A6S", "Lululemon", 88, 108),
     Entry.new("Everywhere Belt Bag 1L", "Clothing & Shoes",

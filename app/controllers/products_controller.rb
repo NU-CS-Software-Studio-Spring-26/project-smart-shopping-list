@@ -70,6 +70,7 @@ class ProductsController < ApplicationController
 
     @product.name      = result.title.presence || fallback_name_from(@product.source_url)
     @product.image_url = result.image_url if result.image_url.present?
+    @product.source_url = result.resolved_url.presence || @product.source_url
 
     if @product.save
       if result.price.present?

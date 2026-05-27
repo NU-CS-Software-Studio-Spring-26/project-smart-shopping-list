@@ -6,6 +6,7 @@ module PriceScrapers
     :image_url,    # String or nil
     :store_name,   # "Amazon" / "Target" / fallback host
     :fetched_at,   # Time
+    :resolved_url, # final URL after retailer-specific normalization (e.g. Lululemon -md)
     keyword_init: true
   ) do
     def initialize(*)

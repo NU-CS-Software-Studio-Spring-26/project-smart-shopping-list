@@ -14,9 +14,12 @@ class PriceScrapers::RegistryTest < ActiveSupport::TestCase
     assert_kind_of PriceScrapers::JsonLdAdapter,
                    PriceScrapers::Registry.for("https://www.target.com/p/foo/A-1")
     assert_kind_of PriceScrapers::JsonLdAdapter,
-                   PriceScrapers::Registry.for("https://shop.lululemon.com/p/abc")
-    assert_kind_of PriceScrapers::JsonLdAdapter,
                    PriceScrapers::Registry.for("https://www.bestbuy.com/site/foo")
+  end
+
+  test "lululemon hosts route to LululemonAdapter" do
+    assert_kind_of PriceScrapers::LululemonAdapter,
+                   PriceScrapers::Registry.for("https://shop.lululemon.com/p/abc")
   end
 
   test "amaazon-typo (substring not host) does NOT match Amazon" do

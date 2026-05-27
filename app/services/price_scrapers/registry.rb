@@ -7,7 +7,8 @@ module PriceScrapers
   # See docs/scrapers.md for the full guide.
   class Registry
     ADAPTERS = [
-      [ /(\A|\.)amazon\.[a-z.]+\z/, AmazonAdapter ]
+      [ /(\A|\.)amazon\.[a-z.]+\z/, AmazonAdapter ],
+      [ /(\A|\.)lululemon\.com\z/, LululemonAdapter ]
     ].freeze
 
     def self.for(url)
