@@ -5,9 +5,6 @@ All notable changes to **PriceTracker (Smart Shopping List)** are documented in 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-_Nothing yet._
 
 ## [v1.2.0] — 2026-05-27 — Milestone 3 (notifications, AI, scraping, polish)
 
@@ -23,6 +20,9 @@ Deployed at <https://smart-shoppinglist-6ae31171e85c.herokuapp.com/>.
   from ENV; `PriceAlertMailer` sends HTML + text when target hit or history low.
   `bin/rails mailer:smoke_test` for production verification. In-app alerts
   unchanged when SMTP is unset.
+- **Price history CSV export.** Product detail pages now include a downloadable
+  price-history report with product, category, store, price, source, timestamp,
+  URL, and notes for every observation.
 - **Manual full-cycle refresh.** GitHub Actions *Run workflow* sends
   `X-Refresh-Mode: full-cycle`; `RefreshPricesJob` runs batch after batch
   immediately until every refreshable product is updated (one click, not 24).

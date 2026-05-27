@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: [ :show, :edit, :update, :destroy, :fetch_price ]
+  before_action :set_product, only: [ :show, :edit, :update, :destroy, :fetch_price, :export ]
 
   def index
     scope = Current.user.products.includes(:price_records)
@@ -102,6 +102,13 @@ class ProductsController < ApplicationController
   def destroy
     @product.destroy
     redirect_to products_url, notice: "Product deleted."
+  end
+
+  def export
+    send_data PriceHistoryExport.to_csv(@product),
+              filename: "#{export_filename(@product)}-price-history.csv",
+              type: "text/csv; charset=utf-8",
+              disposition: "attachment"
   end
 
   # Synchronous "Fetch latest price" button on the product detail page.
@@ -219,6 +226,10 @@ class ProductsController < ApplicationController
   # at any time (or clear it by submitting blank).
   def update_params
     params.require(:product).permit(:name, :category, :description, :image_url, :source_url, :target_price, :auto_refresh)
+  end
+
+  def export_filename(product)
+    product.name.to_s.parameterize.presence || "product"
   end
 
   # Used when the page returns no schema.org "name" — gives the model
