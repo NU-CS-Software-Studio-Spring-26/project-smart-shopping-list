@@ -159,16 +159,29 @@ class ProductsController < ApplicationController
   def build_chart_data(records)
     return [] if records.empty?
 
+    # Special case: a single observation across the whole product. Plot it
+    # as one real point so the chart shows one dot at the actual recorded
+    # date — duplicating it onto a synthetic "today" point was confusing
+    # users into thinking two prices had been logged.
+    if records.size == 1
+      r = records.first
+      return [ {
+        name: r.store_name.presence || "Unknown",
+        data: [ [ r.recorded_at.to_date.iso8601, r.price.to_f ] ]
+      } ]
+    end
+
     dates = records.map { |r| r.recorded_at.to_date }
     range_start, range_end = dates.min, dates.max
-
-    if range_start == range_end
-      range_end = [ Date.current, range_start + 1 ].max
-    end
 
     records.group_by(&:store_name).map do |store, recs|
       points = recs.sort_by(&:recorded_at).map { |r| [ r.recorded_at.to_date.iso8601, r.price.to_f ] }
 
+      # If a store has only one observation but the chart spans multiple
+      # dates, duplicate that observation at the chart's start and end so
+      # the store still draws as a flat horizontal line. This is only safe
+      # when the product overall has multiple observations — otherwise we
+      # would re-create the "two-dots-for-one-price" bug we just fixed.
       if points.size == 1
         _, y = points.first
         points = [ [ range_start.iso8601, y ], [ range_end.iso8601, y ] ]

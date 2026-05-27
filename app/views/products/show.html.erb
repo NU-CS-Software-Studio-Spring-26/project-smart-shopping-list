@@ -198,7 +198,7 @@
               chart_first = prices.first
               chart_last = prices.last
               chart_summary = "Price history line chart for #{@product.name}. " \
-                              "#{@price_records.size} observations. " \
+                              "#{@price_records.size} #{'observation'.pluralize(@price_records.size)}. " \
                               "Lowest recorded: $#{sprintf('%.2f', chart_min)}. " \
                               "Highest recorded: $#{sprintf('%.2f', chart_max)}. " \
                               "First recorded: $#{sprintf('%.2f', chart_first)}. " \
