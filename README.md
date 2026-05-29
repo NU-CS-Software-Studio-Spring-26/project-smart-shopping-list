@@ -96,29 +96,30 @@ Technical details: [`docs/scrapers.md`](docs/scrapers.md). Retailer data lives i
 The default scraper tries **JSON-LD → Open Graph meta → HTML microdata** before
 giving up (see `JsonLdAdapter`).
 
-## Automatic daily price refresh
+## Automatic weekly price refresh
 
 Every **refreshable** product (all scrapeable PDP URLs — team accounts and the
-pagination load-test catalog) is re-scraped on a nightly schedule. See
-[`Product.refreshable`][refreshable] in `app/models/product.rb`.
+pagination load-test catalog) is re-scraped on a **weekly** schedule (Sundays
+08:00 UTC). See [`Product.refreshable`][refreshable] in `app/models/product.rb`.
 
 [refreshable]: app/models/product.rb
 
 - **Manual Run (Actions → Run workflow)** — **full-cycle** mode: one click runs
-  **all batches back-to-back** (no 5-minute wait, no 24 clicks) until every
-  refreshable product is updated or none remain stale.
-- **Nightly cron** — one batch per 5-minute tick (24 ticks in the 2-hour window).
+  **all batches back-to-back** until every refreshable product is updated or
+  none remain stale.
+- **Weekly cron** — same full-cycle mode once per week (fewer Heroku wake-ups
+  than the old nightly 24-tick schedule).
 - **Trigger** — the workflow `POST`s to `/admin/refresh_prices` with
-  `X-Admin-Token` and `X-Trigger-Source` (`schedule` or `manual`).
+  `X-Admin-Token`, `X-Trigger-Source` (`schedule` or `manual`), and
+  `X-Refresh-Mode: full-cycle`.
 - **Worker** — `AdminController#refresh_prices` returns **202 Accepted** immediately,
   creates a [`PriceRefreshRun`](app/models/price_refresh_run.rb) row, and enqueues
-  `RefreshPricesJob`, which calls `PriceFetcher.refresh_batch` with a limit from
-  [`RefreshSchedule`](app/services/refresh_schedule.rb) based on **refreshable**
-  product count. Manual runs loop batches until done; cron runs one batch per tick.
-- **Observability** — the workflow polls `GET /admin/refresh_runs/:id` (up to ~90
-  minutes for manual full-cycle stress runs, ~5 minutes for cron), then writes a
-  markdown report to the GitHub Actions **Summary** tab (batches run, attempted /
-  succeeded / failed, stale remaining, failure list).
+  `RefreshPricesJob`, which loops `PriceFetcher.refresh_batch` until the catalog
+  is covered. Products fetched within the last ~7 days are skipped
+  ([`RefreshSchedule.stale_after`](app/services/refresh_schedule.rb)).
+- **Observability** — the workflow polls `GET /admin/refresh_runs/:id` (up to
+  ~90 minutes), then writes a markdown report to the GitHub Actions **Summary**
+  tab (batches run, attempted / succeeded / failed, stale remaining, failure list).
 - **Dedup** — a new `PriceRecord` is written **only when the price has actually
   changed**. Per-product failures go to `product.last_fetch_error` and never
   crash the batch.

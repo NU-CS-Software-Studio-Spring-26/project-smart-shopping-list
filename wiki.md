@@ -149,7 +149,7 @@ git push heroku main
 heroku run rails db:migrate -a smart-shoppinglist
 ```
 
-### Scheduled tasks (daily price refresh)
+### Scheduled tasks (weekly price refresh)
 
 Each product's latest price is re-scraped on a schedule so the price-history
 chart stays current without anyone clicking "Fetch latest price" by hand.
@@ -161,24 +161,25 @@ if we ever migrate off Heroku — only `APP_URL` would need to change.
 
 **How it works:**
 
-1. `.github/workflows/refresh-prices.yml` runs **every 5 minutes during
-   UTC hours 7–8** (≈ 2:00–3:55 AM Chicago CDT).
+1. `.github/workflows/refresh-prices.yml` runs **once per week** — Sundays
+   at **08:00 UTC** (≈ 3:00 AM Chicago CDT).
 2. It POSTs to `https://<app>/admin/refresh_prices` with an
-   `X-Admin-Token` header and `X-Trigger-Source` (`schedule` or `manual`).
+   `X-Admin-Token` header, `X-Trigger-Source` (`schedule` or `manual`), and
+   `X-Refresh-Mode: full-cycle` (entire catalog in one job — fewer Heroku wake-ups).
 3. `AdminController#refresh_prices` checks the token, creates a
    `PriceRefreshRun`, enqueues `RefreshPricesJob`, and returns **202
    Accepted** immediately (Heroku web requests must finish within 30 seconds).
-4. The workflow polls `GET /admin/refresh_runs/:id` until the batch
+4. The workflow polls `GET /admin/refresh_runs/:id` until the job
    finishes, then writes a markdown report to the run **Summary** tab.
-5. The job calls `PriceFetcher.refresh_batch` on **`Product.scrapeable`** rows
-   only (real PDP URLs — skips `example.com` placeholders and `/search?` links).
-   Limit comes from `RefreshSchedule` (auto-scales with scrapeable count). Over
-   24 ticks in the 2-hour window the scrapeable catalog is covered. A new
+5. The job calls `PriceFetcher.refresh_batch` in a loop until every
+   **`Product.refreshable`** row older than ~7 days is updated (real PDP URLs —
+   skips `example.com` placeholders and `/search?` links). A new
    `PriceRecord` is written only when the price has actually changed.
 6. Each run is persisted in `price_refresh_runs` for polling and debugging.
 
-**Tuning (Heroku config vars):** `REFRESH_WINDOW_HOURS=2`,
-`REFRESH_INTERVAL_MINUTES=5`, `REFRESH_STALE_HOURS=23`, `REFRESH_BATCH_MAX=500`.
+**Tuning (Heroku config vars):** `REFRESH_STALE_HOURS=167` (default, ≈ 7 days),
+`REFRESH_BATCH_MAX=500`. Window/interval vars only affect batch-size math when
+using batch mode; weekly cron uses full-cycle.
 
 **One-time setup:**
 
@@ -197,7 +198,7 @@ heroku config:set ADMIN_REFRESH_TOKEN=<the-secret> -a smart-shoppinglist
 
 **Verifying it works:**
 
-- **Manual trigger:** GitHub → Actions → "Daily price refresh" → "Run workflow".
+- **Manual trigger:** GitHub → Actions → "Weekly price refresh" → "Run workflow".
   Open the run → **Summary** for attempted/succeeded/failed, duration, trigger
   source, and failure list. A red "poll timeout" step can appear while the batch
   still completes on Heroku (~3 min for ~53 serial scrapes) — check Summary or

@@ -1,12 +1,12 @@
-name: Daily price refresh
+name: Weekly price refresh
 
 # Hits the deployed app's /admin/refresh_prices webhook on a schedule so
 # stale product prices are re-scraped without anyone clicking "Fetch latest
-# price". Manual runs use full-cycle mode (all batches back-to-back in one
-# job). Scheduled cron runs one batch per tick (every 5 min in the 2h window).
+# price". Both scheduled and manual runs use full-cycle mode (all batches
+# back-to-back in one job) to minimize Heroku wake-ups / dyno hours.
 #
-# Schedule: every 5 minutes during UTC hours 7–8 (~2:00–3:55 AM Chicago CDT).
-# During CST (winter), shift to hours 8–9 UTC. GitHub cron is UTC-only.
+# Schedule: once per week — Sundays 08:00 UTC (~3:00 AM Chicago CDT).
+# During CST (winter), shift to hour 9 UTC if you prefer. GitHub cron is UTC-only.
 #
 # Required repo secrets (Settings → Secrets and variables → Actions):
 #   APP_URL              e.g. https://smart-shoppinglist-6ae31171e85c.herokuapp.com
@@ -14,13 +14,13 @@ name: Daily price refresh
 
 on:
   schedule:
-    - cron: "*/5 7-8 * * *"
+    - cron: "0 8 * * 0"
   workflow_dispatch:
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ github.event_name == 'workflow_dispatch' && 120 || 8 }}
+    timeout-minutes: 120
 
     steps:
       - name: Trigger refresh
@@ -29,7 +29,7 @@ jobs:
           APP_URL: ${{ secrets.APP_URL }}
           ADMIN_REFRESH_TOKEN: ${{ secrets.ADMIN_REFRESH_TOKEN }}
           TRIGGER_SOURCE: ${{ github.event_name == 'workflow_dispatch' && 'manual' || 'schedule' }}
-          REFRESH_MODE: ${{ github.event_name == 'workflow_dispatch' && 'full-cycle' || 'batch' }}
+          REFRESH_MODE: full-cycle
         run: |
           if [ -z "$APP_URL" ] || [ -z "$ADMIN_REFRESH_TOKEN" ]; then
             echo "::error::APP_URL and ADMIN_REFRESH_TOKEN secrets must be set."

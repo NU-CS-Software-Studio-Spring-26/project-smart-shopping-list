@@ -7,7 +7,7 @@ class RefreshSchedule
   # Tuning via ENV (Heroku config vars):
   #   REFRESH_WINDOW_HOURS      — full-cycle target (default 2)
   #   REFRESH_INTERVAL_MINUTES  — cron cadence inside the window (default 5)
-  #   REFRESH_STALE_HOURS       — skip products fetched more recently (default 23)
+  #   REFRESH_STALE_HOURS       — skip products fetched more recently (default 167 ≈ 7 days)
   #   REFRESH_BATCH_MAX         — safety cap per batch (default 500)
 
   def self.window_hours
@@ -23,7 +23,7 @@ class RefreshSchedule
   end
 
   def self.stale_hours
-    ENV.fetch("REFRESH_STALE_HOURS", 23).to_f
+    ENV.fetch("REFRESH_STALE_HOURS", 167).to_f
   end
 
   def self.runs_per_cycle

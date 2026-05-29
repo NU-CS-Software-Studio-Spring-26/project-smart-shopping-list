@@ -55,7 +55,7 @@ class PriceFetcher
   # on each cron tick. Batch size is computed by RefreshSchedule from the
   # current product count so the catalog is covered within the refresh window
   # without redeploying when load grows.
-  def self.refresh_batch(limit:, min_age: 23.hours, sleep_between: 0)
+  def self.refresh_batch(limit:, min_age: RefreshSchedule.stale_after, sleep_between: 0)
     started_at = Time.current
     total = Product.refreshable.count
     catalog_with_url = Product.with_trackable_url.count

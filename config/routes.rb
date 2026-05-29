@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   get "terms",   to: "pages#terms",   as: :terms
   get "supported", to: "pages#supported_retailers", as: :supported_retailers
 
-  # Webhook hit by .github/workflows/refresh-prices.yml on a daily cron.
+  # Webhook hit by .github/workflows/refresh-prices.yml on a weekly cron.
   # Auth is by shared secret (X-Admin-Token header), not by cookie session.
   post "admin/refresh_prices", to: "admin#refresh_prices"
   get "admin/refresh_runs/:id", to: "admin#refresh_run"
