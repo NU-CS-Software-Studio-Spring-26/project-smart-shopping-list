@@ -28,9 +28,9 @@
     </div>
   </section>
 
-  <%= form_with url: folder_path(@folder), method: :get, local: true, data: { controller: "auto-submit", turbo_frame: "_top" } do |f| %>
-    <section class="pt-toolbar-wrap">
-      <div class="container-xl">
+  <section class="pt-toolbar-wrap">
+    <div class="container-xl">
+      <%= form_with url: folder_path(@folder), method: :get, local: true, data: { controller: "auto-submit", turbo_frame: "_top" } do |f| %>
         <div class="pt-toolbar">
           <div class="pt-search">
             <span class="pt-search-icon"><%= render "shared/icon", name: "search", size: 16 %></span>
@@ -81,18 +81,19 @@
 
           <%= f.submit "Apply", style: "display:none;", tabindex: -1, "aria-hidden": "true" %>
         </div>
+      <% end %>
 
-        <% if @products_not_in_folder.any? %>
-          <div class="pt-folder-add-bar">
-            <%= form_with url: folder_folder_products_path(@folder), method: :post, class: "pt-folder-add-form" do |af| %>
-              <%= af.select :product_id,
-                    @products_not_in_folder.map { |p| [ p.name, p.id ] },
-                    { prompt: "Add a product to this folder…" },
-                    class: "pt-input pt-folder-add-select" %>
-              <%= af.submit "Add", class: "pt-btn pt-btn-primary pt-btn-sm" %>
-            <% end %>
-          </div>
-        <% end %>
+      <% if @products_not_in_folder.any? %>
+        <div class="pt-folder-add-bar">
+          <%= form_with url: folder_folder_products_path(@folder), method: :post, class: "pt-folder-add-form" do |af| %>
+            <%= af.select :product_id,
+                  @products_not_in_folder.map { |p| [ p.name, p.id ] },
+                  { prompt: "Add a product to this folder…" },
+                  class: "pt-input pt-folder-add-select" %>
+            <%= af.submit "Add", class: "pt-btn pt-btn-primary pt-btn-sm" %>
+          <% end %>
+        </div>
+      <% end %>
 
         <div class="pt-result-row">
           <span class="pt-result-count">
@@ -106,7 +107,6 @@
         </div>
       </div>
     </section>
-  <% end %>
 
   <section class="container-xl pt-content">
     <% if @products_in_folder.any? %>
