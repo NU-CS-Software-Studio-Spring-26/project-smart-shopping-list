@@ -6,6 +6,13 @@ class BudgetPlannerController < ApplicationController
 
     base_scope = @selected_folder ? @selected_folder.products : Current.user.products
 
+    # Category-based budgeting: options reflect whatever the folder selection
+    # leaves available; an explicit category narrows the whole planner to that
+    # type of purchase.
+    @categories = base_scope.distinct.pluck(:category).compact.sort
+    @selected_category = params[:category].presence
+    base_scope = base_scope.where(category: @selected_category) if @selected_category
+
     all = base_scope
       .joins(:price_records)
       .select("products.*, MIN(price_records.price) AS lowest_price_seen")
@@ -29,6 +36,23 @@ class BudgetPlannerController < ApplicationController
       # heuristic otherwise. The view always renders the panel using
       # whatever comes back.
       @deal_picks = DealPicker.call(@affordable, budget: @budget)
+
+      # Per-category spend among the affordable items, so users managing
+      # different types of purchases see where their budget would go.
+      @category_breakdown = build_category_breakdown(@affordable)
     end
+  end
+
+  private
+
+  def build_category_breakdown(products)
+    products
+      .group_by(&:category)
+      .map do |category, items|
+        { category: category.presence || "Uncategorized",
+          count: items.size,
+          total: items.sum { |p| p.lowest_price_seen.to_f } }
+      end
+      .sort_by { |row| -row[:total] }
   end
 end
