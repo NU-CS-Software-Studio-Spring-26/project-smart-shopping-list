@@ -19,6 +19,13 @@ class Product < ApplicationRecord
     has_many :folder_products, dependent: :destroy
     has_many :folders, through: :folder_products
 
+    # When the category select is set to "Other", the form sends the user's
+    # typed-in category name here. apply_custom_category folds it into
+    # `category` before validation/truncation so niche categories are saved
+    # and remain filterable like any other.
+    attr_accessor :custom_category
+
+    before_validation :apply_custom_category
     before_validation :truncate_long_text_fields
     before_validation :normalize_tags
     before_validation :canonicalize_lululemon_source_url
@@ -243,6 +250,15 @@ class Product < ApplicationRecord
     end
 
     private
+
+    # If the user chose "Other" and typed a custom category, use that instead.
+    # No-op for predefined categories or a blank custom value (stays "Other").
+    def apply_custom_category
+      return unless category.to_s.strip == "Other"
+
+      custom = custom_category.to_s.strip
+      self.category = custom if custom.present?
+    end
 
     def disable_auto_refresh_without_url
       return if source_url.present?

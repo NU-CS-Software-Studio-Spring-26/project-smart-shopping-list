@@ -1,7 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["url", "urlHint", "targetPrice", "targetHint"]
+  static targets = ["url", "urlHint", "targetPrice", "targetHint", "categorySelect", "customCategory", "customCategoryField"]
+
+  // Show the "name your category" box only when "Other" is selected.
+  toggleCustomCategory() {
+    if (!this.hasCustomCategoryFieldTarget) return
+
+    const isOther = this.categorySelectTarget.value === "Other"
+    this.customCategoryFieldTarget.hidden = !isOther
+    if (isOther && this.hasCustomCategoryTarget) this.customCategoryTarget.focus()
+  }
 
   validateUrl() {
     if (!this.hasUrlTarget || this.urlTarget.value.trim() === "") {
