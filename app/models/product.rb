@@ -79,7 +79,13 @@ class Product < ApplicationRecord
     end
 
     def lowest_price
-      price_records.minimum(:price)
+      # Reuse the preloaded association (e.g. reports/index eager-loads
+      # price_records) instead of issuing a fresh MIN(price) query per product.
+      if price_records.loaded?
+        price_records.filter_map(&:price).min
+      else
+        price_records.minimum(:price)
+      end
     end
 
     def lowest_price_record
@@ -87,22 +93,36 @@ class Product < ApplicationRecord
     end
 
     def latest_price
-      price_records.order(recorded_at: :desc).first&.price
+      newest_price_record&.price
     end
 
     def latest_store
-      price_records.order(recorded_at: :desc).first&.store_name
+      newest_price_record&.store_name
+    end
+
+    # Most recent PriceRecord. Uses the preloaded association when available so
+    # callers that eager-load price_records don't trigger an N+1.
+    def newest_price_record
+      if price_records.loaded?
+        price_records.max_by(&:recorded_at)
+      else
+        price_records.order(recorded_at: :desc).first
+      end
     end
 
     # Calculate price trend based on latest price vs historical average.
     # Returns :up (price increased), :down (price decreased), :stable (relatively unchanged), or nil
     def price_trend
-      records = price_records.order(recorded_at: :asc)
-      return nil if records.count < 2
+      records = if price_records.loaded?
+        price_records.sort_by(&:recorded_at)
+      else
+        price_records.order(recorded_at: :asc).to_a
+      end
+      return nil if records.size < 2
 
       latest = records.last.price
       # Compare against average of all previous prices
-      previous_avg = records[0...-1].map(&:price).sum / (records.count - 1).to_f
+      previous_avg = records[0...-1].sum(&:price) / (records.size - 1).to_f
 
       diff_percent = ((latest - previous_avg) / previous_avg * 100).abs
 
