@@ -1,0 +1,34 @@
+<%# Category select + "Other" custom-category text box.
+    locals: f (form builder), categories (array incl "Other"), product.
+    On edit, a saved category that isn't a preset selects "Other" and pre-fills
+    the custom box. Stimulus (product-form#toggleCustomCategory) shows/hides the
+    box; the model folds custom_category into category when "Other" is chosen. %>
+<% is_custom    = product.category.present? && categories.exclude?(product.category) %>
+<% select_value = is_custom ? "Other" : product.category %>
+<% custom_value = is_custom ? product.category : "" %>
+<% show_custom  = is_custom || product.category == "Other" %>
+
+<div class="pt-field">
+  <label class="pt-field-label" for="product_category">
+    Category <span class="pt-field-req">required</span>
+  </label>
+  <%= f.select :category,
+        options_for_select(categories, select_value),
+        { prompt: "Select a category" },
+        class: "pt-select pt-input pt-input-block",
+        required: true,
+        data: { product_form_target: "categorySelect", action: "change->product-form#toggleCustomCategory" } %>
+</div>
+
+<div class="pt-field" data-product-form-target="customCategoryField" <%= "hidden" unless show_custom %>>
+  <label class="pt-field-label" for="product_custom_category">
+    Name your category <span class="pt-field-req">optional</span>
+  </label>
+  <%= f.text_field :custom_category,
+        value: custom_value,
+        class: "pt-input pt-input-block",
+        placeholder: "e.g. Vinyl Records, Board Games",
+        maxlength: Product::CATEGORY_LIMIT,
+        data: { product_form_target: "customCategory" } %>
+  <div class="pt-field-hint">Give your own label so you can sort niche items later. Leave blank to just use “Other”.</div>
+</div>

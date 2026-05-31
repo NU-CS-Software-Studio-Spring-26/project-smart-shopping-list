@@ -56,12 +56,7 @@
       </div>
     </div>
 
-    <div class="pt-field">
-      <label class="pt-field-label" for="product_category">
-        Category <span class="pt-field-req">required</span>
-      </label>
-      <%= f.select :category, categories, { prompt: "Select a category" }, class: "pt-select pt-input pt-input-block", required: true %>
-    </div>
+    <%= render "products/category_field", f: f, categories: categories, product: product %>
 
     <div class="pt-field">
       <label class="pt-field-label" for="product_tags_input">
@@ -119,12 +114,7 @@
       <%= f.text_field :name, class: "pt-input", maxlength: 140 %>
     </div>
 
-    <div class="pt-field">
-      <label class="pt-field-label" for="product_category">
-        Category <span class="pt-field-req">required</span>
-      </label>
-      <%= f.select :category, categories, { prompt: "Select a category" }, class: "pt-select pt-input pt-input-block", required: true %>
-    </div>
+    <%= render "products/category_field", f: f, categories: categories, product: product %>
 
     <div class="pt-field">
       <label class="pt-field-label" for="product_tags_input">
