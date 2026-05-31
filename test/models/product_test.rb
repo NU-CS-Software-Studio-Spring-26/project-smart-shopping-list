@@ -286,6 +286,27 @@ class ProductTest < ActiveSupport::TestCase
     assert_includes @product.errors[:stock_status], "is not included in the list"
   end
 
+  test "custom_category replaces category when Other is selected" do
+    @product.category = "Other"
+    @product.custom_category = "Vinyl Records"
+    @product.valid?
+    assert_equal "Vinyl Records", @product.category
+  end
+
+  test "custom_category is ignored when a preset category is selected" do
+    @product.category = "Books"
+    @product.custom_category = "Vinyl Records"
+    @product.valid?
+    assert_equal "Books", @product.category
+  end
+
+  test "blank custom_category keeps the literal Other category" do
+    @product.category = "Other"
+    @product.custom_category = "   "
+    @product.valid?
+    assert_equal "Other", @product.category
+  end
+
   test "favorite defaults to false and favorited scope returns only favorites" do
     plain = @user.products.create!(name: "Plain", category: "Books")
     starred = @user.products.create!(name: "Starred", category: "Books", favorite: true)

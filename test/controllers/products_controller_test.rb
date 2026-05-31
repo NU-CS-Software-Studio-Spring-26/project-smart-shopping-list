@@ -311,6 +311,46 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_match "Alert fired", response.body
   end
 
+  # --- custom "Other" category (#74) ---
+
+  test "manual create with Other + custom_category saves the custom name" do
+    assert_difference("Product.count") do
+      post products_url, params: {
+        manual: "1",
+        product: { name: "Rare Pressing", category: "Other", custom_category: "Vinyl Records" }
+      }
+    end
+    assert_equal "Vinyl Records", Product.last.category
+  end
+
+  test "manual create with Other and blank custom keeps Other" do
+    post products_url, params: {
+      manual: "1",
+      product: { name: "Misc Thing", category: "Other", custom_category: "" }
+    }
+    assert_equal "Other", Product.last.category
+  end
+
+  test "update with Other + custom_category saves the custom name" do
+    patch product_url(@product), params: { product: { category: "Other", custom_category: "Board Games" } }
+    assert_equal "Board Games", @product.reload.category
+  end
+
+  test "new form hides the custom category box by default" do
+    get new_product_url
+    assert_response :success
+    assert_select "[data-product-form-target='customCategoryField'][hidden]"
+  end
+
+  test "edit form preselects Other and prefills the custom box for a non-preset category" do
+    @product.update!(category: "Vinyl Records")
+    get edit_product_url(@product)
+    assert_response :success
+    assert_select "select[name=?] option[selected][value=?]", "product[category]", "Other"
+    assert_select "input[name=?][value=?]", "product[custom_category]", "Vinyl Records"
+    assert_select "[data-product-form-target='customCategoryField'][hidden]", count: 0
+  end
+
   # --- favorites (#68) ---
 
   test "toggle_favorite favorites then unfavorites the owner's own product" do
