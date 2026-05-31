@@ -1,8 +1,11 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: [ :show, :edit, :update, :destroy, :fetch_price, :export ]
+  before_action :set_product, only: [ :show, :edit, :update, :destroy, :fetch_price, :export, :toggle_favorite ]
 
   def index
+    @favorites_only = ActiveModel::Type::Boolean.new.cast(params[:favorites])
+
     scope = Current.user.products
+    scope = scope.favorited if @favorites_only
     scope = fuzzy_search(scope, params[:search]) if params[:search].present?
     scope = scope.where(category: params[:category]) if params[:category].present?
     scope = scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
@@ -12,6 +15,7 @@ class ProductsController < ApplicationController
     # would make Pagy's default count(:all) return per-group counts. Override
     # with the underlying filtered product count so pagination math is right.
     count_scope = Current.user.products
+    count_scope = count_scope.favorited if @favorites_only
     count_scope = fuzzy_search(count_scope, params[:search]) if params[:search].present?
     count_scope = count_scope.where(category: params[:category]) if params[:category].present?
     count_scope = count_scope.where("? = ANY(tags)", params[:tag].to_s.downcase) if params[:tag].present?
@@ -20,6 +24,12 @@ class ProductsController < ApplicationController
     @products.load
     @categories = Current.user.products.distinct.pluck(:category).compact.sort
     @tags = Current.user.products.pluck(:tags).flatten.uniq.sort
+
+    # Favorites row shown above the grid (quick access). Skipped while the
+    # "favorites only" filter is active, since the grid is already favorites.
+    @favorites = unless @favorites_only
+      Current.user.products.favorited.includes(:price_records).order(:name).to_a
+    end
   end
 
   def show
@@ -150,6 +160,15 @@ class ProductsController < ApplicationController
     else
       redirect_to @product, notice: "Price refreshed."
     end
+  end
+
+  # Toggle the favorite flag. set_product scopes to Current.user.products, so a
+  # request for another user's product raises RecordNotFound (404) — a user can
+  # never flip someone else's favorite.
+  def toggle_favorite
+    @product.update!(favorite: !@product.favorite?)
+    notice = @product.favorite? ? "Added to favorites." : "Removed from favorites."
+    redirect_back fallback_location: @product, notice: notice
   end
 
   private

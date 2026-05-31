@@ -191,6 +191,10 @@ class Product < ApplicationRecord
       end
     end
 
+    # User-flagged favorites, surfaced in the favorites row and "favorites only"
+    # filter on the products index.
+    scope :favorited, -> { where(favorite: true) }
+
     # Products with a source_url present (includes load-test / seed rows).
     scope :with_trackable_url, -> { where.not(source_url: [ nil, "" ]) }
 
