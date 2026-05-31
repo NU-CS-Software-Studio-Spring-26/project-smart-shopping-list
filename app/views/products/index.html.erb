@@ -86,6 +86,13 @@
                   {}, class: "pt-select", data: { action: "change->auto-submit#submitNow" } %>
           </div>
 
+          <% fav_params = params.permit(:search, :category, :tag, :sort).to_h %>
+          <% if @favorites_only %>
+            <%= link_to "♥ Favorites: on", products_path(fav_params), class: "pt-link-btn pt-link-btn-strong pt-fav-filter is-active" %>
+          <% else %>
+            <%= link_to "♡ Favorites only", products_path(fav_params.merge(favorites: 1)), class: "pt-link-btn pt-link-btn-strong pt-fav-filter" %>
+          <% end %>
+
           <%= link_to "Export watchlist", export_watchlist_products_path(format: :csv), class: "pt-link-btn pt-link-btn-strong" %>
 
           <% if params[:search].present? || params[:category].present? || params[:tag].present? || (params[:sort].present? && params[:sort] != "newest") %>
@@ -112,6 +119,35 @@
   <% end %>
 
   <section class="container-xl pt-content">
+    <% if @favorites.present? %>
+      <section class="pt-fav-row-wrap" aria-label="Favorites">
+        <div class="pt-fav-row-head">
+          <h2 class="pt-fav-row-title">♥ Favorites</h2>
+          <%= link_to "View all", products_path(favorites: 1), class: "pt-link" %>
+        </div>
+        <div class="pt-fav-row">
+          <% @favorites.each do |fav| %>
+            <article class="pt-fav-item">
+              <div class="pt-fav-item-unfav"><%= render "products/favorite_button", product: fav, size: 15 %></div>
+              <%= link_to product_path(fav), class: "pt-fav-item-link" do %>
+                <div class="pt-fav-item-media">
+                  <% if fav.image_url.present? %>
+                    <%= image_tag fav.image_url, alt: fav.name %>
+                  <% else %>
+                    <div class="pt-img-fallback"><%= render "shared/icon", name: "package", size: 28 %></div>
+                  <% end %>
+                </div>
+                <div class="pt-fav-item-name"><%= fav.name %></div>
+                <div class="pt-fav-item-price">
+                  <% lp = fav.latest_price %><% if lp %>$<%= sprintf("%.2f", lp) %><% end %>
+                </div>
+              <% end %>
+            </article>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
     <% if @products.any? %>
       <div class="pt-grid">
         <% @products.each do |product| %>
@@ -130,6 +166,9 @@
                                      else [ "var(--muted-2)", "var(--bg-2)" ]
                                      end %>
           <article class="pt-card">
+            <%# Sibling of the media link (a form can't be nested in an anchor),
+                positioned over the media's top-right corner. %>
+            <div class="pt-card-fav"><%= render "products/favorite_button", product: product %></div>
             <%= link_to product_path(product), class: "pt-card-media", style: "text-decoration: none; color: inherit;" do %>
               <% if product.image_url.present? %>
                 <%= image_tag product.image_url, alt: product.name %>

@@ -1,0 +1,10 @@
+<%# Favorite toggle. locals: product, optional size (default 18).
+    PATCHes products#toggle_favorite and returns to the current page. %>
+<%= button_to toggle_favorite_product_path(product),
+      method: :patch,
+      class: "pt-fav-btn #{'is-favorite' if product.favorite?}",
+      title: product.favorite? ? "Remove from favorites" : "Add to favorites",
+      form: { class: "pt-fav-form" },
+      aria: { label: product.favorite? ? "Remove from favorites" : "Add to favorites", pressed: product.favorite?.to_s } do %>
+  <%= render "shared/icon", name: "heart", size: local_assigns[:size] || 18 %>
+<% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_31_034329) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_31_051724) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_034329) do
     t.string "category", null: false
     t.datetime "created_at", null: false
     t.text "description"
+    t.boolean "favorite", default: false, null: false
     t.string "image_url"
     t.datetime "last_alerted_at"
     t.string "last_fetch_error"
@@ -100,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_31_034329) do
     t.index ["created_at"], name: "index_products_on_created_at"
     t.index ["source_url"], name: "index_products_on_source_url"
     t.index ["tags"], name: "index_products_on_tags", using: :gin
+    t.index ["user_id", "favorite"], name: "index_products_on_user_id_and_favorite"
     t.index ["user_id"], name: "index_products_on_user_id"
     t.check_constraint "char_length(category::text) <= 80", name: "products_category_length"
     t.check_constraint "char_length(name::text) <= 140", name: "products_name_length"

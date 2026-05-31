@@ -286,6 +286,15 @@ class ProductTest < ActiveSupport::TestCase
     assert_includes @product.errors[:stock_status], "is not included in the list"
   end
 
+  test "favorite defaults to false and favorited scope returns only favorites" do
+    plain = @user.products.create!(name: "Plain", category: "Books")
+    starred = @user.products.create!(name: "Starred", category: "Books", favorite: true)
+
+    assert_not plain.favorite?
+    assert_includes Product.favorited, starred
+    assert_not_includes Product.favorited, plain
+  end
+
   test "stock helper predicates and label" do
     @product.stock_status = "in_stock"
     assert @product.in_stock?

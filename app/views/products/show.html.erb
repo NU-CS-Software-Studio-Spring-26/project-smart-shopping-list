@@ -54,7 +54,10 @@
           </div>
           <div class="pt-prod-body">
             <span class="pt-tag"><%= @product.category %></span>
-            <h1 class="pt-prod-title"><%= @product.name %></h1>
+            <div class="pt-prod-title-row">
+              <h1 class="pt-prod-title"><%= @product.name %></h1>
+              <%= render "products/favorite_button", product: @product, size: 22 %>
+            </div>
             <% if @product.tags.any? %>
               <div class="pt-tag-list" style="margin: -4px 0 10px;">
                 <% @product.tags.each do |tag| %>

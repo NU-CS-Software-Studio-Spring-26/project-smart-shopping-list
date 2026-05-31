@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     member do
       get :export
       post :fetch_price
+      patch :toggle_favorite
     end
   end
   resources :price_records, only: [ :index, :show, :edit, :update, :destroy ]
