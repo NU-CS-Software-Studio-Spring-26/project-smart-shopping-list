@@ -51,6 +51,19 @@ class AuthorizationTest < ActionDispatch::IntegrationTest
     assert_equal original_name, @owners_product.reload.name
   end
 
+  test "intruder cannot toggle favorite on another user's product" do
+    sign_in_as(@intruder)
+    @owners_product.update!(favorite: false)
+    patch toggle_favorite_product_path(@owners_product)
+    assert_response :not_found
+    assert_not @owners_product.reload.favorite?, "intruder must not flip the owner's favorite"
+  end
+
+  test "anonymous request to toggle favorite redirects to sign in" do
+    patch toggle_favorite_product_path(@owners_product)
+    assert_redirected_to new_session_path
+  end
+
   test "intruder cannot destroy another user's product" do
     sign_in_as(@intruder)
     delete product_path(@owners_product)

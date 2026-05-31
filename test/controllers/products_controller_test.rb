@@ -310,4 +310,41 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "Alert fired", response.body
   end
+
+  # --- favorites (#68) ---
+
+  test "toggle_favorite favorites then unfavorites the owner's own product" do
+    @product.update!(favorite: false)
+    from_index = { "HTTP_REFERER" => products_url }
+
+    patch toggle_favorite_product_path(@product), headers: from_index
+    assert_redirected_to products_path
+    assert @product.reload.favorite?
+
+    patch toggle_favorite_product_path(@product), headers: from_index
+    assert_not @product.reload.favorite?
+  end
+
+  test "toggle_favorite returns to the page it was triggered from" do
+    patch toggle_favorite_product_path(@product), headers: { "HTTP_REFERER" => product_url(@product) }
+    assert_redirected_to product_url(@product)
+  end
+
+  test "favorites filter shows only favorited products" do
+    @user.products.create!(name: "Starred Gizmo", category: "Electronics", favorite: true)
+    @product.update!(favorite: false, name: "Plain Gadget")
+
+    get products_url(favorites: 1)
+    assert_response :success
+    assert_match "Starred Gizmo", response.body
+    assert_no_match(/Plain Gadget/, response.body)
+  end
+
+  test "favorites row renders favorited products above the grid" do
+    @user.products.create!(name: "Row Favorite Item", category: "Books", favorite: true)
+    get products_url
+    assert_response :success
+    assert_select ".pt-fav-row-wrap"
+    assert_match "Row Favorite Item", response.body
+  end
 end
