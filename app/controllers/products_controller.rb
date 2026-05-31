@@ -223,7 +223,7 @@ class ProductsController < ApplicationController
   # so the user can finish onboarding without a working scrape.
   # target_price is optional — users may set it now or via the edit form later.
   def create_params
-    params.require(:product).permit(:category, :source_url, :name, :description, :image_url, :target_price, :tags_input)
+    params.require(:product).permit(:category, :custom_category, :source_url, :name, :description, :image_url, :target_price, :tags_input)
   end
 
   # Map scraper exceptions to a single user-facing sentence. We deliberately
@@ -265,7 +265,7 @@ class ProductsController < ApplicationController
   # target_price is editable here so users can revise their alert threshold
   # at any time (or clear it by submitting blank).
   def update_params
-    params.require(:product).permit(:name, :category, :description, :image_url, :source_url, :target_price, :auto_refresh, :tags_input)
+    params.require(:product).permit(:name, :category, :custom_category, :description, :image_url, :source_url, :target_price, :auto_refresh, :tags_input)
   end
 
   def export_filename(product)
