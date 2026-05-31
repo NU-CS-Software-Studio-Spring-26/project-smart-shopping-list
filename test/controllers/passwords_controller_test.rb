@@ -31,6 +31,13 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "edit renders the live password requirement checklist" do
+    get edit_password_path(@user.password_reset_token)
+    assert_response :success
+    assert_select "[data-controller='password-strength']"
+    assert_select "[data-password-strength-target='rule']", count: User::PASSWORD_REQUIREMENTS.size
+  end
+
   test "edit with invalid password reset token" do
     get edit_password_path("invalid token")
     assert_redirected_to new_password_path
