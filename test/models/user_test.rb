@@ -18,6 +18,29 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "downcased@example.com", user.email_address
   end
 
+  # The live checklist mirrors these server-side rules (#70). Keep them in sync.
+  test "PASSWORD_REQUIREMENTS exposes the client-checkable rule keys" do
+    assert_equal %w[length special no_repeats], User::PASSWORD_REQUIREMENTS.map { |r| r[:key] }
+  end
+
+  test "password shorter than the minimum length is rejected" do
+    user = User.new(valid_attributes(password: "Ab#1", password_confirmation: "Ab#1"))
+    assert_not user.valid?
+    assert(user.errors[:password].any? { |m| m.include?("at least") })
+  end
+
+  test "password without a special character is rejected" do
+    user = User.new(valid_attributes(password: "Abcdefg9", password_confirmation: "Abcdefg9"))
+    assert_not user.valid?
+    assert(user.errors[:password].any? { |m| m.include?("special character") })
+  end
+
+  test "password with three repeated characters in a row is rejected" do
+    user = User.new(valid_attributes(password: "Abbb#cd9", password_confirmation: "Abbb#cd9"))
+    assert_not user.valid?
+    assert(user.errors[:password].any? { |m| m.include?("repeated") })
+  end
+
   test "invalid without email_address" do
     user = User.new(valid_attributes(email_address: ""))
     assert_not user.valid?

@@ -1,6 +1,19 @@
 class User < ApplicationRecord
   class OauthError < StandardError; end
 
+  PASSWORD_MIN_LENGTH = 8
+
+  # Single source of truth for the password rules we can check live in the
+  # browser. The registrations + reset forms render this list as a checklist,
+  # and the password_strength Stimulus controller tests each rule by `key`
+  # as the user types — so feedback is instant instead of waiting for submit.
+  # (Email-containment and common-password checks stay server-side only.)
+  PASSWORD_REQUIREMENTS = [
+    { key: "length",     label: "At least #{PASSWORD_MIN_LENGTH} characters" },
+    { key: "special",    label: "Includes a special character (! @ # …)" },
+    { key: "no_repeats", label: "No character repeated 3+ times in a row" }
+  ].freeze
+
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :products, dependent: :destroy
@@ -21,7 +34,7 @@ class User < ApplicationRecord
             allow_blank: true
   validates :uid, uniqueness: { scope: :provider }, if: -> { provider.present? && uid.present? }
 
-  validates :password, length: { minimum: 8, message: "must be at least 8 characters" }, if: -> { password.present? }
+  validates :password, length: { minimum: PASSWORD_MIN_LENGTH, message: "must be at least #{PASSWORD_MIN_LENGTH} characters" }, if: -> { password.present? }
   validate :password_strength, if: -> { password.present? && !oauth_user? }
 
   def oauth_user?
