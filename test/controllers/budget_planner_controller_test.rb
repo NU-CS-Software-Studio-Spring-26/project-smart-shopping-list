@@ -41,4 +41,18 @@ class BudgetPlannerControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_no_match(/Spend by category/, response.body)
   end
+
+  test "budget form renders a category dropdown with the user's categories" do
+    get budget_planner_url
+    assert_response :success
+    assert_select "select[name=?]", "category"
+    assert_select "select[name='category'] option", text: "Electronics"
+    assert_select "select[name='category'] option", text: "Books"
+  end
+
+  test "selected category is preserved as the dropdown's chosen option" do
+    get budget_planner_url(budget: 50, category: "Books")
+    assert_response :success
+    assert_select "select[name='category'] option[selected][value=?]", "Books"
+  end
 end
