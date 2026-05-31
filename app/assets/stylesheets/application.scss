@@ -1616,20 +1616,20 @@ body {
   z-index: 60;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
+  gap: 10px;
+  padding: 16px 26px;
   border: none;
   border-radius: 980px;
   background: var(--ink);
   color: #fff;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: var(--shadow-lg);
   transition: transform 0.12s ease, background 0.12s ease;
 }
 .pt-askai-fab:hover { transform: translateY(-1px); background: #000; }
-.pt-askai-fab-spark { color: var(--accent); font-size: 16px; }
+.pt-askai-fab-spark { color: var(--accent); font-size: 20px; }
 
 .pt-askai-overlay {
   position: fixed;
