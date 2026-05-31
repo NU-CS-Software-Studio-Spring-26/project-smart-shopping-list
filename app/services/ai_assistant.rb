@@ -58,9 +58,18 @@ class AiAssistant
         category: product.category,
         latest: latest.to_f,
         lowest: lowest.to_f,
-        target: product.target_price&.to_f
+        target: product.target_price&.to_f,
+        # How many prices we've logged. With only one, latest == lowest by
+        # definition, so "lowest ever" is meaningless — track this so neither
+        # the heuristic nor the AI calls a brand-new product a record low.
+        points: product.price_records.size
       }
     end
+  end
+
+  # True when we have enough history for "lowest ever" to mean anything.
+  def has_history?(candidate)
+    candidate[:points].to_i > 1
   end
 
   def ai_answer
@@ -74,7 +83,13 @@ class AiAssistant
   def prompt
     lines = candidates.map do |c|
       target_part = c[:target] ? ", target $#{format('%.2f', c[:target])}" : ""
-      "- \"#{c[:name]}\" (#{c[:category]}): latest $#{format('%.2f', c[:latest])}, lowest ever $#{format('%.2f', c[:lowest])}#{target_part}"
+      history_part =
+        if has_history?(c)
+          ", lowest ever $#{format('%.2f', c[:lowest])}"
+        else
+          " (only one price logged, no history yet)"
+        end
+      "- \"#{c[:name]}\" (#{c[:category]}): latest $#{format('%.2f', c[:latest])}#{history_part}#{target_part}"
     end
 
     <<~PROMPT
@@ -92,7 +107,10 @@ class AiAssistant
       PICK: <product name> | <reason>
       PICK: <product name> | <reason>
 
-      If the question can't be reasonably answered from the watchlist, return a SUMMARY line that says so and no PICK lines. Never invent products.
+      Rules:
+      - Do NOT describe a product as a "record low", "lowest ever", or "best price yet" unless it has more than one price logged AND its latest price equals that lowest. A product with only one logged price has no history — never call it a deal on that basis.
+      - If the question can't be reasonably answered from the watchlist, return a SUMMARY line that says so and no PICK lines.
+      - Never invent products.
     PROMPT
   end
 
@@ -137,6 +155,8 @@ class AiAssistant
       reason =
         if c[:target] && c[:latest] <= c[:target]
           "Latest $#{format('%.2f', c[:latest])} is at or below your target of $#{format('%.2f', c[:target])}."
+        elsif !has_history?(c)
+          "Latest $#{format('%.2f', c[:latest])} — only one price logged so far, so no history to compare yet."
         elsif c[:latest] <= c[:lowest] + 0.01
           "Latest $#{format('%.2f', c[:latest])} matches the lowest you've ever seen."
         else

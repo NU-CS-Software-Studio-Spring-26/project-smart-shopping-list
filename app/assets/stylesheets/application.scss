@@ -1607,3 +1607,106 @@ body {
   background: transparent;
   &:hover { background: #fef2f2; }
 }
+
+/* ---- Global Ask AI launcher + slide-out panel (shared/_ask_ai_widget) ---- */
+.pt-askai-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 980px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.pt-askai-fab:hover { transform: translateY(-1px); background: #000; }
+.pt-askai-fab-spark { color: var(--accent); font-size: 16px; }
+
+.pt-askai-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.pt-askai-panel {
+  position: fixed;
+  z-index: 80;
+  right: 18px;
+  bottom: 18px;
+  width: 400px;
+  max-width: calc(100vw - 36px);
+  /* Plain calc only — libsass mis-parses CSS min()/max() as Sass functions
+     and errors on a nested calc, so we cap height to the viewport directly. */
+  max-height: calc(100vh - 36px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.pt-askai-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--line-2);
+}
+.pt-askai-title { font-size: 16px; font-weight: 600; color: var(--ink); }
+.pt-askai-close {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+.pt-askai-close:hover { color: var(--ink); }
+
+.pt-askai-form {
+  display: flex;
+  gap: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line-2);
+}
+.pt-askai-form .pt-btn { flex: 0 0 auto; }
+
+.pt-askai-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 4px 18px 16px;
+}
+.pt-askai-body turbo-frame[busy] { opacity: 0.5; transition: opacity 0.1s ease; }
+
+.pt-askai-intro { padding-top: 14px; }
+.pt-askai-chips { display: flex; flex-direction: column; gap: 8px; }
+.pt-askai-chip {
+  border-radius: 980px;
+  font-weight: 400;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.pt-askai-foot {
+  padding: 12px 18px;
+  border-top: 1px solid var(--line-2);
+  font-size: 13px;
+}
+
+@media (max-width: 520px) {
+  .pt-askai-panel { right: 10px; left: 10px; bottom: 10px; width: auto; max-width: none; }
+  .pt-askai-fab-text { display: none; }
+}

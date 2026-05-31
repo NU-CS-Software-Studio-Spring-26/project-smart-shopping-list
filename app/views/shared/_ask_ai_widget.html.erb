@@ -1,0 +1,67 @@
+<%# Global "Ask AI" launcher + slide-out panel. Rendered from the layout on
+    every authenticated page (except the standalone /ask page). The panel's
+    form targets the ask_ai_results Turbo Frame so answers render inline
+    without leaving the current page. See app/javascript/controllers/ask_ai_controller.js. %>
+<div class="pt-askai" data-controller="ask-ai">
+  <button type="button"
+          class="pt-askai-fab"
+          data-action="ask-ai#open"
+          data-ask-ai-target="fab"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-label="Ask AI about your watchlist">
+    <span class="pt-askai-fab-spark" aria-hidden="true">✦</span>
+    <span class="pt-askai-fab-text">Ask AI</span>
+  </button>
+
+  <div class="pt-askai-overlay" data-ask-ai-target="overlay" data-action="click->ask-ai#close" hidden></div>
+
+  <aside class="pt-askai-panel"
+         data-ask-ai-target="panel"
+         role="dialog"
+         aria-modal="true"
+         aria-label="Ask AI"
+         hidden>
+    <div class="pt-askai-head">
+      <div>
+        <div class="pt-eyebrow">AI Assistant</div>
+        <div class="pt-askai-title">Ask about your watchlist</div>
+      </div>
+      <button type="button" class="pt-askai-close" data-action="ask-ai#close" aria-label="Close Ask AI">×</button>
+    </div>
+
+    <%= form_with url: assistant_path, method: :get, class: "pt-askai-form",
+          data: { turbo_frame: "ask_ai_results", action: "submit->ask-ai#submitting" } do |f| %>
+      <%= f.text_field :q,
+            placeholder: "e.g. anything good under $200 right now?",
+            class: "pt-input pt-input-block",
+            autocomplete: "off",
+            maxlength: 240,
+            data: { ask_ai_target: "input" } %>
+      <%= f.submit "Ask", class: "pt-btn pt-btn-primary" %>
+    <% end %>
+
+    <div class="pt-askai-body">
+      <%= turbo_frame_tag "ask_ai_results" do %>
+        <div class="pt-askai-intro">
+          <p class="pt-muted" style="font-size:13px;margin:0 0 10px;">
+            Type a question, or try one:
+          </p>
+          <div class="pt-askai-chips">
+            <% [
+                 "Best deals on my watchlist right now",
+                 "Anything under $100 worth picking up?",
+                 "Which products are at their lowest ever?"
+               ].each do |q| %>
+              <%= link_to q, assistant_path(q: q), class: "pt-btn pt-btn-secondary pt-askai-chip" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="pt-askai-foot">
+      <%= link_to "Open full Ask AI page →", assistant_path, class: "pt-link", data: { turbo_frame: "_top" } %>
+    </div>
+  </aside>
+</div>
