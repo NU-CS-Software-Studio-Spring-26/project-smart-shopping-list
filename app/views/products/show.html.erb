@@ -143,7 +143,11 @@
                   <span class="pt-ai-spark" aria-hidden="true">✦</span>
                   <span><%= @deal_advice.label %></span>
                   <% if @deal_advice.source == "local" %>
-                    <span class="pt-ai-fallback" title="All AI providers (Gemini + OpenRouter) failed or rate-limited — showing a heuristic instead. Refresh in a minute to retry.">AI unavailable · using heuristic</span>
+                    <% if LlmClient.enabled? %>
+                      <span class="pt-ai-fallback" title="The AI providers (Gemini + OpenRouter) didn't respond — showing a heuristic instead. Refresh in a minute to retry.">AI unavailable · using heuristic</span>
+                    <% else %>
+                      <span class="pt-ai-fallback" title="AI advice isn't enabled — showing a local heuristic. Set GEMINI_API_KEY or OPENROUTER_API_KEY to turn it on.">heuristic · AI not enabled</span>
+                    <% end %>
                   <% end %>
                 </div>
                 <p><%= @deal_advice.summary %></p>
