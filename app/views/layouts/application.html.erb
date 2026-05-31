@@ -30,7 +30,6 @@
           <%= link_to "Price Records", price_records_path, class: "pt-nav-link #{'is-active' if controller_name == 'price_records'}" %>
           <%= link_to "Reports", reports_path, class: "pt-nav-link #{'is-active' if controller_name == 'reports'}" %>
           <%= link_to "Budget Planner", budget_planner_path, class: "pt-nav-link #{'is-active' if controller_name == 'budget_planner'}" %>
-          <%= link_to "Ask AI", assistant_path, class: "pt-nav-link #{'is-active' if controller_name == 'assistant'}" %>
           <%= link_to "Supported Sites", supported_retailers_path, class: "pt-nav-link #{'is-active' if controller_name == 'pages' && action_name == 'supported_retailers'}" %>
         </nav>
 
@@ -53,6 +52,12 @@
 
     <div id="main-content" tabindex="-1"></div>
     <%= yield %>
+
+    <%# Global Ask AI launcher. Skipped on the assistant page itself so the
+        ask_ai_results Turbo Frame id stays unique in the response. %>
+    <% if authenticated? && controller_name != "assistant" %>
+      <%= render "shared/ask_ai_widget" %>
+    <% end %>
 
     <footer class="pt-footer">
       <div class="container-xl pt-footer-inner">

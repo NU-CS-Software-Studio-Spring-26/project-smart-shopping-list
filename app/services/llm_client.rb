@@ -60,8 +60,15 @@ class LlmClient
       next unless provider[:enabled]
 
       begin
-        text = call_provider(provider)
-        return strip_thought(text) if text.present?
+        text = strip_thought(call_provider(provider))
+        return text if text.present?
+
+        # A reasoning model (e.g. Gemma) can spend its whole token budget on a
+        # <thought> block, leaving nothing once we strip it. That's unusable —
+        # record it and fall through to the next provider instead of returning
+        # "" to the caller (which silently skipped the OpenRouter fallback).
+        last_error = Error.new("#{provider[:name]} returned no usable text after thought-stripping")
+        Rails.logger.info("[LlmClient] #{provider[:name]} returned empty after thought-stripping")
       rescue StandardError => e
         last_error = e
         Rails.logger.info("[LlmClient] #{provider[:name]} failed: #{e.class}: #{e.message}")
