@@ -21,6 +21,19 @@ class PriceScrapers::AmazonAdapterTest < ActiveSupport::TestCase
     assert_nil result.price
     assert_nil result.title
     assert_nil result.image_url
+    assert_nil result.availability
     assert_equal "Amazon", result.store_name
+  end
+
+  test "reads in-stock availability from Amazon's #availability block" do
+    doc = Nokogiri::HTML('<div id="availability"><span class="a-color-success">In Stock</span></div>')
+    result = PriceScrapers::AmazonAdapter.new.parse(doc, "https://www.amazon.com/dp/X")
+    assert_equal "in_stock", result.availability
+  end
+
+  test "reads out-of-stock availability from Amazon copy" do
+    doc = Nokogiri::HTML('<div id="availability"><span class="a-color-price">Currently unavailable.</span></div>')
+    result = PriceScrapers::AmazonAdapter.new.parse(doc, "https://www.amazon.com/dp/X")
+    assert_equal "out_of_stock", result.availability
   end
 end

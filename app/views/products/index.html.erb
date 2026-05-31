@@ -138,6 +138,11 @@
               <% end %>
               <div class="pt-card-media-shade"></div>
               <span class="pt-tag pt-tag-overlay"><%= product.category %></span>
+              <% if product.out_of_stock? %>
+                <span class="pt-trend pt-trend-float" style="color: #fff; background: var(--orange); left: 12px; right: auto;">
+                  <span>Out of stock</span>
+                </span>
+              <% end %>
               <% if trend %>
                 <span class="pt-trend pt-trend-float" style="color: <%= trend_color %>; background: <%= trend_bg %>;">
                   <span><%= trend_label %></span>

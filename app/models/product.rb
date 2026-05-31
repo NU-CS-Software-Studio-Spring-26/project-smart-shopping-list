@@ -10,6 +10,10 @@ class Product < ApplicationRecord
     TAG_LIMIT         = 32
     MAX_TAGS          = 8
 
+    # Normalized stock states the scraper can record. nil means "unknown /
+    # not reported by the page" (the default for manual and legacy products).
+    STOCK_STATUSES = %w[in_stock out_of_stock].freeze
+
     belongs_to :user
     has_many :price_records, dependent: :destroy
     has_many :folder_products, dependent: :destroy
@@ -44,6 +48,7 @@ class Product < ApplicationRecord
     validates :target_price,
               numericality: { greater_than: 0, less_than_or_equal_to: 10_000_000 },
               allow_nil: true
+    validates :stock_status, inclusion: { in: STOCK_STATUSES }, allow_nil: true
 
     # True iff the owner has asked to be alerted when the price hits or
     # drops below `target_price`. Used by PriceAlerter to decide whether to
@@ -76,6 +81,28 @@ class Product < ApplicationRecord
       price_records.where("recorded_at <= ?", last_alerted_at)
                    .order(recorded_at: :desc)
                    .first
+    end
+
+    # --- Stock status -----------------------------------------------------
+
+    def stock_known?
+      stock_status.present?
+    end
+
+    def in_stock?
+      stock_status == "in_stock"
+    end
+
+    def out_of_stock?
+      stock_status == "out_of_stock"
+    end
+
+    # Short human label for the UI, or nil when stock is unknown.
+    def stock_status_label
+      case stock_status
+      when "in_stock"     then "In stock"
+      when "out_of_stock" then "Out of stock"
+      end
     end
 
     def lowest_price

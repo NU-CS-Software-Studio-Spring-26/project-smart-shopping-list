@@ -81,6 +81,12 @@
                 <dt>Last refresh</dt>
                 <dd class="pt-mono"><%= time_ago_in_words(@product.last_fetched_at) %> ago</dd>
               <% end %>
+              <% if @product.stock_known? %>
+                <dt>Availability</dt>
+                <dd style="color: <%= @product.in_stock? ? "var(--green)" : "var(--orange)" %>; font-weight: 600;">
+                  <%= @product.in_stock? ? "● " : "✕ " %><%= @product.stock_status_label %>
+                </dd>
+              <% end %>
               <% if @product.target_price.present? %>
                 <dt>🎯 Notify at</dt>
                 <dd class="pt-mono" style="color: var(--accent-700);">

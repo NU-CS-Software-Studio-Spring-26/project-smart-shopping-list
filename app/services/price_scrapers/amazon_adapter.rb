@@ -37,6 +37,12 @@ module PriceScrapers
       "#main-image"
     ].freeze
 
+    AVAILABILITY_SELECTORS = [
+      "#availability span",
+      "#availability",
+      "#exports_desktop_outOfStock_buybox_message_feature_div"
+    ].freeze
+
     def parse(doc, _url)
       Result.new(
         price:     extract_price(doc),
@@ -44,6 +50,7 @@ module PriceScrapers
         title:     extract_title(doc),
         image_url: extract_image(doc),
         store_name: "Amazon",
+        availability: extract_availability(doc)
       )
     end
 
@@ -86,6 +93,16 @@ module PriceScrapers
       parsed = JSON.parse(json)
       parsed.is_a?(Hash) ? parsed.keys.first : nil
     rescue JSON::ParserError
+      nil
+    end
+
+    def extract_availability(doc)
+      AVAILABILITY_SELECTORS.each do |sel|
+        node = doc.at_css(sel)
+        next unless node
+        status = normalize_availability(node.text)
+        return status if status
+      end
       nil
     end
   end

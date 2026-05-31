@@ -9,14 +9,15 @@ class PriceFetcherTest < ActiveSupport::TestCase
     @product.update_columns(source_url: SCRAPEABLE_URL)
   end
 
-  def stub_fetch(price:, title: "Stubbed Title", image_url: "https://img/x.jpg", store: "Example", &block)
+  def stub_fetch(price:, title: "Stubbed Title", image_url: "https://img/x.jpg", store: "Example", availability: nil, &block)
     result = PriceScrapers::Result.new(
-      price:      price,
-      currency:   "USD",
-      title:      title,
-      image_url:  image_url,
-      store_name: store,
-      fetched_at: Time.current
+      price:        price,
+      currency:     "USD",
+      title:        title,
+      image_url:    image_url,
+      store_name:   store,
+      availability: availability,
+      fetched_at:   Time.current
     )
     stub_method(PriceScrapers, :fetch, ->(_url, **_opts) { result }, &block)
   end
@@ -53,6 +54,21 @@ class PriceFetcherTest < ActiveSupport::TestCase
     assert_equal BigDecimal("99.99"), record.price
     assert_not_nil @product.last_fetched_at
     assert_nil @product.last_fetch_error
+  end
+
+  test ".call records stock_status from the scrape result" do
+    stub_fetch(price: BigDecimal("99.99"), availability: "out_of_stock") do
+      PriceFetcher.call(@product)
+    end
+    assert_equal "out_of_stock", @product.reload.stock_status
+  end
+
+  test ".call leaves a known stock_status untouched when the page omits availability" do
+    @product.update_columns(stock_status: "in_stock")
+    stub_fetch(price: BigDecimal("99.99"), availability: nil) do
+      PriceFetcher.call(@product)
+    end
+    assert_equal "in_stock", @product.reload.stock_status, "unknown availability must not wipe a known status"
   end
 
   test ".call de-dupes identical prices (no new row when nothing changed)" do

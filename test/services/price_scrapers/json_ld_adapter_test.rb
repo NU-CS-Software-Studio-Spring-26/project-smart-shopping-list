@@ -10,6 +10,19 @@ class PriceScrapers::JsonLdAdapterTest < ActiveSupport::TestCase
     PriceScrapers::JsonLdAdapter.new.parse(doc, url)
   end
 
+  def parse_html(html, url: "https://www.example.com/p/12345")
+    PriceScrapers::JsonLdAdapter.new.parse(Nokogiri::HTML(html), url)
+  end
+
+  def json_ld_page(availability)
+    <<~HTML
+      <html><head><script type="application/ld+json">
+      {"@type":"Product","name":"Thing","offers":{"@type":"Offer","price":"9.99",
+       "priceCurrency":"USD","availability":"#{availability}"}}
+      </script></head><body></body></html>
+    HTML
+  end
+
   test "extracts price, title, and image from a Target-style JSON-LD page" do
     result = parse("json_ld_target.html", url: "https://www.target.com/p/airpods/A-12345")
     assert_equal BigDecimal("249.99"), result.price
@@ -61,5 +74,38 @@ class PriceScrapers::JsonLdAdapterTest < ActiveSupport::TestCase
     assert_equal "USD", result.currency
     assert_equal "lululemon Align™ Ribbed-Trim Cami Dress", result.title
     assert_match %r{lululemon\.com}, result.image_url
+  end
+
+  test "reads in-stock availability from a JSON-LD schema.org URL" do
+    assert_equal "in_stock", parse_html(json_ld_page("https://schema.org/InStock")).availability
+  end
+
+  test "reads out-of-stock availability from JSON-LD (OutOfStock and SoldOut)" do
+    assert_equal "out_of_stock", parse_html(json_ld_page("https://schema.org/OutOfStock")).availability
+    assert_equal "out_of_stock", parse_html(json_ld_page("https://schema.org/SoldOut")).availability
+  end
+
+  test "availability is nil when the page does not report it" do
+    html = <<~HTML
+      <html><head><script type="application/ld+json">
+      {"@type":"Product","name":"Thing","offers":{"@type":"Offer","price":"9.99","priceCurrency":"USD"}}
+      </script></head><body></body></html>
+    HTML
+    assert_nil parse_html(html).availability
+  end
+
+  test "real Target fixture reports in_stock" do
+    assert_equal "in_stock", parse("json_ld_target.html").availability
+  end
+
+  test "reads availability from Open Graph product:availability meta tag" do
+    html = <<~HTML
+      <html><head>
+        <meta property="product:price:amount" content="24.99">
+        <meta property="product:availability" content="out of stock">
+        <meta property="og:title" content="Mug">
+      </head><body></body></html>
+    HTML
+    assert_equal "out_of_stock", parse_html(html).availability
   end
 end

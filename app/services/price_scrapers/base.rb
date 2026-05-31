@@ -81,6 +81,23 @@ module PriceScrapers
       nil
     end
 
+    # Map a raw availability string (schema.org URL, OG meta value, or retailer
+    # text) to a normalized "in_stock" / "out_of_stock", or nil when unknown.
+    # Covers schema.org tokens (InStock, OutOfStock, SoldOut, …), OG/meta
+    # phrasings ("in stock" / "out of stock"), and common retailer copy.
+    IN_STOCK_RE  = /in\s*stock|instock|online\s*only|in\s*store\s*only|limited\s*availability/i
+    OUT_STOCK_RE = /out\s*of\s*stock|outofstock|sold\s*out|soldout|unavailable|discontinued|back\s*order|backorder/i
+
+    def normalize_availability(raw)
+      return nil if raw.blank?
+
+      str = raw.to_s
+      # OUT patterns first: "currently unavailable" must win over a stray "in".
+      return "out_of_stock" if str.match?(OUT_STOCK_RE)
+      return "in_stock"     if str.match?(IN_STOCK_RE)
+      nil
+    end
+
     # Common subdomain prefixes that aren't the brand name. Strip these to
     # turn "shop.lululemon.com" -> "Lululemon" instead of "Shop".
     HOST_PREFIX = /\A(www|shop|store|m|mobile|us|en|en-us)\./i
