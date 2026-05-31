@@ -272,4 +272,33 @@ class ProductTest < ActiveSupport::TestCase
     @product.update!(auto_refresh: false)
     assert_nil @product.last_fetch_error
   end
+
+  test "stock_status accepts known values and nil but rejects others" do
+    @product.stock_status = nil
+    assert @product.valid?
+    @product.stock_status = "in_stock"
+    assert @product.valid?
+    @product.stock_status = "out_of_stock"
+    assert @product.valid?
+
+    @product.stock_status = "maybe"
+    assert_not @product.valid?
+    assert_includes @product.errors[:stock_status], "is not included in the list"
+  end
+
+  test "stock helper predicates and label" do
+    @product.stock_status = "in_stock"
+    assert @product.in_stock?
+    assert @product.stock_known?
+    assert_not @product.out_of_stock?
+    assert_equal "In stock", @product.stock_status_label
+
+    @product.stock_status = "out_of_stock"
+    assert @product.out_of_stock?
+    assert_equal "Out of stock", @product.stock_status_label
+
+    @product.stock_status = nil
+    assert_not @product.stock_known?
+    assert_nil @product.stock_status_label
+  end
 end

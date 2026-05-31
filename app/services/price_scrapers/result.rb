@@ -5,6 +5,7 @@ module PriceScrapers
     :title,        # String or nil
     :image_url,    # String or nil
     :store_name,   # "Amazon" / "Target" / fallback host
+    :availability, # "in_stock" / "out_of_stock" / nil (unknown)
     :fetched_at,   # Time
     :resolved_url, # final URL after retailer-specific normalization (e.g. Lululemon -md)
     keyword_init: true

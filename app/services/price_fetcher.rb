@@ -11,6 +11,9 @@ class PriceFetcher
   #     rows; the chart shows only real price changes.
   #   - NEVER mutates name / image_url / description / category. Those are
   #     populated only at product creation time (in ProductsController#create).
+  #   - DOES refresh stock_status when the page exposes availability, since
+  #     (like price) it changes over time. Left untouched when unknown so a
+  #     page that omits availability doesn't wipe a previously known status.
   #
   # Returns the product (always), so callers can chain or inspect.
   def self.call(product)
@@ -38,10 +41,9 @@ class PriceFetcher
       end
     end
 
-    product.update_columns(
-      last_fetched_at:  Time.current,
-      last_fetch_error: nil
-    )
+    updates = { last_fetched_at: Time.current, last_fetch_error: nil }
+    updates[:stock_status] = result.availability if result.availability.present?
+    product.update_columns(updates)
     product
   rescue PriceScrapers::Error => e
     product.update_columns(

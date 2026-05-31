@@ -43,7 +43,8 @@ module PriceScrapers
         price:     parse_price(offer&.dig("price") || offer&.dig("lowPrice")),
         currency: (offer&.dig("priceCurrency") || "USD"),
         title:     stringify(product["name"]),
-        image_url: first_image(product["image"])
+        image_url: first_image(product["image"]),
+        availability: normalize_availability(offer&.dig("availability"))
       )
     end
 
@@ -55,7 +56,10 @@ module PriceScrapers
         price:     price,
         currency:  meta_currency(doc) || "USD",
         title:     meta_content(doc, "og:title") || meta_content(doc, "twitter:title"),
-        image_url: meta_content(doc, "og:image") || meta_content(doc, "twitter:image")
+        image_url: meta_content(doc, "og:image") || meta_content(doc, "twitter:image"),
+        availability: normalize_availability(
+          meta_content(doc, "product:availability") || meta_content(doc, "og:availability")
+        )
       )
     end
 
@@ -72,7 +76,8 @@ module PriceScrapers
         price:     price,
         currency:  scope.at_css('[itemprop="priceCurrency"]')&.[]("content") || "USD",
         title:     scope.at_css('[itemprop="name"]')&.text&.strip,
-        image_url: microdata_image(scope)
+        image_url: microdata_image(scope),
+        availability: normalize_availability(microdata_availability(scope))
       )
     end
 
@@ -85,7 +90,8 @@ module PriceScrapers
         currency:  primary.currency || secondary.currency || "USD",
         title:     primary.title || secondary.title,
         image_url: primary.image_url || secondary.image_url,
-        store_name: primary.store_name || secondary.store_name
+        store_name: primary.store_name || secondary.store_name,
+        availability: primary.availability || secondary.availability
       )
     end
 
@@ -103,6 +109,13 @@ module PriceScrapers
       return nil unless node
 
       node["content"].presence || node["src"].presence || node["href"].presence
+    end
+
+    def microdata_availability(scope)
+      node = scope.at_css('[itemprop="availability"]')
+      return nil unless node
+
+      node["href"].presence || node["content"].presence || node.text.presence
     end
 
     def collect_product_nodes(doc)

@@ -42,7 +42,13 @@ gem "omniauth-rails_csrf_protection"
 
 group :development, :test do
   gem "faker"
-  # Auto-load local .env (e.g. GEMINI_API_KEY / OPENROUTER_API_KEY) in dev/test.
+end
+
+# Auto-load local .env (e.g. GEMINI_API_KEY / OPENROUTER_API_KEY) in development
+# only. Tests must stay hermetic — loading .env in the test env leaks AI keys
+# and flips services like DealAdvisor onto the live AI path, breaking the
+# heuristic-fallback tests (which is also why CI, with no .env, stays green).
+group :development do
   gem "dotenv-rails"
 end
 
