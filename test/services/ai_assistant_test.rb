@@ -53,4 +53,34 @@ class AiAssistantTest < ActiveSupport::TestCase
       assert_equal "local", answer.source
     end
   end
+
+  # Regression: the model echoes the watchlist's quoted/markdown name, which the
+  # old exact match dropped ("No matchable picks in AI response").
+  def with_ai_returning(text, &block)
+    stub_method(LlmClient, :enabled?, -> { true }) do
+      stub_method(LlmClient, :complete, ->(**_kw) { text }, &block)
+    end
+  end
+
+  test "AI picks with surrounding quotes still match the product" do
+    product = product_with_prices("Apple AirPods Pro", [ 199.00, 189.00 ])
+    text = "SUMMARY: A good pick.\nPICK: \"Apple AirPods Pro\" | Latest $189 is solid."
+
+    with_ai_returning(text) do
+      answer = AiAssistant.call(query: "headphones", products: [ product ])
+      assert_equal "ai", answer.source
+      assert_equal [ product ], answer.picks.map(&:product)
+    end
+  end
+
+  test "AI picks with markdown bold and a shortened name still match" do
+    product = product_with_prices("Apple AirPods Pro (2nd generation)", [ 249.00, 229.00 ])
+    text = "SUMMARY: Pick.\n- PICK: **AirPods Pro** | Down to $229."
+
+    with_ai_returning(text) do
+      answer = AiAssistant.call(query: "earbuds", products: [ product ])
+      assert_equal "ai", answer.source
+      assert_equal [ product ], answer.picks.map(&:product)
+    end
+  end
 end

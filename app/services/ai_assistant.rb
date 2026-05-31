@@ -115,17 +115,42 @@ class AiAssistant
   end
 
   def parse(text)
-    by_name = candidates.index_by { |c| c[:name] }
+    by_name = candidates.index_by { |c| normalize_name(c[:name]) }
 
     summary_line = text[/SUMMARY:\s*(.+)/i, 1]&.strip&.gsub(/\s+/, " ")
-    picks = text.scan(/^PICK:\s*(.+?)\s*\|\s*(.+)$/).filter_map do |name, reason|
-      candidate = by_name[name.strip]
+    # Allow optional leading bullets/markdown ("- PICK:", "* PICK:") and any
+    # case. The model often echoes the watchlist's quoted/markdown name, so we
+    # match leniently (see match_candidate) instead of requiring an exact hit.
+    picks = text.scan(/^\s*[-*]?\s*PICK:\s*(.+?)\s*\|\s*(.+)$/i).filter_map do |name, reason|
+      candidate = match_candidate(name, by_name)
       next unless candidate
 
       Pick.new(product: candidate[:product], reason: reason.strip.gsub(/\s+/, " "))
-    end.first(MAX_PICKS)
+    end.uniq { |pick| pick.product.id }.first(MAX_PICKS)
 
     Answer.new(summary: summary_line, picks: picks, source: "ai")
+  end
+
+  # Strip the formatting the model tends to add around a name (surrounding
+  # straight/smart quotes, markdown **/`, trailing punctuation) and fold
+  # whitespace + case so AI output matches our candidate names.
+  def normalize_name(value)
+    value.to_s
+         .gsub(/[*`"'“”‘’]/, "")
+         .gsub(/\s+/, " ")
+         .strip
+         .downcase
+  end
+
+  # Exact normalized match first, then substring containment either way so a
+  # shortened ("AirPods Pro" vs "Apple AirPods Pro (2nd gen)") or padded name
+  # still resolves to the right product.
+  def match_candidate(raw, by_name)
+    key = normalize_name(raw)
+    return nil if key.blank?
+
+    by_name[key] ||
+      by_name.find { |name, _| name.include?(key) || key.include?(name) }&.last
   end
 
   # Naive keyword overlap between the query and each product's name +
