@@ -1808,3 +1808,47 @@ body {
 
 /* Favorites filter chip in the toolbar. */
 .pt-fav-filter.is-active { color: #e0245e; }
+
+/* ---- Live password requirement checklist (#70) ---- */
+.pt-pw-reqs {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.pt-pw-req {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  transition: color 0.12s ease;
+}
+.pt-pw-req-mark {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  display: inline-grid;
+  place-items: center;
+  font-size: 10px;
+  line-height: 1;
+  color: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.pt-pw-req-mark::after { content: "\2713"; }
+.pt-pw-req.is-met { color: var(--green); }
+.pt-pw-req.is-met .pt-pw-req-mark {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+.pt-pw-match {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--orange);
+}
+.pt-pw-match.is-met { color: var(--green); }
