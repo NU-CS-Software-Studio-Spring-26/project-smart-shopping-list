@@ -42,6 +42,8 @@ gem "omniauth-rails_csrf_protection"
 
 group :development, :test do
   gem "faker"
+  # Auto-load local .env (e.g. GEMINI_API_KEY / OPENROUTER_API_KEY) in dev/test.
+  gem "dotenv-rails"
 end
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
