@@ -19,6 +19,14 @@
          role="dialog"
          aria-label="Ask AI"
          hidden>
+    <%# Resize handles: drag any edge or corner to expand/shrink the panel. %>
+    <% %w[n s e w ne nw se sw].each do |dir| %>
+      <div class="pt-askai-resize pt-askai-resize-<%= dir %>"
+           data-direction="<%= dir %>"
+           data-action="pointerdown->ask-ai#resizeStart"
+           aria-hidden="true"></div>
+    <% end %>
+
     <div class="pt-askai-head"
          data-ask-ai-target="handle"
          data-action="pointerdown->ask-ai#dragStart"

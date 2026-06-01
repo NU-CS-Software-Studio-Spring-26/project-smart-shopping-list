@@ -1667,6 +1667,19 @@ body {
 .pt-askai-head:active { cursor: grabbing; }
 .pt-askai-head .pt-askai-close { cursor: pointer; }
 .pt-askai-panel.is-dragging { cursor: grabbing; user-select: none; }
+.pt-askai-panel.is-resizing { user-select: none; }
+
+/* Edge + corner resize handles. Thin invisible strips that sit above the
+   panel content so any side can be dragged to expand/shrink the panel. */
+.pt-askai-resize { position: absolute; z-index: 5; touch-action: none; }
+.pt-askai-resize-n { top: 0; left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.pt-askai-resize-s { bottom: 0; left: 8px; right: 8px; height: 6px; cursor: ns-resize; }
+.pt-askai-resize-e { top: 8px; bottom: 8px; right: 0; width: 6px; cursor: ew-resize; }
+.pt-askai-resize-w { top: 8px; bottom: 8px; left: 0; width: 6px; cursor: ew-resize; }
+.pt-askai-resize-ne { top: 0; right: 0; width: 12px; height: 12px; cursor: nesw-resize; }
+.pt-askai-resize-nw { top: 0; left: 0; width: 12px; height: 12px; cursor: nwse-resize; }
+.pt-askai-resize-se { bottom: 0; right: 0; width: 12px; height: 12px; cursor: nwse-resize; }
+.pt-askai-resize-sw { bottom: 0; left: 0; width: 12px; height: 12px; cursor: nesw-resize; }
 .pt-askai-title { font-size: 16px; font-weight: 600; color: var(--ink); }
 .pt-askai-close {
   border: none;
