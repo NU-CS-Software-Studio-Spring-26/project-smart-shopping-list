@@ -1639,7 +1639,9 @@ body {
   position: fixed;
   inset: 0;
   z-index: 70;
-  background: rgba(0, 0, 0, 0.28);
+  /* No dimming: the assistant helps while you use the site, so the page
+     stays at full brightness when the panel is open. */
+  background: transparent;
 }
 
 .pt-askai-panel {
@@ -1667,7 +1669,13 @@ body {
   justify-content: space-between;
   padding: 16px 18px 12px;
   border-bottom: 1px solid var(--line-2);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
+.pt-askai-head:active { cursor: grabbing; }
+.pt-askai-head .pt-askai-close { cursor: pointer; }
+.pt-askai-panel.is-dragging { cursor: grabbing; user-select: none; }
 .pt-askai-title { font-size: 16px; font-weight: 600; color: var(--ink); }
 .pt-askai-close {
   border: none;
