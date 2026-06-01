@@ -4,7 +4,6 @@
     <div class="container-xl">
       <div class="pt-hero-grid">
         <div>
-          <p class="pt-ai-hint">Use AI to help you plan your shopping and navigate our site</p>
           <div class="pt-eyebrow">Your products</div>
           <h1 class="pt-h1">Products you're watching</h1>
           <p class="pt-hero-note">
@@ -26,6 +25,10 @@
             <span class="pt-hero-meta-dot"></span>
             <span><strong><%= @pagy&.count || @products.size %></strong> <%= "product".pluralize(@pagy&.count || @products.size) %> tracked</span>
           </div>
+          <%= link_to "Use AI to help you plan your shopping and navigate our site",
+                assistant_path,
+                class: "pt-ai-hint-link",
+                data: { controller: "askai-launcher", action: "askai-launcher#open" } %>
         </aside>
       </div>
     </div>
