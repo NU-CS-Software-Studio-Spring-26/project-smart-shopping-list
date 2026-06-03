@@ -33,7 +33,7 @@ gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2"
 
 # Pagination
-gem "pagy", "~> 9.3"
+gem "pagy", "~> 43.5"
 
 # OAuth sign-in (Google)
 gem "omniauth"
