@@ -121,6 +121,11 @@ class ProductsController < ApplicationController
   end
 
   def export
+    unless @product.price_history?
+      return redirect_to @product,
+        alert: "There's no price history to export yet — log a price first."
+    end
+
     respond_to do |format|
       format.csv do
         send_data PriceHistoryExport.to_csv(@product),
@@ -139,6 +144,11 @@ class ProductsController < ApplicationController
 
   def export_watchlist
     products = Current.user.products.includes(:price_records).order(:category, :name)
+    if products.empty?
+      return redirect_to products_path,
+        alert: "Your watchlist is empty — add a product before exporting."
+    end
+
     send_data WatchlistExport.to_csv(products),
               filename: "price-tracker-watchlist.csv",
               type: "text/csv; charset=utf-8",

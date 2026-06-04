@@ -126,6 +126,16 @@ class Product < ApplicationRecord
       price_records.order(:price).first
     end
 
+    # True when the product has at least one recorded price. Gates the
+    # price-history exports (CSV/PDF) so we never hand back an empty file.
+    def price_history?
+      if price_records.loaded?
+        price_records.any?
+      else
+        price_records.exists?
+      end
+    end
+
     def latest_price
       newest_price_record&.price
     end
