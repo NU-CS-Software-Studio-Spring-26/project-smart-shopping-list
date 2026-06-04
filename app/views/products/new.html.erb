@@ -4,7 +4,7 @@
     <header class="pt-form-head">
       <div class="pt-eyebrow">Add a product</div>
       <h1 class="pt-h1">Track a new product</h1>
-      <p class="pt-lede">Paste a product link and we'll fetch the title, image, and current price. If the site isn't supported, fill in the details by hand.</p>
+      <p class="pt-lede">Paste a product link and we'll try to fetch the title, image, and current price. Many retailers block automated lookups — when that happens you can fill the details in by hand.</p>
     </header>
 
     <%= render "form", product: @product, manual: @manual %>
