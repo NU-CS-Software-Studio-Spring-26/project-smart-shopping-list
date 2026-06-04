@@ -121,6 +121,11 @@ class ProductsController < ApplicationController
   end
 
   def export
+    unless @product.price_history?
+      return redirect_to @product,
+        alert: "There's no price history to export yet — log a price first."
+    end
+
     respond_to do |format|
       format.csv do
         send_data PriceHistoryExport.to_csv(@product),
