@@ -1,0 +1,11 @@
+<%# One labelled figure in the budget summary bar.
+    Locals: label (String), value (String/html_safe).
+    Optional: size (:lg default, or :sm), tone (:green / :orange). %>
+<% size = local_assigns.fetch(:size, :lg) %>
+<% tone = local_assigns[:tone] %>
+<div class="pt-budget-stat">
+  <div class="pt-budget-stat-label"><%= label %></div>
+  <div class="pt-budget-stat-num<%= " pt-budget-stat-num--sm" if size == :sm %><%= " pt-budget-stat-num--#{tone}" if tone %>">
+    <%= value %>
+  </div>
+</div>
