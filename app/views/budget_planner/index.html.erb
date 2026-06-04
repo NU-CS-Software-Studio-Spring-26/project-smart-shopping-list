@@ -92,37 +92,22 @@
     <% else %>
 
       <%# Budget summary bar %>
-      <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:32px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;">
+      <div class="pt-budget-summary">
         <% if @selected_folder %>
-          <div style="flex:1;min-width:140px;">
-            <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Folder</div>
-            <div style="font-size:1.1rem;font-weight:600;"><%= link_to @selected_folder.name, @selected_folder, style: "color:var(--accent-700);text-decoration:none;" %></div>
-          </div>
+          <%= render "summary_stat", label: "Folder", size: :sm,
+                value: link_to(@selected_folder.name, @selected_folder, class: "pt-budget-stat-link") %>
         <% end %>
         <% if @selected_category %>
-          <div style="flex:1;min-width:140px;">
-            <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Category</div>
-            <div style="font-size:1.1rem;font-weight:600;"><%= @selected_category %></div>
-          </div>
+          <%= render "summary_stat", label: "Category", size: :sm, value: @selected_category %>
         <% end %>
-        <div style="flex:1;min-width:140px;">
-          <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Spending limit</div>
-          <div style="font-size:1.6rem;font-weight:700;">$<%= sprintf("%.2f", @budget) %></div>
-        </div>
-        <div style="flex:1;min-width:140px;">
-          <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Cost to buy all in-range items</div>
-          <div style="font-size:1.6rem;font-weight:700;color:var(--green);">$<%= sprintf("%.2f", @total_if_all) %></div>
-        </div>
-        <div style="flex:1;min-width:140px;">
-          <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Remaining</div>
-          <div style="font-size:1.6rem;font-weight:700;color:<%= @remaining >= 0 ? "var(--green)" : "var(--orange)" %>;">
-            <%= @remaining >= 0 ? "+$#{sprintf("%.2f", @remaining)}" : "-$#{sprintf("%.2f", @remaining.abs)}" %>
-          </div>
-        </div>
-        <div style="flex:1;min-width:140px;">
-          <div style="font-size:12px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">Products in range</div>
-          <div style="font-size:1.6rem;font-weight:700;"><%= @affordable.size %> of <%= @affordable.size + @over_budget.size %></div>
-        </div>
+        <%= render "summary_stat", label: "Spending limit",
+              value: "$#{sprintf("%.2f", @budget)}" %>
+        <%= render "summary_stat", label: "Cost to buy all in-range items", tone: :green,
+              value: "$#{sprintf("%.2f", @total_if_all)}" %>
+        <%= render "summary_stat", label: "Remaining", tone: (@remaining >= 0 ? :green : :orange),
+              value: (@remaining >= 0 ? "+$#{sprintf("%.2f", @remaining)}" : "-$#{sprintf("%.2f", @remaining.abs)}") %>
+        <%= render "summary_stat", label: "Products in range",
+              value: "#{@affordable.size} of #{@affordable.size + @over_budget.size}" %>
       </div>
 
       <%# Spend by category (category-based budgeting) %>
@@ -197,36 +182,7 @@
         </h2>
         <div class="pt-grid" style="margin-bottom:40px;">
           <% @affordable.each do |product| %>
-            <% lowest = product.lowest_price_seen.to_f %>
-            <article class="pt-card" style="border:2px solid var(--green);">
-              <%= link_to product_path(product), class: "pt-card-media", style: "text-decoration:none;color:inherit;" do %>
-                <% if product.image_url.present? %>
-                  <%= image_tag product.image_url, alt: product.name %>
-                <% else %>
-                  <div class="pt-img-fallback"><%= render "shared/icon", name: "package", size: 40 %></div>
-                <% end %>
-                <div class="pt-card-media-shade"></div>
-                <span class="pt-tag pt-tag-overlay"><%= product.category %></span>
-              <% end %>
-              <div class="pt-card-body">
-                <h3 class="pt-card-title">
-                  <%= link_to product.name, product, style: "text-decoration:none;color:inherit;" %>
-                </h3>
-                <div class="pt-card-price-row">
-                  <div class="pt-card-price" style="color:var(--green);">
-                    $<%= sprintf("%.2f", lowest) %>
-                  </div>
-                </div>
-                <div class="pt-card-low">
-                  <span class="pt-card-low-dot" style="background:var(--green);"></span>
-                  <span class="pt-card-low-label">You'd still have</span>
-                  <span class="pt-card-low-num" style="color:var(--green);">$<%= sprintf("%.2f", @budget - lowest) %></span>
-                </div>
-              </div>
-              <div class="pt-card-foot">
-                <%= link_to "View details →", product, class: "pt-link-btn pt-link-btn-strong" %>
-              </div>
-            </article>
+            <%= render "product_card", product: product, budget: @budget, tone: :affordable %>
           <% end %>
         </div>
       <% end %>
@@ -239,37 +195,7 @@
         </h2>
         <div class="pt-grid">
           <% @over_budget.each do |product| %>
-            <% lowest = product.lowest_price_seen.to_f %>
-            <article class="pt-card" style="opacity:0.85;border:2px solid var(--orange);" aria-label="<%= product.name %>, over budget">
-              <%= link_to product_path(product), class: "pt-card-media", style: "text-decoration:none;color:inherit;" do %>
-                <% if product.image_url.present? %>
-                  <%= image_tag product.image_url, alt: product.name %>
-                <% else %>
-                  <div class="pt-img-fallback"><%= render "shared/icon", name: "package", size: 40 %></div>
-                <% end %>
-                <div class="pt-card-media-shade"></div>
-                <span class="pt-tag pt-tag-overlay"><%= product.category %></span>
-                <span style="position:absolute;top:8px;right:8px;background:var(--orange);color:#fff;font-size:11px;font-weight:600;padding:4px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;">Over budget</span>
-              <% end %>
-              <div class="pt-card-body">
-                <h3 class="pt-card-title">
-                  <%= link_to product.name, product, style: "text-decoration:none;color:inherit;" %>
-                </h3>
-                <div class="pt-card-price-row">
-                  <div class="pt-card-price" style="color:var(--orange);">
-                    $<%= sprintf("%.2f", lowest) %>
-                  </div>
-                </div>
-                <div class="pt-card-low">
-                  <span class="pt-card-low-dot" style="background:var(--orange);"></span>
-                  <span class="pt-card-low-label">Need</span>
-                  <span class="pt-card-low-num" style="color:var(--orange);">$<%= sprintf("%.2f", lowest - @budget) %> more</span>
-                </div>
-              </div>
-              <div class="pt-card-foot">
-                <%= link_to "View details →", product, class: "pt-link-btn pt-link-btn-strong" %>
-              </div>
-            </article>
+            <%= render "product_card", product: product, budget: @budget, tone: :over %>
           <% end %>
         </div>
       <% end %>
