@@ -139,6 +139,34 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "export redirects instead of sending an empty csv when there's no price history" do
+    empty = @user.products.create!(name: "No Prices Yet", category: "Misc")
+    get export_product_url(empty, format: :csv)
+    assert_redirected_to product_url(empty)
+    assert_match(/no price history/i, flash[:alert])
+  end
+
+  test "export pdf also redirects when there's no price history" do
+    empty = @user.products.create!(name: "No Prices Yet", category: "Misc")
+    get export_product_url(empty, format: :pdf)
+    assert_redirected_to product_url(empty)
+  end
+
+  test "show hides the export buttons when the product has no price history" do
+    empty = @user.products.create!(name: "No Prices Yet", category: "Misc")
+    get product_url(empty)
+    assert_response :success
+    assert_no_match export_product_path(empty, format: :csv), response.body
+    assert_no_match export_product_path(empty, format: :pdf), response.body
+  end
+
+  test "watchlist export redirects when the watchlist is empty" do
+    @user.products.destroy_all
+    get export_watchlist_products_url(format: :csv)
+    assert_redirected_to products_path
+    assert_match(/empty/i, flash[:alert])
+  end
+
   test "should get edit" do
     get edit_product_url(@product)
     assert_response :success
