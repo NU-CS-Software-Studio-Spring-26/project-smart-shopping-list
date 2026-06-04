@@ -70,9 +70,17 @@
               <h2 class="pt-panel-title">Products by category</h2>
             </div>
           </div>
-          <div class="pt-chart-wrap" style="padding: 0 22px 22px;">
-            <%= pie_chart @category_chart_data, height: "260px", donut: true %>
-          </div>
+          <% if @category_chart_data.any? %>
+            <div class="pt-chart-wrap" style="padding: 0 22px 22px;">
+              <%= pie_chart @category_chart_data, height: "260px", donut: true %>
+            </div>
+          <% else %>
+            <div class="pt-empty-filter" style="margin: 0 22px 22px;">
+              <h3>No products yet.</h3>
+              <p>Add a product to see how your watchlist is distributed.</p>
+              <%= link_to "+ Add a product", new_product_path, class: "pt-btn pt-btn-primary", style: "margin-top: 12px;" %>
+            </div>
+          <% end %>
         </section>
 
         <section class="pt-panel">
@@ -90,6 +98,7 @@
             <div class="pt-empty-filter" style="margin: 0 22px 22px;">
               <h3>No tags yet.</h3>
               <p>Add tags to products to see keyword distribution.</p>
+              <%= link_to "Browse products to tag", products_path, class: "pt-btn pt-btn-secondary", style: "margin-top: 12px;" %>
             </div>
           <% end %>
         </section>
