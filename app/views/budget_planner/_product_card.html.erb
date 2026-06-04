@@ -1,0 +1,40 @@
+<%# Budget planner product card, shared by the affordable and over-budget grids.
+    Locals: product, budget (Float), tone (:affordable or :over). %>
+<% over   = tone.to_sym == :over %>
+<% lowest = product.lowest_price_seen.to_f %>
+<%= tag.article class: "pt-card pt-card--#{over ? "over" : "affordable"}",
+      "aria-label": (over ? "#{product.name}, over budget" : nil) do %>
+  <%= link_to product_path(product), class: "pt-card-media", style: "text-decoration:none;color:inherit;" do %>
+    <% if product.image_url.present? %>
+      <%= image_tag product.image_url, alt: product.name %>
+    <% else %>
+      <div class="pt-img-fallback"><%= render "shared/icon", name: "package", size: 40 %></div>
+    <% end %>
+    <div class="pt-card-media-shade"></div>
+    <span class="pt-tag pt-tag-overlay"><%= product.category %></span>
+    <% if over %>
+      <span class="pt-budget-over-badge">Over budget</span>
+    <% end %>
+  <% end %>
+  <div class="pt-card-body">
+    <h3 class="pt-card-title">
+      <%= link_to product.name, product, style: "text-decoration:none;color:inherit;" %>
+    </h3>
+    <div class="pt-card-price-row">
+      <div class="pt-card-price">$<%= sprintf("%.2f", lowest) %></div>
+    </div>
+    <div class="pt-card-low">
+      <span class="pt-card-low-dot"></span>
+      <% if over %>
+        <span class="pt-card-low-label">Need</span>
+        <span class="pt-card-low-num">$<%= sprintf("%.2f", lowest - budget) %> more</span>
+      <% else %>
+        <span class="pt-card-low-label">You'd still have</span>
+        <span class="pt-card-low-num">$<%= sprintf("%.2f", budget - lowest) %></span>
+      <% end %>
+    </div>
+  </div>
+  <div class="pt-card-foot">
+    <%= link_to "View details →", product, class: "pt-link-btn pt-link-btn-strong" %>
+  </div>
+<% end %>
