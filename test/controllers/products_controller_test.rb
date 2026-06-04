@@ -63,6 +63,41 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ "school", "gifts" ], Product.last.tags
   end
 
+  test "blocked retailer url skips the fetch and routes to manual entry" do
+    # Pre-detection should short-circuit before PriceScrapers.fetch runs.
+    fetched = false
+    spy = ->(*_args, **_opts) { fetched = true; raise "fetch should not be called" }
+    stub_method(PriceScrapers, :fetch, spy) do
+      assert_no_difference("Product.count") do
+        post products_url, params: {
+          product: {
+            source_url: "https://shop.lululemon.com/p/airing-easy-camp-collar-shirt/eoz64nncho",
+            category: "Clothing and Shoes"
+          }
+        }
+      end
+    end
+    assert_not fetched, "expected blocked-site pre-check to skip PriceScrapers.fetch"
+    assert_response :unprocessable_entity
+    assert_match "Lululemon", response.body
+    assert_match(/heads up/i, response.body)  # calm warning banner, not a red error
+    assert_nil flash[:alert]
+  end
+
+  test "failed scrape falls back to manual with a heads-up, not an error" do
+    raiser = ->(_url, **_opts) { raise PriceScrapers::PermanentError, "HTTP 404 from example.com" }
+    stub_method(PriceScrapers, :fetch, raiser) do
+      assert_no_difference("Product.count") do
+        post products_url, params: {
+          product: { source_url: "https://www.example.com/p/missing", category: "Electronics" }
+        }
+      end
+    end
+    assert_response :unprocessable_entity
+    assert_match(/heads up/i, response.body)
+    assert_nil flash[:alert]
+  end
+
   test "manual create disables auto_refresh" do
     assert_difference("Product.count") do
       post products_url, params: {

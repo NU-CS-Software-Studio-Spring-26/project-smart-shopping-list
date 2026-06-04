@@ -70,13 +70,20 @@ class ProductsController < ApplicationController
       return render :new, status: :unprocessable_entity
     end
 
+    # Some retailers (Lululemon, Nordstrom, Sephora, …) block every server-side
+    # request with bot management, so the fetch can only ever fail. Detect them
+    # up front and go straight to manual entry — no wasted 5s call, and a calm
+    # "heads up" naming the retailer instead of a generic error.
+    if (retailer = PriceScrapers::BlockedSites.label_for(@product.source_url))
+      return render_manual_fallback(blocked_site_message(retailer))
+    end
+
     begin
       result = PriceScrapers.fetch(@product.source_url, timeout: 5)
     rescue PriceScrapers::Error => e
-      @manual = true
-      flash.now[:alert] = friendly_scrape_error(e) +
-        " You can fill in the product details below to add it manually."
-      return render :new, status: :unprocessable_entity
+      return render_manual_fallback(
+        friendly_scrape_error(e) + " You can fill in the product details below to add it manually."
+      )
     end
 
     @product.name      = result.title.presence || fallback_name_from(@product.source_url)
@@ -248,6 +255,21 @@ class ProductsController < ApplicationController
     "homedepot.com" => "The Home Depot",
     "nordstrom.com" => "Nordstrom"
   }.freeze
+
+  # Re-render the new-product form in manual mode with a calm "heads up"
+  # banner (orange, not a red error). Used whenever auto-fetch can't get us
+  # details — a known-blocked retailer or a failed scrape — so the user can
+  # finish adding the product by hand. The link they pasted is preserved.
+  def render_manual_fallback(message)
+    @manual = true
+    flash.now[:warning] = message
+    render :new, status: :unprocessable_entity
+  end
+
+  def blocked_site_message(retailer)
+    "#{retailer} blocks automated price lookups, so we couldn't fetch this one " \
+    "for you. We've kept your link — fill in the details below and we'll track it."
+  end
 
   def friendly_scrape_error(error)
     host = begin
