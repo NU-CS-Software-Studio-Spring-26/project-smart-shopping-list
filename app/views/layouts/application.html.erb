@@ -18,14 +18,26 @@
   </head>
   <body>
     <a href="#main-content" class="pt-skip-link">Skip to main content</a>
-    <header class="pt-header">
+    <header class="pt-header" data-controller="nav" data-action="keydown@window->nav#closeOnEscape">
       <div class="pt-header-inner container-xl">
         <%= link_to root_path, class: "pt-brand" do %>
           <span class="pt-brand-mark">P/T</span>
           <span class="pt-brand-name">PriceTracker</span>
         <% end %>
 
-        <nav class="pt-nav">
+        <button type="button"
+                class="pt-nav-toggle"
+                data-nav-target="button"
+                data-action="click->nav#toggle"
+                aria-controls="pt-primary-nav"
+                aria-expanded="false"
+                aria-label="Toggle navigation menu">
+          <span class="pt-nav-toggle-bar"></span>
+          <span class="pt-nav-toggle-bar"></span>
+          <span class="pt-nav-toggle-bar"></span>
+        </button>
+
+        <nav id="pt-primary-nav" class="pt-nav" data-nav-target="menu" data-action="click->nav#close">
           <% if authenticated? %>
             <%= link_to "Products", products_path, class: "pt-nav-link #{'is-active' if controller_name == 'products'}" %>
             <%= link_to "Price Records", price_records_path, class: "pt-nav-link #{'is-active' if controller_name == 'price_records'}" %>

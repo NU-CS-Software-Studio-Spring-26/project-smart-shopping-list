@@ -98,6 +98,26 @@ body {
 .pt-brand-meta { display: none; }
 
 .pt-nav { display: flex; gap: 4px; margin-left: 8px; }
+.pt-nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  width: 36px; height: 36px;
+  padding: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.pt-nav-toggle-bar {
+  display: block;
+  width: 16px; height: 2px;
+  background: var(--ink);
+  border-radius: 2px;
+}
 .pt-nav-link {
   color: var(--ink-2);
   text-decoration: none;
@@ -1092,22 +1112,29 @@ body {
 }
 
 @media (max-width: 640px) {
-  /* Header: wrap nav to second row */
+  /* Header: hamburger reveals collapsible nav drawer */
   .pt-header-inner {
     flex-wrap: wrap;
     height: auto;
     padding: 8px 0;
+    column-gap: 8px;
   }
-  .pt-header-right { margin-left: auto; }
+  .pt-nav-toggle { display: inline-flex; }
+  .pt-header-right { margin-left: 0; }
   .pt-nav {
-    order: 3;
+    order: 4;
     width: 100%;
     margin-left: 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 6px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 8px 0 4px;
+    border-top: 1px solid var(--line-2);
+    margin-top: 8px;
+    display: none;
   }
-  .pt-nav-link { font-size: 12px; padding: 6px 10px; white-space: nowrap; }
+  .pt-nav.is-open { display: flex; }
+  .pt-nav-link { font-size: 14px; padding: 10px 12px; }
 
   /* Toolbar: can't track dynamic header height on mobile */
   .pt-toolbar-wrap { position: static; }
