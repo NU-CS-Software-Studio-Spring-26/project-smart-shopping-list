@@ -245,7 +245,7 @@
               <span class="pt-btn-icon">+</span> Add price
             <% end %>
           </div>
-          <% if @price_records.any? %>
+          <% if @price_records.size >= 2 %>
             <%
               prices = @price_records.map { |r| r.price.to_f }
               chart_min = prices.min
@@ -270,6 +270,12 @@
                       elements: { point: { radius: 4, hoverRadius: 6 } },
                       interaction: { mode: "nearest", intersect: false }
                     } %>
+            </div>
+          <% elsif @price_records.size == 1 %>
+            <div class="pt-empty-filter" style="margin: 0 22px 22px;">
+              <div class="pt-empty-icon"><%= render "shared/icon", name: "trend-up", size: 32 %></div>
+              <h3>Just one observation so far</h3>
+              <p>Log at least one more price to see a trend line.</p>
             </div>
           <% else %>
             <div class="pt-empty-filter" style="margin: 0 22px 22px;">
