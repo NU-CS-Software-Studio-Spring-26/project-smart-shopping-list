@@ -10,6 +10,14 @@ class ProductTest < ActiveSupport::TestCase
     assert @product.valid?
   end
 
+  test "price_history? is false without records and true once a price is logged" do
+    @product.save!
+    assert_not @product.price_history?
+
+    @product.price_records.create!(price: 9.99, store_name: "Example", recorded_at: Time.current)
+    assert @product.price_history?
+  end
+
   test "normalizes comma separated tags" do
     @product.tags_input = " Gifts, school, gifts,  URGENT "
     @product.valid?
