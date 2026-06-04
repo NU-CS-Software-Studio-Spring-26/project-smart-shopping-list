@@ -144,6 +144,11 @@ class ProductsController < ApplicationController
 
   def export_watchlist
     products = Current.user.products.includes(:price_records).order(:category, :name)
+    if products.empty?
+      return redirect_to products_path,
+        alert: "Your watchlist is empty — add a product before exporting."
+    end
+
     send_data WatchlistExport.to_csv(products),
               filename: "price-tracker-watchlist.csv",
               type: "text/csv; charset=utf-8",
