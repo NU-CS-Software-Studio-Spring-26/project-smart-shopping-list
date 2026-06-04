@@ -402,6 +402,19 @@ ZenRows, or Bright Data, which solve Cloudflare/Akamai challenges on their
 infrastructure, or (b) provision a Playwright-based dyno separate from web —
 both are out of scope for this milestone.
 
+### D.1 — Pre-detection at product creation (`PriceScrapers::BlockedSites`)
+
+Because the scrape always runs from the app server's IP — never the user's
+browser — a site that bot-blocks our server fails **100% of the time**, on
+every attempt. So [`ProductsController#create`](../app/controllers/products_controller.rb)
+checks [`PriceScrapers::BlockedSites`](../app/services/price_scrapers/blocked_sites.rb)
+*before* fetching: if the pasted URL is a known blocker (Lululemon, Nordstrom,
+Sephora, ASOS, Free People, Urban Outfitters, Anthropologie), it skips the
+doomed 5-second request and drops the user straight into manual entry with a
+calm "heads up" banner naming the retailer — not a red error. The pasted link
+is preserved so prices can be logged by hand. Add a host to `BlockedSites::HOSTS`
+when you confirm a retailer hard-blocks every server-side request.
+
 ---
 
 ## 7. Legal & ethical notes
