@@ -8,6 +8,15 @@ Nicole Li, Andrew Xue, Amie Masih, Rahib Taher
 
 A web app where signed-in users save products they are watching, record prices seen at different stores, and review them from a simple dashboard. Paste a product link, set a target price, and get in-app plus email notifications when the price hits your target or a new history low.
 
+## Milestone 4 (shipped in v1.3.0)
+
+- **Account settings** — change password, delete account, profile photo (Active Storage)
+- **Registration** — Terms & Disclaimer checkbox required on sign-up
+- **Testing** — Cucumber feature specs, RSpec examples, CI seed smoke test
+- **Docs** — RDoc under `doc/`; privacy/contact via GitHub Issues
+
+See [CHANGELOG.md](CHANGELOG.md#v130--2026-06-07--milestone-4-accounts-compliance-testing-polish) for details.
+
 ## Communication
 
 - Weekly meetings on Saturday afternoons, with extra syncs when the app or deadlines need them.
@@ -26,7 +35,7 @@ A web app where signed-in users save products they are watching, record prices s
 ## Local setup
 
 This app is built on Rails 8.1 and should be run with the Ruby version in
-`.ruby-version` (`4.0.4`) plus the Bundler version in `Gemfile.lock` (`4.0.9`).
+`.ruby-version` (`4.0.2`) plus the Bundler version in `Gemfile.lock` (`4.0.9`).
 If `bin/rails` reports macOS system Ruby 2.6, switch your Ruby manager to the
 project version before installing gems.
 
@@ -38,6 +47,8 @@ gem install bundler:4.0.9
 bundle install
 bin/rails db:prepare
 bin/rails test
+bundle exec rspec
+bundle exec cucumber
 bin/rails server
 ```
 
@@ -139,7 +150,7 @@ troubleshooting, see:
 
 Each product can carry an optional **target price** ("notify me when price
 drops to $X"). Whenever a new `PriceRecord` is written — whether by the
-daily refresh cron, the manual "Fetch latest" button, or a hand-entered
+weekly refresh job, the manual "Fetch latest" button, or a hand-entered
 price — `PriceAlerter` checks two conditions:
 
 1. **`target_hit`** — new price ≤ `product.target_price`.
@@ -222,7 +233,7 @@ logs the issue and falls back to the local recommendation.
 ## Manual-only products (`auto_refresh`)
 
 Products created via **Fill in manually** get `auto_refresh: false` — they are
-saved and alert-eligible but skipped by nightly cron. Toggle **Auto refresh** on
+saved and alert-eligible but skipped by the weekly refresh job. Toggle **Auto refresh** on
 the edit form to opt back in when a scrapeable URL is present.
 
 ## Ideas captured from early planning

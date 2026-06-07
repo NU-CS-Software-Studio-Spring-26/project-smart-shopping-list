@@ -24,26 +24,29 @@ Demo account: `demo@example.com` / `TrackSave!123` (see [Seed accounts](../READM
 - **Framework:** Ruby on Rails 8.1
 - **Database:** PostgreSQL
 - **Frontend:** Bootstrap 5 + ERB views
-- **Auth:** Rails 8 session auth (bcrypt) + **Google OAuth** (OmniAuth)
+- **Auth:** Rails 8 session auth (bcrypt) + **Google OAuth** (OmniAuth) + **Account settings** (password change, self-delete, profile photo)
+- **Storage:** **Active Storage** for user avatar uploads
 - **Email:** Action Mailer + **SendGrid SMTP** for price-drop alerts
 - **AI:** **OpenRouter** / OpenAI for Ask AI, DealAdvisor, DealPicker (heuristic fallback)
 - **Charts:** Chartkick price history on product show
 - **Pagination:** Pagy on products and price records indexes
 - **Hosting:** Heroku
-- **CI:** GitHub Actions (RuboCop, Brakeman, Bundler-Audit, full test suite, seed smoke)
+- **CI:** GitHub Actions (RuboCop, Brakeman, Bundler-Audit, Minitest, Cucumber/RSpec, seed smoke)
 - **Scheduled tasks:** GitHub Actions cron → `/admin/refresh_prices` webhook
 
 ## Domain model
 
-- **User** — owns a list of products; authenticates with email + password or Google OAuth
+- **User** — owns products and folders; authenticates with email + password or Google OAuth; optional **profile photo** (Active Storage)
 - **Product** — an item the user is tracking (name, category, description, optional
-  `source_url`, `target_price`, `auto_refresh`). Scoped to its owning user.
+  `source_url`, `target_price`, `auto_refresh`, tags, favorite flag). Scoped to its owning user.
 - **PriceRecord** — a single observed price for a product at a given store (price,
   store name, URL, date observed, notes). Belongs to a product.
-- **PriceRefreshRun** — one nightly or manual refresh batch (counts, duration, failures).
+- **Folder** — named group of products (many-to-many via `folder_products`).
+- **PriceRefreshRun** — one weekly or manual refresh batch (counts, duration, failures).
 
 ```
 User 1 ── * Product 1 ── * PriceRecord
+User 1 ── * Folder  * ── * Product
 ```
 
 Users only ever see and act on their own products; attempting to access another user's product returns 404.
@@ -57,7 +60,7 @@ Users only ever see and act on their own products; attempting to access another 
 - [x] Bootstrap-based responsive UI + **Supported Sites** page (`/supported`)
 - [x] Deployed on Heroku
 - [x] Automated tests + **`bin/push-check`** local CI gate on GitHub Actions
-- [x] Daily automatic price refresh (GitHub Actions cron → webhook → async job)
+- [x] **Weekly** automatic price refresh (GitHub Actions cron → webhook → async job)
 - [x] Target price + in-app price-drop alerts (banner + card chip, 24h cooldown)
 - [x] **Email** price-drop alerts (SendGrid SMTP)
 - [x] **Ask AI** watchlist assistant (OpenRouter + heuristic fallback)
@@ -65,6 +68,16 @@ Users only ever see and act on their own products; attempting to access another 
 - [x] **Chartkick** price-history charts + Up/Down/Stable trend badges
 - [x] Multi-layer scraper (JSON-LD → OG meta → microdata) + Amazon adapter
 - [x] **`auto_refresh`** toggle for manual-only products
+- [x] **Folders**, **favorites**, **tags**, **Reports** dashboard, watchlist CSV export
+
+## Milestone 4 (shipped in v1.3.0)
+
+- [x] **Account settings** — change password, delete account, profile photo (Active Storage)
+- [x] **Terms acceptance** required on password registration
+- [x] **Cucumber** + **RSpec** coverage; CI seed smoke test
+- [x] **RDoc** generated under `doc/`
+- [x] Privacy page updated (self-serve deletion; GitHub Issues for contact)
+- [x] Products dashboard UI polish (toolbar actions, Ask AI hint)
 
 ## Similar products and references
 
@@ -85,6 +98,8 @@ These tools solve overlapping problems and are useful for comparison and inspira
 - **"Resolved" / purchased state.** A toggle on each product to mark "bought" or
   "no longer watching," which hides it from the main grid.
 - **Product images.** Scraped thumbnail URL on create; optional manual URL.
+- **Account self-service.** ✅ `/account` — password change, delete account, avatar upload.
+- **Registration compliance.** ✅ Terms checkbox on sign-up.
 - **Shared wishlists.** Share a list of watched items with friends/family for gift ideas.
 
 ## Visual assets
@@ -141,6 +156,9 @@ heroku run bin/rails paginationtest:reseed_real_urls -a smart-shoppinglist
 ### Running tests
 ```bash
 bin/rails test
+bundle exec rspec
+bundle exec cucumber
+bin/push-check   # full local CI gate
 ```
 
 ### Deploying to Heroku
@@ -214,8 +232,8 @@ heroku config:set ADMIN_REFRESH_TOKEN=<the-secret> -a smart-shoppinglist
 ### Price-drop alerts (target price + in-app banner)
 
 Users can set a per-product **target price** ("notify me when price drops to
-$X"). Every time a new `PriceRecord` is written — whether by the daily
-refresh cron, the manual "Fetch latest" button, or a hand-entered price —
+$X"). Every time a new `PriceRecord` is written — whether by the **weekly**
+refresh job, the manual "Fetch latest" button, or a hand-entered price —
 the system checks whether the new price should trigger an alert.
 
 **Trigger reasons** (an alert fires if either is true):

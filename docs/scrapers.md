@@ -29,13 +29,12 @@ Three triggers, one core path:
   entry in the same form.
 - **B. Manual "Fetch latest price" button** — synchronous, blocks the click.
   Lives in `ProductsController#fetch_price`.
-- **C. GitHub Actions cron** — every 5 minutes during a 2-hour nightly
-  window (UTC 7–8 ≈ 2:00–3:55 AM Chicago CDT). The workflow `curl`s
-  `POST /admin/refresh_prices`; `AdminController` validates the token,
+- **C. GitHub Actions cron** — **weekly** (Sundays 08:00 UTC) **full-cycle**
+  refresh. The workflow `POST`s `/admin/refresh_prices` with
+  `X-Refresh-Mode: full-cycle`; `AdminController` validates the token,
   enqueues `RefreshPricesJob`, and returns **202 Accepted** immediately.
-  The job calls `PriceFetcher.refresh_batch` with a limit computed by
-  [`RefreshSchedule`](../app/services/refresh_schedule.rb) from the current
-  product count. See section 4 for setup.
+  The job loops `PriceFetcher.refresh_batch` until stale **`Product.refreshable`**
+  rows are updated. See section 4 for setup.
 
 Triggers A and B call `PriceFetcher.call` synchronously in the web request.
 Trigger C is **async + batched** because Heroku web requests must finish

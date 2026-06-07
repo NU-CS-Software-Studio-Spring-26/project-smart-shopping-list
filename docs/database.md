@@ -1,12 +1,24 @@
 # Database & Entity-Relationship Reference
 
-This document describes the current PriceTracker database schema, the relationships between models, and how the schema is expected to evolve as we build toward (and past) MVP.
+This document describes the PriceTracker database schema and relationships.
+For the authoritative column list, see [`db/schema.rb`](../db/schema.rb).
 
 ---
 
-## 1. Current schema (Milestone 0)
+## 1. Current schema (production)
 
-### Entity-relationship diagram
+The diagram below is a simplified view from early milestones. The live schema
+also includes, among other things:
+
+- **users** — OAuth fields (`provider`, `uid`, `name`, `avatar_url`); profile
+  photos via **Active Storage** (`has_one_attached :avatar`)
+- **products** — `target_price`, `auto_refresh`, `tags` (PostgreSQL array),
+  `favorite`, `last_alerted_at`, stock fields, scrape timestamps/errors
+- **folders** + **folder_products** — many-to-many product grouping
+- **price_refresh_runs** — batch observability for scheduled/manual refresh
+- **active_storage_*** — blobs and attachments for user avatars
+
+### Entity-relationship diagram (core)
 
 ```mermaid
 erDiagram
@@ -75,7 +87,7 @@ no automatic refresh, no "Fetch latest price" button. See
 
 ### `price_refresh_runs` (batch observability)
 
-Added for nightly/manual refresh reporting. One row per enqueued batch.
+Added for scheduled/manual refresh reporting. One row per enqueued batch.
 
 | Column | Purpose |
 |---|---|
@@ -141,29 +153,13 @@ flowchart LR
 
 ---
 
-## 4. Planned schema evolution
+## 4. Future schema ideas
 
-These changes are **not yet built**. They are organized in roughly the order we expect to implement them.
+Several items below were **planned early** and are now **shipped** (target
+price, in-app/email alerts, comma-separated tags on products, user avatar via
+Active Storage). This section lists ideas we have **not** built yet.
 
-### 4.1 Target price + price-drop alerts
-
-Add a `target_price` to products so users can flag a "buy at" threshold. When a new price record drops below it, eventually trigger a notification.
-
-```mermaid
-erDiagram
-    PRODUCT {
-        decimal target_price "nullable"
-        boolean alert_sent  "default false"
-    }
-```
-
-**Migrations:**
-```ruby
-add_column :products, :target_price, :decimal, precision: 10, scale: 2
-add_column :products, :alert_sent,   :boolean, default: false, null: false
-```
-
-### 4.2 Purchased / archived state
+### 4.1 Purchased / archived state
 
 A simple boolean toggle so users can mark items they've bought (or stopped tracking) and hide them from the active grid.
 
@@ -175,64 +171,12 @@ add_column :products, :purchased_at, :datetime
 
 A nullable timestamp captures both "is it purchased?" and "when?" in one column — more flexible than a plain boolean.
 
-### 4.3 Active Storage for product images
+### 4.2 Product image uploads (not user avatars)
 
-Replace the freeform `image_url` string with a real attachment so users can upload from their device.
+Product thumbnails today come from scraped `image_url` or a manual URL field.
+Uploading a custom product photo (Active Storage on `Product`) is still a future idea.
 
-```ruby
-# in Product
-has_one_attached :image
-```
-
-Active Storage adds two tables (`active_storage_blobs`, `active_storage_attachments`) automatically. Existing `image_url` rows get migrated to remote-pulled blobs or simply deprecated.
-
-```mermaid
-erDiagram
-    PRODUCT ||--o| ACTIVE_STORAGE_ATTACHMENT : "has_one image"
-    ACTIVE_STORAGE_ATTACHMENT ||--|| ACTIVE_STORAGE_BLOB : "points to"
-```
-
-### 4.4 Notifications
-
-When a `PriceRecord` is created with `price < product.target_price`, enqueue a background job to email the user (and optionally push a browser notification). Schema additions:
-
-```mermaid
-erDiagram
-    USER ||--o{ NOTIFICATION : "received"
-
-    NOTIFICATION {
-        bigint   id PK
-        bigint   user_id FK
-        bigint   product_id FK
-        bigint   price_record_id FK
-        string   channel         "email | web"
-        datetime sent_at
-        datetime read_at
-    }
-```
-
-### 4.5 Tags / categories as first-class entities
-
-Right now `category` is a free-text string on `products`. To support filtering and avoid typos like "Electronics" vs "electronic," promote categories (or general tags) to their own table with a join model.
-
-```mermaid
-erDiagram
-    PRODUCT      ||--o{ PRODUCT_TAG : "has"
-    TAG          ||--o{ PRODUCT_TAG : "applied to"
-
-    TAG {
-        bigint id PK
-        string name "unique"
-        string slug
-    }
-
-    PRODUCT_TAG {
-        bigint product_id FK
-        bigint tag_id     FK
-    }
-```
-
-### 4.6 Shared wishlists (later, if scoped in)
+### 4.3 Shared wishlists
 
 To let users share lists with others without giving up ownership, introduce a join model:
 

@@ -6,6 +6,40 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [v1.3.0] — 2026-06-07 — Milestone 4 (accounts, compliance, testing, polish)
+
+Fourth milestone release. Themes: **account self-service**, registration
+compliance, expanded **test coverage**, generated **RDoc**, and UI polish for
+the products dashboard and account settings.
+
+Deployed at <https://smart-shoppinglist-6ae31171e85c.herokuapp.com/>.
+
+### Added
+- **Account settings** (`/account`) — change password, delete account (password
+  or email confirmation for OAuth users), profile photo upload via **Active
+  Storage**.
+- **Registration terms** — users must accept Terms & Disclaimer before creating
+  a password account (`terms_accepted` validation).
+- **Cucumber** — registration (happy + sad), auth guard, manual add-product flows.
+- **RSpec** — accounts, registrations, user model, authentication request specs.
+- **RDoc** — `bin/rails rdoc` generates API docs under `doc/`.
+
+### Changed
+- **Privacy page** — account deletion via Account settings; contact through GitHub
+  Issues (no personal email addresses on the page).
+- **Account UI** — header account chip + restyled settings page.
+- **Products index** — toolbar pill buttons for Favorites filter and watchlist
+  CSV export; compact hero Ask AI hint.
+- **Ask AI page** — submit button no longer full-width.
+- **Scheduled refresh** — documentation aligned to **weekly** full-cycle cron
+  (Sundays 08:00 UTC); seed smoke test runs in CI.
+
+### Fixed
+- CI seed smoke test (`terms_accepted` on seeded users).
+- RuboCop alignment in Cucumber support; Puma bumped for CVE advisories.
+- Product detail spacing above “Fetch latest from source”.
+- Heroku deploy note: run `db:migrate` after Active Storage migration.
+
 ## [v1.2.0] — 2026-05-27 — Milestone 3 (notifications, AI, scraping, polish)
 
 Third milestone release. Themes: outbound **email** alerts, **scheduled**
