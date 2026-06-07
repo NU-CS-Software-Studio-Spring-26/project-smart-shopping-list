@@ -1,0 +1,2 @@
+default: --publish-quiet --format progress
+test: --publish-quiet --format progress

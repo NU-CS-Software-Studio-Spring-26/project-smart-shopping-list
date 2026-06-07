@@ -42,6 +42,9 @@ gem "omniauth-rails_csrf_protection"
 
 group :development, :test do
   gem "faker"
+  gem "rspec-rails", "~> 7.1"
+  gem "cucumber-rails", require: false
+  gem "cucumber"
 end
 
 # Auto-load local .env (e.g. GEMINI_API_KEY / OPENROUTER_API_KEY) in development
@@ -89,6 +92,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "rdoc", require: false
 end
 
 group :test do
