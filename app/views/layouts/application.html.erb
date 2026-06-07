@@ -50,11 +50,23 @@
 
         <div class="pt-header-right">
           <% if authenticated? %>
-            <div class="pt-user">
-              <%= user_avatar_tag(Current.user) %>
-              <span class="pt-user-email"><%= Current.user.email_address %></span>
-              <%= link_to "Account", account_path, class: "pt-link-btn" %>
-              <%= button_to "Sign out", session_path, method: :delete, class: "pt-link-btn", form: { class: "d-inline" } %>
+            <div class="pt-header-account">
+              <%= link_to account_path,
+                    class: "pt-account-chip #{'is-active' if controller_name == 'accounts'}",
+                    aria: { current: (controller_name == 'accounts' ? "page" : nil) } do %>
+                <%= user_avatar_tag(Current.user) %>
+                <span class="pt-account-chip-label">
+                  <span class="pt-account-chip-name">
+                    <%= Current.user.name.presence || Current.user.email_address.split("@").first %>
+                  </span>
+                  <span class="pt-account-chip-meta">Account</span>
+                </span>
+              <% end %>
+              <%= button_to "Sign out",
+                    session_path,
+                    method: :delete,
+                    class: "pt-btn pt-btn-ghost pt-btn-sm",
+                    form: { class: "pt-header-signout-form" } %>
             </div>
           <% else %>
             <%= link_to "Sign in", new_session_path, class: "pt-btn pt-btn-ghost" %>
