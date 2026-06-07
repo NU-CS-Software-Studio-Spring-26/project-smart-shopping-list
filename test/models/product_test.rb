@@ -233,7 +233,8 @@ class ProductTest < ActiveSupport::TestCase
     user = User.create!(
       email_address: Product::PAGINATION_TEST_EMAIL,
       password: "Pagy123!",
-      password_confirmation: "Pagy123!"
+      password_confirmation: "Pagy123!",
+      terms_accepted: true
     )
     user.products.create!(
       name: "Load test",

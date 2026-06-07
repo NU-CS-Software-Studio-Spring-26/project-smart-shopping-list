@@ -15,7 +15,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
       user: {
         email_address: "newuser@example.com",
         password: "SecurePassword123!",
-        password_confirmation: "SecurePassword123!"
+        password_confirmation: "SecurePassword123!",
+        terms_accepted: "1"
       }
     }
 
@@ -29,7 +30,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
       user: {
         email_address: @user.email_address,
         password: "password",
-        password_confirmation: "password"
+        password_confirmation: "password",
+        terms_accepted: "1"
       }
     }
 
@@ -42,7 +44,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
       user: {
         email_address: "new@example.com",
         password: "password",
-        password_confirmation: "different"
+        password_confirmation: "different",
+        terms_accepted: "1"
       }
     }
 
@@ -146,7 +149,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
     new_user = User.create!(
       email_address: "hashtest@example.com",
       password: "MySecurePassword123!",
-      password_confirmation: "MySecurePassword123!"
+      password_confirmation: "MySecurePassword123!",
+      terms_accepted: true
     )
 
     # Reload to ensure we're reading from DB
@@ -211,7 +215,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
       user: {
         email_address: "TestUser@EXAMPLE.COM",
         password: "Test#Pass9!",
-        password_confirmation: "Test#Pass9!"
+        password_confirmation: "Test#Pass9!",
+        terms_accepted: "1"
       }
     }
 
@@ -224,7 +229,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
       user: {
         email_address: "  trimmed@example.com  ",
         password: "Test#Pass9!",
-        password_confirmation: "Test#Pass9!"
+        password_confirmation: "Test#Pass9!",
+        terms_accepted: "1"
       }
     }
 
@@ -333,7 +339,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
       user: {
         email_address: "not-an-email",
         password: "password",
-        password_confirmation: "password"
+        password_confirmation: "password",
+        terms_accepted: "1"
       }
     }
 
@@ -346,7 +353,8 @@ class AuthenticationComprehensiveTest < ActionDispatch::IntegrationTest
       user: {
         email_address: "invalid email@example.com",
         password: "password",
-        password_confirmation: "password"
+        password_confirmation: "password",
+        terms_accepted: "1"
       }
     }
 

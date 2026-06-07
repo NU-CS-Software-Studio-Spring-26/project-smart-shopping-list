@@ -39,11 +39,11 @@ module IntegrationHelpers
 
   def assert_response(expected)
     code = case expected
-           when :success then 200..299
-           when Integer then expected
-           when :unprocessable_entity, :unprocessable_content then 422
-           else Rack::Utils::SYMBOL_TO_STATUS_CODE.fetch(expected)
-           end
+    when :success then 200..299
+    when Integer then expected
+    when :unprocessable_entity, :unprocessable_content then 422
+    else Rack::Utils::SYMBOL_TO_STATUS_CODE.fetch(expected)
+    end
 
     actual = response.status
     ok = code.is_a?(Range) ? code.cover?(actual) : actual == code

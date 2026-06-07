@@ -27,7 +27,8 @@ class OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
     existing = User.create!(
       email_address: "controller-oauth@example.com",
       password: "Test#Pass9!",
-      password_confirmation: "Test#Pass9!"
+      password_confirmation: "Test#Pass9!",
+      terms_accepted: true
     )
     existing.products.create!(name: "Existing product", category: "Books")
 
