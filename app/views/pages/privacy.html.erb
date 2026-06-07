@@ -15,7 +15,7 @@
   <section class="container-xl pt-content">
     <h2>What we collect</h2>
     <ul>
-      <li><strong>Account info:</strong> your email address and a hashed (bcrypt) password.</li>
+      <li><strong>Account info:</strong> your email address, an optional profile photo (Active Storage), and a hashed (bcrypt) password.</li>
       <li><strong>Products you track:</strong> the URLs, names, images, categories, and descriptions of products you add.</li>
       <li><strong>Price history:</strong> prices and store names for the products you've added, recorded over time.</li>
       <li><strong>Session data:</strong> a signed cookie identifying your active session.</li>
@@ -36,11 +36,11 @@
       Passwords are never stored in plaintext.
     </p>
 
-    <h2>How to request deletion</h2>
+    <h2>How to delete your account</h2>
     <p>
-      To delete your account and all associated data (products, price records, session), email
-      <a href="mailto:andrewhxue@gmail.com">andrewhxue@gmail.com</a> from the address tied
-      to your account. We will remove your records within 14 days.
+      Signed-in users can delete their account immediately from
+      <%= link_to "Account settings", account_path %> (password or email confirmation required).
+      This permanently removes your products, price records, folders, and sessions.
     </p>
 
     <h2>Changes</h2>

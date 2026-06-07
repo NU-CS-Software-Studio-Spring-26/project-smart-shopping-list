@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   match "/auth/:provider/callback", to: "omniauth_callbacks#create", via: %i[ get post ]
   get "/auth/failure", to: "omniauth_callbacks#failure"
   resource :registration, only: [ :new, :create ]
+  resource :account, only: [ :show, :update, :destroy ]
   resources :passwords, param: :token
   root "products#index"
   resources :products do

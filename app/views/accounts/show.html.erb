@@ -1,0 +1,92 @@
+<% content_for :title, "Account settings" %>
+<main class="pt-page">
+  <div class="container-xl pt-content pt-narrow">
+    <header class="pt-form-head">
+      <div class="pt-eyebrow">Account</div>
+      <h1 class="pt-h1">Settings</h1>
+      <p class="pt-lede">Manage your profile photo, password, and account data.</p>
+    </header>
+
+    <section class="pt-panel" style="margin-bottom: 24px;">
+      <div class="pt-panel-head">
+        <h2 class="pt-panel-title">Profile photo</h2>
+      </div>
+      <div class="pt-panel-body" style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+        <div class="pt-account-avatar-preview">
+          <%= user_avatar_tag(@user, size: :large) %>
+        </div>
+        <%= form_with model: @user, url: account_path, method: :patch, local: true, html: { multipart: true }, class: "pt-form", style: "flex: 1; min-width: 240px;" do |f| %>
+          <div class="pt-field">
+            <label class="pt-field-label" for="user_avatar">Upload image</label>
+            <%= f.file_field :avatar, accept: "image/png,image/jpeg,image/webp,image/gif", class: "pt-input" %>
+            <div class="pt-field-hint">PNG, JPEG, WebP, or GIF — max 5 MB. Stored with Active Storage.</div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <%= f.submit "Save photo", class: "pt-btn pt-btn-primary" %>
+            <% if @user.avatar.attached? %>
+              <%= button_to "Remove photo", account_path, method: :patch, params: { remove_avatar: "1" }, class: "pt-btn pt-btn-secondary", data: { turbo_confirm: "Remove your profile photo?" } %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="pt-panel" style="margin-bottom: 24px;">
+      <div class="pt-panel-head">
+        <h2 class="pt-panel-title">Change password</h2>
+      </div>
+      <div class="pt-panel-body">
+        <% if @user.oauth_user? %>
+          <p class="pt-muted">You sign in with <strong>Google</strong>. Password changes are handled by your Google account.</p>
+        <% else %>
+          <%= form_with url: account_path, method: :patch, local: true, class: "pt-form" do |f| %>
+            <div class="pt-field">
+              <label class="pt-field-label" for="current_password">Current password</label>
+              <%= password_field_tag :current_password, nil, required: true, autocomplete: "current-password", class: "pt-input", maxlength: 72 %>
+            </div>
+            <div data-controller="password-strength" data-password-strength-min-length-value="<%= User::PASSWORD_MIN_LENGTH %>">
+              <div class="pt-field">
+                <label class="pt-field-label" for="password">New password</label>
+                <%= password_field_tag :password, nil, required: true, autocomplete: "new-password", class: "pt-input", maxlength: 72,
+                      data: { password_strength_target: "password", action: "input->password-strength#check" } %>
+                <%= render "shared/password_requirements" %>
+              </div>
+              <div class="pt-field">
+                <label class="pt-field-label" for="password_confirmation">Confirm new password</label>
+                <%= password_field_tag :password_confirmation, nil, required: true, autocomplete: "new-password", class: "pt-input", maxlength: 72,
+                      data: { password_strength_target: "confirmation", action: "input->password-strength#checkMatch" } %>
+              </div>
+            </div>
+            <%= submit_tag "Update password", class: "pt-btn pt-btn-primary" %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="pt-panel" style="border-left: 3px solid var(--red);">
+      <div class="pt-panel-head">
+        <h2 class="pt-panel-title" style="color: var(--red);">Delete account</h2>
+      </div>
+      <div class="pt-panel-body">
+        <p class="pt-muted" style="margin-bottom: 16px;">
+          Permanently delete your account, products, price records, and folders. This cannot be undone.
+        </p>
+        <%= form_with url: account_path, method: :delete, local: true, class: "pt-form",
+              data: { turbo_confirm: "Delete your account and all data permanently?" } do %>
+          <% if @user.oauth_user? %>
+            <div class="pt-field">
+              <label class="pt-field-label" for="email_confirmation">Type your email to confirm</label>
+              <%= email_field_tag :email_confirmation, nil, required: true, class: "pt-input", placeholder: @user.email_address, autocomplete: "off" %>
+            </div>
+          <% else %>
+            <div class="pt-field">
+              <label class="pt-field-label" for="password_confirmation">Current password</label>
+              <%= password_field_tag :password_confirmation, nil, required: true, autocomplete: "current-password", class: "pt-input", maxlength: 72 %>
+            </div>
+          <% end %>
+          <%= submit_tag "Delete my account", class: "pt-btn pt-btn-secondary", style: "border-color: var(--red); color: var(--red);" %>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</main>
