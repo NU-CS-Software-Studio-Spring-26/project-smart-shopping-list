@@ -22,9 +22,9 @@
               autocomplete: "off",
               maxlength: 240 %>
       </div>
-      <div class="pt-form-actions" style="margin-top: 12px;">
+      <div class="pt-form-actions">
         <%= f.submit "Ask",
-              class: "pt-btn pt-btn-primary pt-btn-lg",
+              class: "pt-btn pt-btn-primary",
               data: { loading_button_target: "submit", busy_label: "Thinking…" } %>
         <% if @query.present? %>
           <%= link_to "Clear", assistant_path, class: "pt-link-btn" %>
