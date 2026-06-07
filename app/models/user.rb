@@ -15,11 +15,17 @@ class User < ApplicationRecord
   ].freeze
 
   has_secure_password
+  has_one_attached :avatar
   has_many :sessions, dependent: :destroy
   has_many :products, dependent: :destroy
   has_many :folders, dependent: :destroy
 
+  attr_accessor :terms_accepted
+
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+
+  AVATAR_MAX_BYTES = 5.megabytes
+  AVATAR_CONTENT_TYPES = %w[image/png image/jpeg image/jpg image/webp image/gif].freeze
 
   validates :email_address,
             presence: true,
@@ -36,6 +42,8 @@ class User < ApplicationRecord
 
   validates :password, length: { minimum: PASSWORD_MIN_LENGTH, message: "must be at least #{PASSWORD_MIN_LENGTH} characters" }, if: -> { password.present? }
   validate :password_strength, if: -> { password.present? && !oauth_user? }
+  validate :terms_must_be_accepted, on: :create, unless: :oauth_user?
+  validate :avatar_is_acceptable, if: -> { avatar.attached? }
 
   def oauth_user?
     provider.present? && uid.present?
@@ -135,6 +143,25 @@ class User < ApplicationRecord
       next if username.present? && password.downcase.include?(username)
 
       return password
+    end
+  end
+
+  def terms_must_be_accepted
+    return if ActiveModel::Type::Boolean.new.cast(terms_accepted)
+
+    errors.add(:terms_accepted, "must be accepted before creating an account")
+  end
+
+  def avatar_is_acceptable
+    blob = avatar.blob
+    return if blob.blank?
+
+    unless AVATAR_CONTENT_TYPES.include?(blob.content_type.to_s)
+      errors.add(:avatar, "must be a PNG, JPEG, WebP, or GIF image")
+    end
+
+    if blob.byte_size > AVATAR_MAX_BYTES
+      errors.add(:avatar, "is too large (maximum is 5 MB)")
     end
   end
 

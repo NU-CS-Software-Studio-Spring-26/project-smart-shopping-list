@@ -145,7 +145,17 @@ body {
   color: white;
   display: grid; place-items: center;
   font-weight: 600; font-size: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
+.pt-user-avatar-lg {
+  width: 96px; height: 96px; font-size: 32px;
+}
+.pt-check-label {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 14px; color: var(--ink-2); cursor: pointer;
+}
+.pt-check { margin-top: 3px; flex-shrink: 0; }
 .pt-user-email { font-size: 13px; color: var(--ink-2); }
 .pt-link-btn {
   background: none; border: none; color: var(--accent);

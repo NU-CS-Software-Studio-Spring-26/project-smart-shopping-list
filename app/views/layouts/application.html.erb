@@ -51,8 +51,9 @@
         <div class="pt-header-right">
           <% if authenticated? %>
             <div class="pt-user">
-              <span class="pt-user-avatar"><%= Current.user.email_address.first.upcase %></span>
+              <%= user_avatar_tag(Current.user) %>
               <span class="pt-user-email"><%= Current.user.email_address %></span>
+              <%= link_to "Account", account_path, class: "pt-link-btn" %>
               <%= button_to "Sign out", session_path, method: :delete, class: "pt-link-btn", form: { class: "d-inline" } %>
             </div>
           <% else %>
