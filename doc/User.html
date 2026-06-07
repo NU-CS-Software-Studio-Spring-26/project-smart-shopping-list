@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>class User - PriceTracker API Documentation</title>
+
+
+  <meta
+    name="keywords"
+    content="ruby,class,User"
+  >
+
+    <meta
+      name="description"
+      content="Documentation for the User class"
+    >
+
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="class User - PriceTracker API Documentation">
+
+
+
+    <meta
+      property="og:description"
+      content="Documentation for User class - API reference and code examples"
+    >
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="class User - PriceTracker API Documentation">
+
+
+
+    <meta
+      name="twitter:description"
+      content="Documentation for User class - API reference and code examples"
+    >
+
+
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script
+  src="./js/theme-toggle.js?v=7.2.0"
+></script>
+
+<script
+  src="./js/search_navigation.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_data.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_ranker.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_controller.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/c_highlighter.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/bash_highlighter.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/aliki.js?v=7.2.0"
+  defer
+></script>
+
+<link
+  href="./css/rdoc.css?v=7.2.0"
+  rel="stylesheet"
+>
+
+
+
+
+<body role="document" class="class has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="./index.html" class="navbar-brand">
+    PriceTracker API Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation" hidden>
+  
+
+
+
+
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" >
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
+
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="./README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  
+
+  
+<div id="parent-class-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-ancestors"></use></svg>
+      </span>
+      <span class="nav-section-title">Ancestors</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+    <ul><li><a href="ApplicationRecord.html">ApplicationRecord</a><ul><li>ActiveRecord::Base</li></ul></li></ul>
+  </details>
+</div>
+
+
+  
+
+  
+
+  
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-class-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Class Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-c-accounts_for_email">accounts_for_email</a></li>
+
+        <li ><a href="#method-c-find_by_email_address">find_by_email_address</a></li>
+
+        <li ><a href="#method-c-from_omniauth">from_omniauth</a></li>
+
+        <li ><a href="#method-c-generated_oauth_password">generated_oauth_password</a></li>
+
+        <li ><a href="#method-c-merge_accounts-21">merge_accounts!</a></li>
+
+        <li ><a href="#method-c-normalize_email">normalize_email</a></li>
+
+      </ul>
+    </details>
+  </div>
+
+
+
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-oauth_user-3F">oauth_user?</a></li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+
+    <ul class="link-list nav-list"><li><code><a href="./AccountsController.html">AccountsController</a></code></li><li><code><a href="./AdminController.html">AdminController</a></code></li><li><code><a href="./AiAssistant.html">AiAssistant</a></code></li><li><details><summary><code><a href="./ApplicationCable.html">ApplicationCable</a></code></summary><ul class="link-list nav-list"><li><code><a href="./ApplicationCable/Connection.html">Connection</a></code></li></ul></details></li><li><code><a href="./ApplicationController.html">ApplicationController</a></code></li><li><code><a href="./ApplicationHelper.html">ApplicationHelper</a></code></li><li><code><a href="./ApplicationJob.html">ApplicationJob</a></code></li><li><code><a href="./ApplicationMailer.html">ApplicationMailer</a></code></li><li><code><a href="./ApplicationRecord.html">ApplicationRecord</a></code></li><li><code><a href="./AssistantController.html">AssistantController</a></code></li><li><code><a href="./Authentication.html">Authentication</a></code></li><li><code><a href="./BudgetPlannerController.html">BudgetPlannerController</a></code></li><li><code><a href="./Current.html">Current</a></code></li><li><code><a href="./DealAdvisor.html">DealAdvisor</a></code></li><li><code><a href="./DealPicker.html">DealPicker</a></code></li><li><code><a href="./Folder.html">Folder</a></code></li><li><code><a href="./FolderProduct.html">FolderProduct</a></code></li><li><code><a href="./FolderProductsController.html">FolderProductsController</a></code></li><li><code><a href="./FoldersController.html">FoldersController</a></code></li><li><details><summary><code><a href="./LlmClient.html">LlmClient</a></code></summary><ul class="link-list nav-list"><li><code><a href="./LlmClient/Error.html">Error</a></code></li></ul></details></li><li><code><a href="./MailerSettings.html">MailerSettings</a></code></li><li><code><a href="./OmniauthCallbacksController.html">OmniauthCallbacksController</a></code></li><li><code><a href="./PagesController.html">PagesController</a></code></li><li><code><a href="./PasswordsController.html">PasswordsController</a></code></li><li><code><a href="./PasswordsMailer.html">PasswordsMailer</a></code></li><li><code><a href="./PriceAlertMailer.html">PriceAlertMailer</a></code></li><li><code><a href="./PriceAlerter.html">PriceAlerter</a></code></li><li><code><a href="./PriceFetcher.html">PriceFetcher</a></code></li><li><code><a href="./PriceHistoryExport.html">PriceHistoryExport</a></code></li><li><code><a href="./PriceRecord.html">PriceRecord</a></code></li><li><code><a href="./PriceRecordsController.html">PriceRecordsController</a></code></li><li><code><a href="./PriceRecordsHelper.html">PriceRecordsHelper</a></code></li><li><code><a href="./PriceRefreshRun.html">PriceRefreshRun</a></code></li><li><details><summary><code><a href="./PriceScrapers.html">PriceScrapers</a></code></summary><ul class="link-list nav-list"><li><code><a href="./PriceScrapers/AmazonAdapter.html">AmazonAdapter</a></code></li><li><code><a href="./PriceScrapers/Base.html">Base</a></code></li><li><code><a href="./PriceScrapers/BlockedSites.html">BlockedSites</a></code></li><li><code><a href="./PriceScrapers/Error.html">Error</a></code></li><li><code><a href="./PriceScrapers/JsonLdAdapter.html">JsonLdAdapter</a></code></li><li><code><a href="./PriceScrapers/LululemonAdapter.html">LululemonAdapter</a></code></li><li><code><a href="./PriceScrapers/LululemonUrl.html">LululemonUrl</a></code></li><li><code><a href="./PriceScrapers/PermanentError.html">PermanentError</a></code></li><li><code><a href="./PriceScrapers/Registry.html">Registry</a></code></li><li><code><a href="./PriceScrapers/TransientError.html">TransientError</a></code></li></ul></details></li><li><code><a href="./Product.html">Product</a></code></li><li><code><a href="./ProductsController.html">ProductsController</a></code></li><li><code><a href="./ProductsHelper.html">ProductsHelper</a></code></li><li><code><a href="./RefreshFailureReport.html">RefreshFailureReport</a></code></li><li><code><a href="./RefreshPricesJob.html">RefreshPricesJob</a></code></li><li><code><a href="./RefreshSchedule.html">RefreshSchedule</a></code></li><li><code><a href="./RegistrationsController.html">RegistrationsController</a></code></li><li><code><a href="./ReportsController.html">ReportsController</a></code></li><li><code><a href="./Session.html">Session</a></code></li><li><code><a href="./SessionsController.html">SessionsController</a></code></li><li><code><a href="./SupportedRetailersHelper.html">SupportedRetailersHelper</a></code></li><li><details><summary><code><a href="./User.html">User</a></code></summary><ul class="link-list nav-list"><li><code><a href="./User/OauthError.html">OauthError</a></code></li></ul></details></li><li><code><a href="./WatchlistExport.html">WatchlistExport</a></code></li></ul>
+  </details>
+</div>
+
+</nav>
+
+<main role="main" aria-labelledby="class-user">
+  
+  
+
+  <span id="class-User" class="legacy-anchor"></span>
+  <h1 id="class-user" class="anchor-link class">
+    class User
+  </h1>
+
+  <section class="description">
+    
+  </section>
+
+
+  <span id="5Buntitled-5D" class="legacy-anchor"></span>
+  <section class="documentation-section anchor-link">
+
+
+
+
+
+    <section class="constants-list">
+      <header>
+        <h3 id="untitled-constants"><a href="#untitled-constants">Constants</a></h3>
+      </header>
+      <dl>
+
+        <dt id="AVATAR_CONTENT_TYPES">AVATAR_CONTENT_TYPES</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="AVATAR_MAX_BYTES">AVATAR_MAX_BYTES</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="COMMON_PASSWORDS">COMMON_PASSWORDS</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="PASSWORD_MIN_LENGTH">PASSWORD_MIN_LENGTH</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="PASSWORD_REQUIREMENTS">PASSWORD_REQUIREMENTS</dt>
+
+        <dd>
+
+          <p>Single source of truth for the password rules we can check live in the browser. The registrations + reset forms render this list as a checklist, and the password_strength Stimulus controller tests each rule by <code>key</code> as the user types — so feedback is instant instead of waiting for submit. (Email-containment and common-password checks stay server-side only.)</p>
+        </dd>
+
+
+      </dl>
+    </section>
+
+
+
+    <section class="attribute-method-details method-section">
+      <header>
+        <h3 id="untitled-attributes"><a href="#untitled-attributes">Attributes</a></h3>
+      </header>
+
+
+      <div id="attribute-i-terms_accepted" class="method-detail anchor-link">
+        <div class="method-heading attribute-method-heading">
+          <a href="#attribute-i-terms_accepted" title="Link to this attribute">
+            <span class="method-name">terms_accepted</span>
+            <span class="attribute-access-type">[RW]</span>
+          </a>
+        </div>
+
+        <div class="method-description">
+
+
+        
+
+        </div>
+      </div>
+
+    </section>
+
+
+
+
+
+
+     <section id="public-class-untitled-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-class-untitled-methods"><a href="#public-class-untitled-methods">Public Class Methods</a></h3>
+       </header>
+
+
+      <div id="method-c-accounts_for_email" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-accounts_for_email" title="Link to this method">
+                <span class="method-name">accounts_for_email</span>
+                <span class="method-args">(email)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="accounts_for_email-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/user.rb</span>
+<span class="line-num">65</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">accounts_for_email</span>(<span class="ruby-identifier">email</span>)
+<span class="line-num">66</span>   <span class="ruby-identifier">normalized</span> = <span class="ruby-identifier">normalize_email</span>(<span class="ruby-identifier">email</span>)
+<span class="line-num">67</span>   <span class="ruby-keyword">return</span> <span class="ruby-identifier">none</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">normalized</span>.<span class="ruby-identifier">blank?</span>
+<span class="line-num">68</span> 
+<span class="line-num">69</span>   <span class="ruby-identifier">where</span>(<span class="ruby-string">&quot;LOWER(email_address) = ?&quot;</span>, <span class="ruby-identifier">normalized</span>).<span class="ruby-identifier">order</span>(<span class="ruby-value">:created_at</span>)
+<span class="line-num">70</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-find_by_email_address" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-find_by_email_address" title="Link to this method">
+                <span class="method-name">find_by_email_address</span>
+                <span class="method-args">(email)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="find_by_email_address-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/user.rb</span>
+<span class="line-num">58</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">find_by_email_address</span>(<span class="ruby-identifier">email</span>)
+<span class="line-num">59</span>   <span class="ruby-identifier">normalized</span> = <span class="ruby-identifier">normalize_email</span>(<span class="ruby-identifier">email</span>)
+<span class="line-num">60</span>   <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">normalized</span>.<span class="ruby-identifier">blank?</span>
+<span class="line-num">61</span> 
+<span class="line-num">62</span>   <span class="ruby-identifier">where</span>(<span class="ruby-string">&quot;LOWER(email_address) = ?&quot;</span>, <span class="ruby-identifier">normalized</span>).<span class="ruby-identifier">first</span>
+<span class="line-num">63</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Case-insensitive lookup — handles legacy rows saved before email normalization, so Google sign-in can attach to an existing account.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-from_omniauth" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-from_omniauth" title="Link to this method">
+                <span class="method-name">from_omniauth</span>
+                <span class="method-args">(auth)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="from_omniauth-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/user.rb</span>
+<span class="line-num"> 81</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">from_omniauth</span>(<span class="ruby-identifier">auth</span>)
+<span class="line-num"> 82</span>   <span class="ruby-identifier">provider</span> = <span class="ruby-identifier">auth</span>.<span class="ruby-identifier">provider</span>.<span class="ruby-identifier">to_s</span>
+<span class="line-num"> 83</span>   <span class="ruby-identifier">uid</span> = <span class="ruby-identifier">auth</span>.<span class="ruby-identifier">uid</span>.<span class="ruby-identifier">to_s</span>
+<span class="line-num"> 84</span>   <span class="ruby-identifier">info</span> = <span class="ruby-identifier">auth</span>.<span class="ruby-identifier">info</span>
+<span class="line-num"> 85</span>   <span class="ruby-identifier">email</span> = <span class="ruby-identifier">normalize_email</span>(<span class="ruby-identifier">info</span>.<span class="ruby-identifier">email</span>)
+<span class="line-num"> 86</span> 
+<span class="line-num"> 87</span>   <span class="ruby-identifier">raise</span> <span class="ruby-constant">OauthError</span>, <span class="ruby-string">&quot;Google did not return an email address.&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">email</span>.<span class="ruby-identifier">blank?</span>
+<span class="line-num"> 88</span> 
+<span class="line-num"> 89</span>   <span class="ruby-identifier">oauth_user</span> = <span class="ruby-identifier">find_by</span>(<span class="ruby-value">provider:</span> <span class="ruby-identifier">provider</span>, <span class="ruby-value">uid:</span> <span class="ruby-identifier">uid</span>)
+<span class="line-num"> 90</span>   <span class="ruby-identifier">email_matches</span> = <span class="ruby-identifier">accounts_for_email</span>(<span class="ruby-identifier">email</span>).<span class="ruby-identifier">to_a</span>
+<span class="line-num"> 91</span>   <span class="ruby-identifier">related_users</span> = (<span class="ruby-identifier">email_matches</span> <span class="ruby-operator">+</span> [ <span class="ruby-identifier">oauth_user</span> ].<span class="ruby-identifier">compact</span>).<span class="ruby-identifier">uniq</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:id</span>)
+<span class="line-num"> 92</span> 
+<span class="line-num"> 93</span>   <span class="ruby-identifier">user</span> =
+<span class="line-num"> 94</span>     <span class="ruby-keyword">case</span> <span class="ruby-identifier">related_users</span>.<span class="ruby-identifier">size</span>
+<span class="line-num"> 95</span>     <span class="ruby-keyword">when</span> <span class="ruby-value">0</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">new</span>(<span class="ruby-value">email_address:</span> <span class="ruby-identifier">email</span>)
+<span class="line-num"> 96</span>     <span class="ruby-keyword">when</span> <span class="ruby-value">1</span> <span class="ruby-keyword">then</span> <span class="ruby-identifier">related_users</span>.<span class="ruby-identifier">first</span>
+<span class="line-num"> 97</span>     <span class="ruby-keyword">else</span> <span class="ruby-identifier">merge_accounts!</span>(<span class="ruby-identifier">related_users</span>)
+<span class="line-num"> 98</span>     <span class="ruby-keyword">end</span>
+<span class="line-num"> 99</span> 
+<span class="line-num">100</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">provider</span> = <span class="ruby-identifier">provider</span>
+<span class="line-num">101</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">uid</span> = <span class="ruby-identifier">uid</span>
+<span class="line-num">102</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">name</span> = <span class="ruby-identifier">info</span>.<span class="ruby-identifier">name</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">info</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:name</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">info</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">present?</span>
+<span class="line-num">103</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">avatar_url</span> = <span class="ruby-identifier">info</span>.<span class="ruby-identifier">image</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">info</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:image</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">info</span>.<span class="ruby-identifier">image</span>.<span class="ruby-identifier">present?</span>
+<span class="line-num">104</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">email_address</span> = <span class="ruby-identifier">email</span>
+<span class="line-num">105</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">password</span> = <span class="ruby-identifier">generated_oauth_password</span>(<span class="ruby-identifier">email</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">user</span>.<span class="ruby-identifier">password_digest</span>.<span class="ruby-identifier">blank?</span>
+<span class="line-num">106</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">password_confirmation</span> = <span class="ruby-identifier">user</span>.<span class="ruby-identifier">password</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">user</span>.<span class="ruby-identifier">password_digest</span>.<span class="ruby-identifier">blank?</span>
+<span class="line-num">107</span>   <span class="ruby-identifier">user</span>.<span class="ruby-identifier">save!</span>
+<span class="line-num">108</span>   <span class="ruby-identifier">user</span>
+<span class="line-num">109</span> <span class="ruby-keyword">rescue</span> <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">RecordInvalid</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">e</span>
+<span class="line-num">110</span>   <span class="ruby-identifier">raise</span> <span class="ruby-constant">OauthError</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">record</span>.<span class="ruby-identifier">errors</span>.<span class="ruby-identifier">full_messages</span>.<span class="ruby-identifier">to_sentence</span>
+<span class="line-num">111</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Find-or-create a <a href="User.html"><code>User</code></a> from an OmniAuth::AuthHash. Looks up by (provider, uid) first so repeat sign-ins land on the same row, then by email (case-insensitive) so users who originally signed up locally are linked instead of getting a second account. If duplicate rows already exist for the same email, their products are merged into one user. New OAuth users get a random password that satisfies has_secure_password’s create-time presence validation; they sign in via the provider, not by typing it. Raises <a href="User/OauthError.html"><code>User::OauthError</code></a> on a missing email or validation failure so <a href="OmniauthCallbacksController.html"><code>OmniauthCallbacksController</code></a> can surface a friendly message.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-generated_oauth_password" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-generated_oauth_password" title="Link to this method">
+                <span class="method-name">generated_oauth_password</span>
+                <span class="method-args">(email = nil)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="generated_oauth_password-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/user.rb</span>
+<span class="line-num">138</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">generated_oauth_password</span>(<span class="ruby-identifier">email</span> = <span class="ruby-keyword">nil</span>)
+<span class="line-num">139</span>   <span class="ruby-identifier">username</span> = <span class="ruby-identifier">email</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&quot;@&quot;</span>).<span class="ruby-identifier">first</span>.<span class="ruby-identifier">downcase</span>
+<span class="line-num">140</span>   <span class="ruby-identifier">loop</span> <span class="ruby-keyword">do</span>
+<span class="line-num">141</span>     <span class="ruby-identifier">password</span> = <span class="ruby-node">&quot;Sso!9#{SecureRandom.alphanumeric(24)}&quot;</span>
+<span class="line-num">142</span>     <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">password</span>.<span class="ruby-identifier">match?</span>(<span class="ruby-regexp">/(.)\1{2,}/</span>)
+<span class="line-num">143</span>     <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">username</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">password</span>.<span class="ruby-identifier">downcase</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">username</span>)
+<span class="line-num">144</span> 
+<span class="line-num">145</span>     <span class="ruby-keyword">return</span> <span class="ruby-identifier">password</span>
+<span class="line-num">146</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">147</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-merge_accounts-21" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-merge_accounts-21" title="Link to this method">
+                <span class="method-name">merge_accounts!</span>
+                <span class="method-args">(users)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="merge_accounts-21-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/user.rb</span>
+<span class="line-num">116</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">merge_accounts!</span>(<span class="ruby-identifier">users</span>)
+<span class="line-num">117</span>   <span class="ruby-identifier">keep</span> = <span class="ruby-identifier">users</span>.<span class="ruby-identifier">max_by</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">user</span><span class="ruby-operator">|</span> [ <span class="ruby-identifier">user</span>.<span class="ruby-identifier">products</span>.<span class="ruby-identifier">count</span>, <span class="ruby-identifier">user</span>.<span class="ruby-identifier">oauth_user?</span> <span class="ruby-operator">?</span> <span class="ruby-value">0</span> <span class="ruby-operator">:</span> <span class="ruby-value">1</span>, <span class="ruby-operator">-</span><span class="ruby-identifier">user</span>.<span class="ruby-identifier">created_at</span>.<span class="ruby-identifier">to_i</span> ] }
+<span class="line-num">118</span> 
+<span class="line-num">119</span>   <span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>
+<span class="line-num">120</span>     <span class="ruby-identifier">users</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">duplicate</span><span class="ruby-operator">|</span>
+<span class="line-num">121</span>       <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">duplicate</span>.<span class="ruby-identifier">id</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">keep</span>.<span class="ruby-identifier">id</span>
+<span class="line-num">122</span> 
+<span class="line-num">123</span>       <span class="ruby-identifier">duplicate</span>.<span class="ruby-identifier">products</span>.<span class="ruby-identifier">update_all</span>(<span class="ruby-value">user_id:</span> <span class="ruby-identifier">keep</span>.<span class="ruby-identifier">id</span>)
+<span class="line-num">124</span>       <span class="ruby-identifier">duplicate</span>.<span class="ruby-identifier">sessions</span>.<span class="ruby-identifier">delete_all</span>
+<span class="line-num">125</span>       <span class="ruby-identifier">duplicate</span>.<span class="ruby-identifier">destroy!</span>
+<span class="line-num">126</span>     <span class="ruby-keyword">end</span>
+<span class="line-num">127</span> 
+<span class="line-num">128</span>     <span class="ruby-identifier">keep</span>.<span class="ruby-identifier">update!</span>(<span class="ruby-value">email_address:</span> <span class="ruby-identifier">normalize_email</span>(<span class="ruby-identifier">keep</span>.<span class="ruby-identifier">email_address</span>))
+<span class="line-num">129</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">130</span> 
+<span class="line-num">131</span>   <span class="ruby-identifier">keep</span>
+<span class="line-num">132</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Combine duplicate accounts that share the same email. Keeps the account with the most products, preferring the original password registration when tied, and moves products from the others before deleting them.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-c-normalize_email" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-normalize_email" title="Link to this method">
+                <span class="method-name">normalize_email</span>
+                <span class="method-args">(email)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="normalize_email-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/user.rb</span>
+<span class="line-num">52</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">normalize_email</span>(<span class="ruby-identifier">email</span>)
+<span class="line-num">53</span>   <span class="ruby-identifier">email</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">downcase</span>
+<span class="line-num">54</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
+
+
+
+
+
+
+
+     <section id="public-instance-untitled-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-instance-untitled-methods"><a href="#public-instance-untitled-methods">Public Instance Methods</a></h3>
+       </header>
+
+
+      <div id="method-i-oauth_user-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-oauth_user-3F" title="Link to this method">
+                <span class="method-name">oauth_user?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="oauth_user-3F-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/user.rb</span>
+<span class="line-num">48</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">oauth_user?</span>
+<span class="line-num">49</span>   <span class="ruby-identifier">provider</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">uid</span>.<span class="ruby-identifier">present?</span>
+<span class="line-num">50</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
+
+
+
+
+  </section>
+
+</main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.2.0</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+

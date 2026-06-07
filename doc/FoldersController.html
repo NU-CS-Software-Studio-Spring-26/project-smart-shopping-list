@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>class FoldersController - PriceTracker API Documentation</title>
+
+
+  <meta
+    name="keywords"
+    content="ruby,class,FoldersController"
+  >
+
+    <meta
+      name="description"
+      content="Documentation for the FoldersController class"
+    >
+
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="class FoldersController - PriceTracker API Documentation">
+
+
+
+    <meta
+      property="og:description"
+      content="Documentation for FoldersController class - API reference and code examples"
+    >
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="class FoldersController - PriceTracker API Documentation">
+
+
+
+    <meta
+      name="twitter:description"
+      content="Documentation for FoldersController class - API reference and code examples"
+    >
+
+
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script
+  src="./js/theme-toggle.js?v=7.2.0"
+></script>
+
+<script
+  src="./js/search_navigation.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_data.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_ranker.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_controller.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/c_highlighter.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/bash_highlighter.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/aliki.js?v=7.2.0"
+  defer
+></script>
+
+<link
+  href="./css/rdoc.css?v=7.2.0"
+  rel="stylesheet"
+>
+
+
+
+
+<body role="document" class="class has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="./index.html" class="navbar-brand">
+    PriceTracker API Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation" hidden>
+  
+
+
+
+
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" >
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
+
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="./README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  
+
+  
+<div id="parent-class-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-ancestors"></use></svg>
+      </span>
+      <span class="nav-section-title">Ancestors</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+    <ul><li><a href="ApplicationController.html">ApplicationController</a><ul><li>ActionController::Base</li></ul></li></ul>
+  </details>
+</div>
+
+
+  
+
+  
+
+  
+
+
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-create">create</a></li>
+
+        <li ><a href="#method-i-destroy">destroy</a></li>
+
+        <li ><a href="#method-i-edit">edit</a></li>
+
+        <li ><a href="#method-i-index">index</a></li>
+
+        <li ><a href="#method-i-new">new</a></li>
+
+        <li ><a href="#method-i-show">show</a></li>
+
+        <li ><a href="#method-i-update">update</a></li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+
+    <ul class="link-list nav-list"><li><code><a href="./AccountsController.html">AccountsController</a></code></li><li><code><a href="./AdminController.html">AdminController</a></code></li><li><code><a href="./AiAssistant.html">AiAssistant</a></code></li><li><details><summary><code><a href="./ApplicationCable.html">ApplicationCable</a></code></summary><ul class="link-list nav-list"><li><code><a href="./ApplicationCable/Connection.html">Connection</a></code></li></ul></details></li><li><code><a href="./ApplicationController.html">ApplicationController</a></code></li><li><code><a href="./ApplicationHelper.html">ApplicationHelper</a></code></li><li><code><a href="./ApplicationJob.html">ApplicationJob</a></code></li><li><code><a href="./ApplicationMailer.html">ApplicationMailer</a></code></li><li><code><a href="./ApplicationRecord.html">ApplicationRecord</a></code></li><li><code><a href="./AssistantController.html">AssistantController</a></code></li><li><code><a href="./Authentication.html">Authentication</a></code></li><li><code><a href="./BudgetPlannerController.html">BudgetPlannerController</a></code></li><li><code><a href="./Current.html">Current</a></code></li><li><code><a href="./DealAdvisor.html">DealAdvisor</a></code></li><li><code><a href="./DealPicker.html">DealPicker</a></code></li><li><code><a href="./Folder.html">Folder</a></code></li><li><code><a href="./FolderProduct.html">FolderProduct</a></code></li><li><code><a href="./FolderProductsController.html">FolderProductsController</a></code></li><li><code><a href="./FoldersController.html">FoldersController</a></code></li><li><details><summary><code><a href="./LlmClient.html">LlmClient</a></code></summary><ul class="link-list nav-list"><li><code><a href="./LlmClient/Error.html">Error</a></code></li></ul></details></li><li><code><a href="./MailerSettings.html">MailerSettings</a></code></li><li><code><a href="./OmniauthCallbacksController.html">OmniauthCallbacksController</a></code></li><li><code><a href="./PagesController.html">PagesController</a></code></li><li><code><a href="./PasswordsController.html">PasswordsController</a></code></li><li><code><a href="./PasswordsMailer.html">PasswordsMailer</a></code></li><li><code><a href="./PriceAlertMailer.html">PriceAlertMailer</a></code></li><li><code><a href="./PriceAlerter.html">PriceAlerter</a></code></li><li><code><a href="./PriceFetcher.html">PriceFetcher</a></code></li><li><code><a href="./PriceHistoryExport.html">PriceHistoryExport</a></code></li><li><code><a href="./PriceRecord.html">PriceRecord</a></code></li><li><code><a href="./PriceRecordsController.html">PriceRecordsController</a></code></li><li><code><a href="./PriceRecordsHelper.html">PriceRecordsHelper</a></code></li><li><code><a href="./PriceRefreshRun.html">PriceRefreshRun</a></code></li><li><details><summary><code><a href="./PriceScrapers.html">PriceScrapers</a></code></summary><ul class="link-list nav-list"><li><code><a href="./PriceScrapers/AmazonAdapter.html">AmazonAdapter</a></code></li><li><code><a href="./PriceScrapers/Base.html">Base</a></code></li><li><code><a href="./PriceScrapers/BlockedSites.html">BlockedSites</a></code></li><li><code><a href="./PriceScrapers/Error.html">Error</a></code></li><li><code><a href="./PriceScrapers/JsonLdAdapter.html">JsonLdAdapter</a></code></li><li><code><a href="./PriceScrapers/LululemonAdapter.html">LululemonAdapter</a></code></li><li><code><a href="./PriceScrapers/LululemonUrl.html">LululemonUrl</a></code></li><li><code><a href="./PriceScrapers/PermanentError.html">PermanentError</a></code></li><li><code><a href="./PriceScrapers/Registry.html">Registry</a></code></li><li><code><a href="./PriceScrapers/TransientError.html">TransientError</a></code></li></ul></details></li><li><code><a href="./Product.html">Product</a></code></li><li><code><a href="./ProductsController.html">ProductsController</a></code></li><li><code><a href="./ProductsHelper.html">ProductsHelper</a></code></li><li><code><a href="./RefreshFailureReport.html">RefreshFailureReport</a></code></li><li><code><a href="./RefreshPricesJob.html">RefreshPricesJob</a></code></li><li><code><a href="./RefreshSchedule.html">RefreshSchedule</a></code></li><li><code><a href="./RegistrationsController.html">RegistrationsController</a></code></li><li><code><a href="./ReportsController.html">ReportsController</a></code></li><li><code><a href="./Session.html">Session</a></code></li><li><code><a href="./SessionsController.html">SessionsController</a></code></li><li><code><a href="./SupportedRetailersHelper.html">SupportedRetailersHelper</a></code></li><li><details><summary><code><a href="./User.html">User</a></code></summary><ul class="link-list nav-list"><li><code><a href="./User/OauthError.html">OauthError</a></code></li></ul></details></li><li><code><a href="./WatchlistExport.html">WatchlistExport</a></code></li></ul>
+  </details>
+</div>
+
+</nav>
+
+<main role="main" aria-labelledby="class-folderscontroller">
+  
+  
+
+  <span id="class-FoldersController" class="legacy-anchor"></span>
+  <h1 id="class-folderscontroller" class="anchor-link class">
+    class FoldersController
+  </h1>
+
+  <section class="description">
+    
+  </section>
+
+
+  <span id="5Buntitled-5D" class="legacy-anchor"></span>
+  <section class="documentation-section anchor-link">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     <section id="public-instance-untitled-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-instance-untitled-methods"><a href="#public-instance-untitled-methods">Public Instance Methods</a></h3>
+       </header>
+
+
+      <div id="method-i-create" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-create" title="Link to this method">
+                <span class="method-name">create</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="create-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/controllers/folders_controller.rb</span>
+<span class="line-num">34</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">create</span>
+<span class="line-num">35</span>   <span class="ruby-ivar">@folder</span> = <span class="ruby-constant">Current</span>.<span class="ruby-identifier">user</span>.<span class="ruby-identifier">folders</span>.<span class="ruby-identifier">build</span>(<span class="ruby-identifier">folder_params</span>)
+<span class="line-num">36</span>   <span class="ruby-keyword">if</span> <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">save</span>
+<span class="line-num">37</span>     <span class="ruby-identifier">redirect_to</span> <span class="ruby-ivar">@folder</span>, <span class="ruby-value">notice:</span> <span class="ruby-string">&quot;Folder created!&quot;</span>
+<span class="line-num">38</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">39</span>     <span class="ruby-identifier">render</span> <span class="ruby-value">:new</span>, <span class="ruby-value">status:</span> <span class="ruby-value">:unprocessable_entity</span>
+<span class="line-num">40</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">41</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-destroy" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-destroy" title="Link to this method">
+                <span class="method-name">destroy</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="destroy-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/controllers/folders_controller.rb</span>
+<span class="line-num">53</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">destroy</span>
+<span class="line-num">54</span>   <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">destroy</span>
+<span class="line-num">55</span>   <span class="ruby-identifier">redirect_to</span> <span class="ruby-identifier">folders_url</span>, <span class="ruby-value">notice:</span> <span class="ruby-string">&quot;Folder deleted.&quot;</span>
+<span class="line-num">56</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-edit" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-edit" title="Link to this method">
+                <span class="method-name">edit</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="edit-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/controllers/folders_controller.rb</span>
+<span class="line-num">43</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">edit</span>; <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-index" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-index" title="Link to this method">
+                <span class="method-name">index</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="index-source">
+            <pre class="ruby">  <span class="ruby-comment"># File app/controllers/folders_controller.rb</span>
+<span class="line-num">4</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">index</span>
+<span class="line-num">5</span>   <span class="ruby-ivar">@folders</span> = <span class="ruby-constant">Current</span>.<span class="ruby-identifier">user</span>.<span class="ruby-identifier">folders</span>.<span class="ruby-identifier">order</span>(<span class="ruby-value">:name</span>).<span class="ruby-identifier">includes</span>(<span class="ruby-value">:products</span>)
+<span class="line-num">6</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-new" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-new" title="Link to this method">
+                <span class="method-name">new</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="new-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/controllers/folders_controller.rb</span>
+<span class="line-num">30</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">new</span>
+<span class="line-num">31</span>   <span class="ruby-ivar">@folder</span> = <span class="ruby-constant">Current</span>.<span class="ruby-identifier">user</span>.<span class="ruby-identifier">folders</span>.<span class="ruby-identifier">build</span>
+<span class="line-num">32</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-show" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-show" title="Link to this method">
+                <span class="method-name">show</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="show-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/controllers/folders_controller.rb</span>
+<span class="line-num"> 8</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">show</span>
+<span class="line-num"> 9</span>   <span class="ruby-identifier">scope</span> = <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">products</span>
+<span class="line-num">10</span>   <span class="ruby-identifier">scope</span> = <span class="ruby-identifier">fuzzy_search</span>(<span class="ruby-identifier">scope</span>, <span class="ruby-identifier">params</span>[<span class="ruby-value">:search</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:search</span>].<span class="ruby-identifier">present?</span>
+<span class="line-num">11</span>   <span class="ruby-identifier">scope</span> = <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">where</span>(<span class="ruby-value">category:</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:category</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:category</span>].<span class="ruby-identifier">present?</span>
+<span class="line-num">12</span>   <span class="ruby-identifier">scope</span> = <span class="ruby-identifier">scope</span>.<span class="ruby-identifier">where</span>(<span class="ruby-string">&quot;? = ANY(tags)&quot;</span>, <span class="ruby-identifier">params</span>[<span class="ruby-value">:tag</span>].<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:tag</span>].<span class="ruby-identifier">present?</span>
+<span class="line-num">13</span>   <span class="ruby-identifier">scope</span> = <span class="ruby-identifier">sort_products</span>(<span class="ruby-identifier">scope</span>, <span class="ruby-identifier">params</span>[<span class="ruby-value">:sort</span>])
+<span class="line-num">14</span> 
+<span class="line-num">15</span>   <span class="ruby-identifier">count_scope</span> = <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">products</span>
+<span class="line-num">16</span>   <span class="ruby-identifier">count_scope</span> = <span class="ruby-identifier">fuzzy_search</span>(<span class="ruby-identifier">count_scope</span>, <span class="ruby-identifier">params</span>[<span class="ruby-value">:search</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:search</span>].<span class="ruby-identifier">present?</span>
+<span class="line-num">17</span>   <span class="ruby-identifier">count_scope</span> = <span class="ruby-identifier">count_scope</span>.<span class="ruby-identifier">where</span>(<span class="ruby-value">category:</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:category</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:category</span>].<span class="ruby-identifier">present?</span>
+<span class="line-num">18</span>   <span class="ruby-identifier">count_scope</span> = <span class="ruby-identifier">count_scope</span>.<span class="ruby-identifier">where</span>(<span class="ruby-string">&quot;? = ANY(tags)&quot;</span>, <span class="ruby-identifier">params</span>[<span class="ruby-value">:tag</span>].<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">:tag</span>].<span class="ruby-identifier">present?</span>
+<span class="line-num">19</span> 
+<span class="line-num">20</span>   <span class="ruby-ivar">@pagy</span>, <span class="ruby-ivar">@products_in_folder</span> = <span class="ruby-identifier">pagy</span>(<span class="ruby-identifier">scope</span>, <span class="ruby-value">count:</span> <span class="ruby-identifier">count_scope</span>.<span class="ruby-identifier">count</span>, <span class="ruby-value">limit:</span> <span class="ruby-value">24</span>)
+<span class="line-num">21</span>   <span class="ruby-ivar">@products_in_folder</span>.<span class="ruby-identifier">load</span>
+<span class="line-num">22</span> 
+<span class="line-num">23</span>   <span class="ruby-ivar">@categories</span> = <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">products</span>.<span class="ruby-identifier">distinct</span>.<span class="ruby-identifier">pluck</span>(<span class="ruby-value">:category</span>).<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">sort</span>
+<span class="line-num">24</span>   <span class="ruby-ivar">@tags</span> = <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">products</span>.<span class="ruby-identifier">pluck</span>(<span class="ruby-value">:tags</span>).<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">uniq</span>.<span class="ruby-identifier">sort</span>
+<span class="line-num">25</span>   <span class="ruby-ivar">@products_not_in_folder</span> = <span class="ruby-constant">Current</span>.<span class="ruby-identifier">user</span>.<span class="ruby-identifier">products</span>
+<span class="line-num">26</span>                                         .<span class="ruby-identifier">where</span>.<span class="ruby-identifier">not</span>(<span class="ruby-value">id:</span> <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">products</span>.<span class="ruby-identifier">select</span>(<span class="ruby-value">:id</span>))
+<span class="line-num">27</span>                                         .<span class="ruby-identifier">order</span>(<span class="ruby-value">:name</span>)
+<span class="line-num">28</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-update" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-update" title="Link to this method">
+                <span class="method-name">update</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="update-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/controllers/folders_controller.rb</span>
+<span class="line-num">45</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">update</span>
+<span class="line-num">46</span>   <span class="ruby-keyword">if</span> <span class="ruby-ivar">@folder</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">folder_params</span>)
+<span class="line-num">47</span>     <span class="ruby-identifier">redirect_to</span> <span class="ruby-ivar">@folder</span>, <span class="ruby-value">notice:</span> <span class="ruby-string">&quot;Folder updated.&quot;</span>
+<span class="line-num">48</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">49</span>     <span class="ruby-identifier">render</span> <span class="ruby-value">:edit</span>, <span class="ruby-value">status:</span> <span class="ruby-value">:unprocessable_entity</span>
+<span class="line-num">50</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">51</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
+
+
+
+
+  </section>
+
+</main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.2.0</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+

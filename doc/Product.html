@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>class Product - PriceTracker API Documentation</title>
+
+
+  <meta
+    name="keywords"
+    content="ruby,class,Product"
+  >
+
+    <meta
+      name="description"
+      content="Documentation for the Product class"
+    >
+
+
+
+
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="class Product - PriceTracker API Documentation">
+
+
+
+    <meta
+      property="og:description"
+      content="Documentation for Product class - API reference and code examples"
+    >
+
+
+
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="class Product - PriceTracker API Documentation">
+
+
+
+    <meta
+      name="twitter:description"
+      content="Documentation for Product class - API reference and code examples"
+    >
+
+
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script
+  src="./js/theme-toggle.js?v=7.2.0"
+></script>
+
+<script
+  src="./js/search_navigation.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_data.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_ranker.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/search_controller.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/c_highlighter.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/bash_highlighter.js?v=7.2.0"
+  defer
+></script>
+
+<script
+  src="./js/aliki.js?v=7.2.0"
+  defer
+></script>
+
+<link
+  href="./css/rdoc.css?v=7.2.0"
+  rel="stylesheet"
+>
+
+
+
+
+<body role="document" class="class has-toc">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- Chevron (right arrow) - used for expand/collapse -->
+  <symbol
+    id="icon-chevron"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </symbol>
+
+  <!-- File/Document - Pages section -->
+  <symbol
+    id="icon-file"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
+    ></path>
+
+    <polyline points="14 2 14 8 20 8"></polyline>
+  </symbol>
+
+  <!-- Layers/Stack - Classes and Modules section -->
+  <symbol
+    id="icon-layers"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+    <polyline points="2 17 12 22 22 17"></polyline>
+    <polyline points="2 12 12 17 22 12"></polyline>
+  </symbol>
+
+  <!-- Curly braces with C - Class Methods section -->
+  <symbol
+    id="icon-class-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      C
+    </text>
+  </symbol>
+
+  <!-- Curly braces with I - Instance Methods section -->
+  <symbol
+    id="icon-instance-methods"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M6 3C3.5 3 2 4.5 2 7v3c0 1.5-1 2-1 2s1 .5 1 2v5c0 2.5 1.5 4 4 4"></path>
+    <path d="M18 3c2.5 0 4 1.5 4 4v3c0 1.5 1 2 1 2s-1 .5-1 2v5c0 2.5-1.5 4-4 4"></path>
+
+    <text
+      x="12"
+      y="17"
+      text-anchor="middle"
+      font-size="13"
+      font-weight="bold"
+      fill="currentColor"
+      stroke="none"
+    >
+      I
+    </text>
+  </symbol>
+
+  <!-- Double chevrons up - Ancestors section -->
+  <symbol
+    id="icon-ancestors"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+  </symbol>
+
+  <!-- User with plus - Included Modules section -->
+  <symbol
+    id="icon-includes"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+
+    <line
+      x1="20"
+      y1="8"
+      x2="20"
+      y2="14"
+    ></line>
+
+    <line
+      x1="23"
+      y1="11"
+      x2="17"
+      y2="11"
+    ></line>
+  </symbol>
+
+  <!-- User with check - Extended Modules section -->
+  <symbol
+    id="icon-extends"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <polyline points="17 11 19 13 23 9"></polyline>
+  </symbol>
+
+  <!-- List - Sections section -->
+  <symbol
+    id="icon-list"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line
+      x1="8"
+      y1="6"
+      x2="21"
+      y2="6"
+    ></line>
+
+    <line
+      x1="8"
+      y1="12"
+      x2="21"
+      y2="12"
+    ></line>
+
+    <line
+      x1="8"
+      y1="18"
+      x2="21"
+      y2="18"
+    ></line>
+
+    <line
+      x1="3"
+      y1="6"
+      x2="3.01"
+      y2="6"
+    ></line>
+
+    <line
+      x1="3"
+      y1="12"
+      x2="3.01"
+      y2="12"
+    ></line>
+
+    <line
+      x1="3"
+      y1="18"
+      x2="3.01"
+      y2="18"
+    ></line>
+  </symbol>
+</svg>
+
+<header class="top-navbar">
+  <a href="./index.html" class="navbar-brand">
+    PriceTracker API Documentation
+  </a>
+
+  <!-- Desktop search bar -->
+  <div class="navbar-search navbar-search-desktop" role="search">
+    <form action="#" method="get" accept-charset="utf-8">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results-desktop"
+             type="text" name="search" placeholder="Search (/) for a class, method..."
+             spellcheck="false" autocomplete="off"
+             title="Type to search, Up and Down to navigate, Enter to load">
+      <ul id="search-results-desktop" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="initially-hidden search-results"></ul>
+    </form>
+  </div>
+
+  <!-- Mobile search icon button -->
+  <button id="search-toggle" class="navbar-search-mobile" aria-label="Open search" type="button">
+    <span aria-hidden="true">🔍</span>
+  </button>
+
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" type="button">
+    <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+  </button>
+</header>
+
+<!-- Search Modal (Mobile) -->
+<div id="search-modal" class="search-modal" hidden aria-modal="true" role="dialog" aria-label="Search">
+  <div class="search-modal-backdrop"></div>
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <form class="search-modal-form" action="#" method="get" accept-charset="utf-8">
+        <span class="search-modal-icon" aria-hidden="true">🔍</span>
+        <input id="search-field-mobile" role="combobox" aria-label="Search"
+               aria-autocomplete="list" aria-controls="search-results-mobile"
+               type="text" name="search" placeholder="Search documentation"
+               spellcheck="false" autocomplete="off">
+        <button type="button" class="search-modal-close" aria-label="Close search" id="search-modal-close">
+          <span aria-hidden="true">esc</span>
+        </button>
+      </form>
+    </div>
+    <div class="search-modal-body">
+      <ul id="search-results-mobile" aria-label="Search Results"
+          aria-busy="false" aria-expanded="false"
+          aria-atomic="false" class="search-results search-modal-results initially-hidden"></ul>
+      <div class="search-modal-empty">
+        <p>No recent searches</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="navigation-toggle" role="button" tabindex="0" aria-label="Toggle sidebar" aria-expanded="true" aria-controls="navigation">
+  <span aria-hidden="true">&#9776;</span>
+</div>
+
+
+<nav id="navigation" role="navigation" hidden>
+  
+
+
+
+
+  <div id="fileindex-section" class="nav-section">
+    <details class="nav-section-collapsible" >
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg>
+            <use href="#icon-file"></use>
+          </svg>
+        </span>
+
+        <span class="nav-section-title">Pages</span>
+
+        <span class="nav-section-chevron">
+          <svg>
+            <use href="#icon-chevron"></use>
+          </svg>
+        </span>
+      </summary>
+
+      <ul class="nav-list">
+
+
+
+
+
+
+            <li>
+              <a href="./README_md.html">
+                README
+              </a>
+            </li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  
+
+  
+<div id="parent-class-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-ancestors"></use></svg>
+      </span>
+      <span class="nav-section-title">Ancestors</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+    <ul><li><a href="ApplicationRecord.html">ApplicationRecord</a><ul><li>ActiveRecord::Base</li></ul></li></ul>
+  </details>
+</div>
+
+
+  
+
+  
+
+  
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-class-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Class Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-c-scrape_excluded-3F">scrape_excluded?</a></li>
+
+      </ul>
+    </details>
+  </div>
+
+
+
+  <div class="nav-section">
+    <details class="nav-section-collapsible" open>
+      <summary class="nav-section-header">
+        <span class="nav-section-icon">
+          <svg><use href="#icon-instance-methods"></use></svg>
+        </span>
+        <span class="nav-section-title">Instance Methods</span>
+        <span class="nav-section-chevron">
+          <svg><use href="#icon-chevron"></use></svg>
+        </span>
+      </summary>
+      <ul class="nav-list" role="directory">
+
+        <li ><a href="#method-i-alert_cooldown_active-3F">alert_cooldown_active?</a></li>
+
+        <li ><a href="#method-i-alert_trigger_record">alert_trigger_record</a></li>
+
+        <li ><a href="#method-i-in_stock-3F">in_stock?</a></li>
+
+        <li ><a href="#method-i-latest_price">latest_price</a></li>
+
+        <li ><a href="#method-i-latest_store">latest_store</a></li>
+
+        <li ><a href="#method-i-lowest_price">lowest_price</a></li>
+
+        <li ><a href="#method-i-lowest_price_record">lowest_price_record</a></li>
+
+        <li ><a href="#method-i-newest_price_record">newest_price_record</a></li>
+
+        <li ><a href="#method-i-out_of_stock-3F">out_of_stock?</a></li>
+
+        <li ><a href="#method-i-price_history-3F">price_history?</a></li>
+
+        <li ><a href="#method-i-price_trend">price_trend</a></li>
+
+        <li ><a href="#method-i-price_trend_description">price_trend_description</a></li>
+
+        <li ><a href="#method-i-price_trend_emoji">price_trend_emoji</a></li>
+
+        <li ><a href="#method-i-recent_alert-3F">recent_alert?</a></li>
+
+        <li ><a href="#method-i-scrapeable-3F">scrapeable?</a></li>
+
+        <li ><a href="#method-i-show_refresh_failure-3F">show_refresh_failure?</a></li>
+
+        <li ><a href="#method-i-stock_known-3F">stock_known?</a></li>
+
+        <li ><a href="#method-i-stock_status_label">stock_status_label</a></li>
+
+        <li ><a href="#method-i-tags_input">tags_input</a></li>
+
+        <li ><a href="#method-i-tags_input-3D">tags_input=</a></li>
+
+        <li ><a href="#method-i-target_price_alert_enabled-3F">target_price_alert_enabled?</a></li>
+
+      </ul>
+    </details>
+  </div>
+
+
+  <div id="classindex-section" class="nav-section">
+  <details class="nav-section-collapsible" open>
+    <summary class="nav-section-header">
+      <span class="nav-section-icon">
+        <svg><use href="#icon-layers"></use></svg>
+      </span>
+      <span class="nav-section-title">Classes and Modules</span>
+      <span class="nav-section-chevron">
+        <svg><use href="#icon-chevron"></use></svg>
+      </span>
+    </summary>
+
+    <ul class="link-list nav-list"><li><code><a href="./AccountsController.html">AccountsController</a></code></li><li><code><a href="./AdminController.html">AdminController</a></code></li><li><code><a href="./AiAssistant.html">AiAssistant</a></code></li><li><details><summary><code><a href="./ApplicationCable.html">ApplicationCable</a></code></summary><ul class="link-list nav-list"><li><code><a href="./ApplicationCable/Connection.html">Connection</a></code></li></ul></details></li><li><code><a href="./ApplicationController.html">ApplicationController</a></code></li><li><code><a href="./ApplicationHelper.html">ApplicationHelper</a></code></li><li><code><a href="./ApplicationJob.html">ApplicationJob</a></code></li><li><code><a href="./ApplicationMailer.html">ApplicationMailer</a></code></li><li><code><a href="./ApplicationRecord.html">ApplicationRecord</a></code></li><li><code><a href="./AssistantController.html">AssistantController</a></code></li><li><code><a href="./Authentication.html">Authentication</a></code></li><li><code><a href="./BudgetPlannerController.html">BudgetPlannerController</a></code></li><li><code><a href="./Current.html">Current</a></code></li><li><code><a href="./DealAdvisor.html">DealAdvisor</a></code></li><li><code><a href="./DealPicker.html">DealPicker</a></code></li><li><code><a href="./Folder.html">Folder</a></code></li><li><code><a href="./FolderProduct.html">FolderProduct</a></code></li><li><code><a href="./FolderProductsController.html">FolderProductsController</a></code></li><li><code><a href="./FoldersController.html">FoldersController</a></code></li><li><details><summary><code><a href="./LlmClient.html">LlmClient</a></code></summary><ul class="link-list nav-list"><li><code><a href="./LlmClient/Error.html">Error</a></code></li></ul></details></li><li><code><a href="./MailerSettings.html">MailerSettings</a></code></li><li><code><a href="./OmniauthCallbacksController.html">OmniauthCallbacksController</a></code></li><li><code><a href="./PagesController.html">PagesController</a></code></li><li><code><a href="./PasswordsController.html">PasswordsController</a></code></li><li><code><a href="./PasswordsMailer.html">PasswordsMailer</a></code></li><li><code><a href="./PriceAlertMailer.html">PriceAlertMailer</a></code></li><li><code><a href="./PriceAlerter.html">PriceAlerter</a></code></li><li><code><a href="./PriceFetcher.html">PriceFetcher</a></code></li><li><code><a href="./PriceHistoryExport.html">PriceHistoryExport</a></code></li><li><code><a href="./PriceRecord.html">PriceRecord</a></code></li><li><code><a href="./PriceRecordsController.html">PriceRecordsController</a></code></li><li><code><a href="./PriceRecordsHelper.html">PriceRecordsHelper</a></code></li><li><code><a href="./PriceRefreshRun.html">PriceRefreshRun</a></code></li><li><details><summary><code><a href="./PriceScrapers.html">PriceScrapers</a></code></summary><ul class="link-list nav-list"><li><code><a href="./PriceScrapers/AmazonAdapter.html">AmazonAdapter</a></code></li><li><code><a href="./PriceScrapers/Base.html">Base</a></code></li><li><code><a href="./PriceScrapers/BlockedSites.html">BlockedSites</a></code></li><li><code><a href="./PriceScrapers/Error.html">Error</a></code></li><li><code><a href="./PriceScrapers/JsonLdAdapter.html">JsonLdAdapter</a></code></li><li><code><a href="./PriceScrapers/LululemonAdapter.html">LululemonAdapter</a></code></li><li><code><a href="./PriceScrapers/LululemonUrl.html">LululemonUrl</a></code></li><li><code><a href="./PriceScrapers/PermanentError.html">PermanentError</a></code></li><li><code><a href="./PriceScrapers/Registry.html">Registry</a></code></li><li><code><a href="./PriceScrapers/TransientError.html">TransientError</a></code></li></ul></details></li><li><code><a href="./Product.html">Product</a></code></li><li><code><a href="./ProductsController.html">ProductsController</a></code></li><li><code><a href="./ProductsHelper.html">ProductsHelper</a></code></li><li><code><a href="./RefreshFailureReport.html">RefreshFailureReport</a></code></li><li><code><a href="./RefreshPricesJob.html">RefreshPricesJob</a></code></li><li><code><a href="./RefreshSchedule.html">RefreshSchedule</a></code></li><li><code><a href="./RegistrationsController.html">RegistrationsController</a></code></li><li><code><a href="./ReportsController.html">ReportsController</a></code></li><li><code><a href="./Session.html">Session</a></code></li><li><code><a href="./SessionsController.html">SessionsController</a></code></li><li><code><a href="./SupportedRetailersHelper.html">SupportedRetailersHelper</a></code></li><li><details><summary><code><a href="./User.html">User</a></code></summary><ul class="link-list nav-list"><li><code><a href="./User/OauthError.html">OauthError</a></code></li></ul></details></li><li><code><a href="./WatchlistExport.html">WatchlistExport</a></code></li></ul>
+  </details>
+</div>
+
+</nav>
+
+<main role="main" aria-labelledby="class-product">
+  
+  
+
+  <span id="class-Product" class="legacy-anchor"></span>
+  <h1 id="class-product" class="anchor-link class">
+    class Product
+  </h1>
+
+  <section class="description">
+    
+  </section>
+
+
+  <span id="5Buntitled-5D" class="legacy-anchor"></span>
+  <section class="documentation-section anchor-link">
+
+
+
+
+
+    <section class="constants-list">
+      <header>
+        <h3 id="untitled-constants"><a href="#untitled-constants">Constants</a></h3>
+      </header>
+      <dl>
+
+        <dt id="CATEGORY_LIMIT">CATEGORY_LIMIT</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="DESCRIPTION_LIMIT">DESCRIPTION_LIMIT</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="MAX_TAGS">MAX_TAGS</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+        <dt id="NAME_LIMIT">NAME_LIMIT</dt>
+
+        <dd>
+
+          <p>Column caps mirror the DB check constraints added in HardenProductAndPriceRecordConstraints. Scraped Amazon / Target / etc. titles routinely run past 200 chars; rather than reject the save and show a validation error, we silently truncate in a before_validation so every save path (scraper, manual form, seeds) stays within bounds.</p>
+        </dd>
+
+
+        <dt id="PAGINATION_TEST_EMAIL">PAGINATION_TEST_EMAIL</dt>
+
+        <dd>
+
+          <p>Stable identifier for the Pagy load-test user (seeds / rake tasks).</p>
+        </dd>
+
+
+        <dt id="STOCK_STATUSES">STOCK_STATUSES</dt>
+
+        <dd>
+
+          <p>Normalized stock states the scraper can record. nil means “unknown / not reported by the page” (the default for manual and legacy products).</p>
+        </dd>
+
+
+        <dt id="TAG_LIMIT">TAG_LIMIT</dt>
+
+        <dd>
+
+          
+        </dd>
+
+
+      </dl>
+    </section>
+
+
+
+    <section class="attribute-method-details method-section">
+      <header>
+        <h3 id="untitled-attributes"><a href="#untitled-attributes">Attributes</a></h3>
+      </header>
+
+
+      <div id="attribute-i-custom_category" class="method-detail anchor-link">
+        <div class="method-heading attribute-method-heading">
+          <a href="#attribute-i-custom_category" title="Link to this attribute">
+            <span class="method-name">custom_category</span>
+            <span class="attribute-access-type">[RW]</span>
+          </a>
+        </div>
+
+        <div class="method-description">
+
+
+        <p>When the category select is set to “Other”, the form sends the user’s typed-in category name here. apply_custom_category folds it into <code>category</code> before validation/truncation so niche categories are saved and remain filterable like any other.</p>
+
+        </div>
+      </div>
+
+    </section>
+
+
+
+
+
+
+     <section id="public-class-untitled-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-class-untitled-methods"><a href="#public-class-untitled-methods">Public Class Methods</a></h3>
+       </header>
+
+
+      <div id="method-c-scrape_excluded-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-c-scrape_excluded-3F" title="Link to this method">
+                <span class="method-name">scrape_excluded?</span>
+                <span class="method-args">(url)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="scrape_excluded-3F-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">235</span> <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">scrape_excluded?</span>(<span class="ruby-identifier">url</span>)
+<span class="line-num">236</span>   <span class="ruby-identifier">u</span> = <span class="ruby-identifier">url</span>.<span class="ruby-identifier">to_s</span>
+<span class="line-num">237</span>   <span class="ruby-keyword">return</span> <span class="ruby-keyword">true</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">u</span>.<span class="ruby-identifier">blank?</span>
+<span class="line-num">238</span>   <span class="ruby-keyword">return</span> <span class="ruby-keyword">true</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">u</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;example.com&quot;</span>)
+<span class="line-num">239</span>   <span class="ruby-keyword">return</span> <span class="ruby-keyword">true</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">u</span>.<span class="ruby-identifier">match?</span>(<span class="ruby-regexp">%r{/search[?]}i</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">u</span>.<span class="ruby-identifier">match?</span>(<span class="ruby-regexp">%r{/s[?]k=}i</span>)
+<span class="line-num">240</span> 
+<span class="line-num">241</span>   <span class="ruby-keyword">false</span>
+<span class="line-num">242</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
+
+
+
+
+
+
+
+     <section id="public-instance-untitled-method-details" class="method-section anchor-link">
+       <header>
+         <h3 id="public-instance-untitled-methods"><a href="#public-instance-untitled-methods">Public Instance Methods</a></h3>
+       </header>
+
+
+      <div id="method-i-alert_cooldown_active-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-alert_cooldown_active-3F" title="Link to this method">
+                <span class="method-name">alert_cooldown_active?</span>
+                <span class="method-args">(window: 24.hours)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="alert_cooldown_active-3F-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">70</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">alert_cooldown_active?</span>(<span class="ruby-value">window:</span> <span class="ruby-value">24</span>.<span class="ruby-identifier">hours</span>)
+<span class="line-num">71</span>   <span class="ruby-identifier">last_alerted_at</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">last_alerted_at</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">window</span>.<span class="ruby-identifier">ago</span>
+<span class="line-num">72</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Don’t email the user more than once per <code>window</code>. The 24-hour default matches PriceAlerter’s expectations and gives us room to lengthen the window later if users complain about noise.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-alert_trigger_record" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-alert_trigger_record" title="Link to this method">
+                <span class="method-name">alert_trigger_record</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="alert_trigger_record-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">86</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">alert_trigger_record</span>
+<span class="line-num">87</span>   <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">last_alerted_at</span>.<span class="ruby-identifier">blank?</span>
+<span class="line-num">88</span>   <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">where</span>(<span class="ruby-string">&quot;recorded_at &lt;= ?&quot;</span>, <span class="ruby-identifier">last_alerted_at</span>)
+<span class="line-num">89</span>                .<span class="ruby-identifier">order</span>(<span class="ruby-value">recorded_at:</span> <span class="ruby-value">:desc</span>)
+<span class="line-num">90</span>                .<span class="ruby-identifier">first</span>
+<span class="line-num">91</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Best-effort lookup of the <a href="PriceRecord.html"><code>PriceRecord</code></a> whose creation fired the most recent alert. <a href="PriceAlerter.html"><code>PriceAlerter</code></a> stamps ‘last_alerted_at = Time.current` right after writing the <a href="PriceRecord.html"><code>PriceRecord</code></a>, so the trigger record is the latest one whose <code>recorded_at</code> is at or before that stamp.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-in_stock-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-in_stock-3F" title="Link to this method">
+                <span class="method-name">in_stock?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="in_stock-3F-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num"> 99</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">in_stock?</span>
+<span class="line-num">100</span>   <span class="ruby-identifier">stock_status</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;in_stock&quot;</span>
+<span class="line-num">101</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-latest_price" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-latest_price" title="Link to this method">
+                <span class="method-name">latest_price</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="latest_price-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">139</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">latest_price</span>
+<span class="line-num">140</span>   <span class="ruby-identifier">newest_price_record</span>&amp;.<span class="ruby-identifier">price</span>
+<span class="line-num">141</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-latest_store" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-latest_store" title="Link to this method">
+                <span class="method-name">latest_store</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="latest_store-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">143</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">latest_store</span>
+<span class="line-num">144</span>   <span class="ruby-identifier">newest_price_record</span>&amp;.<span class="ruby-identifier">store_name</span>
+<span class="line-num">145</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-lowest_price" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-lowest_price" title="Link to this method">
+                <span class="method-name">lowest_price</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="lowest_price-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">115</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">lowest_price</span>
+<span class="line-num">116</span>   <span class="ruby-comment"># Reuse the preloaded association (e.g. reports/index eager-loads</span>
+<span class="line-num">117</span>   <span class="ruby-comment"># price_records) instead of issuing a fresh MIN(price) query per product.</span>
+<span class="line-num">118</span>   <span class="ruby-keyword">if</span> <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">loaded?</span>
+<span class="line-num">119</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">filter_map</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:price</span>).<span class="ruby-identifier">min</span>
+<span class="line-num">120</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">121</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">minimum</span>(<span class="ruby-value">:price</span>)
+<span class="line-num">122</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">123</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-lowest_price_record" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-lowest_price_record" title="Link to this method">
+                <span class="method-name">lowest_price_record</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="lowest_price_record-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">125</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">lowest_price_record</span>
+<span class="line-num">126</span>   <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">order</span>(<span class="ruby-value">:price</span>).<span class="ruby-identifier">first</span>
+<span class="line-num">127</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-newest_price_record" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-newest_price_record" title="Link to this method">
+                <span class="method-name">newest_price_record</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="newest_price_record-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">149</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">newest_price_record</span>
+<span class="line-num">150</span>   <span class="ruby-keyword">if</span> <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">loaded?</span>
+<span class="line-num">151</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">max_by</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:recorded_at</span>)
+<span class="line-num">152</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">153</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">order</span>(<span class="ruby-value">recorded_at:</span> <span class="ruby-value">:desc</span>).<span class="ruby-identifier">first</span>
+<span class="line-num">154</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">155</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Most recent <a href="PriceRecord.html"><code>PriceRecord</code></a>. Uses the preloaded association when available so callers that eager-load price_records don’t trigger an N+1.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-out_of_stock-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-out_of_stock-3F" title="Link to this method">
+                <span class="method-name">out_of_stock?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="out_of_stock-3F-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">103</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">out_of_stock?</span>
+<span class="line-num">104</span>   <span class="ruby-identifier">stock_status</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;out_of_stock&quot;</span>
+<span class="line-num">105</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-price_history-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-price_history-3F" title="Link to this method">
+                <span class="method-name">price_history?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="price_history-3F-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">131</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">price_history?</span>
+<span class="line-num">132</span>   <span class="ruby-keyword">if</span> <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">loaded?</span>
+<span class="line-num">133</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">any?</span>
+<span class="line-num">134</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">135</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">exists?</span>
+<span class="line-num">136</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">137</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>True when the product has at least one recorded price. Gates the price-history exports (CSV/PDF) so we never hand back an empty file.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-price_trend" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-price_trend" title="Link to this method">
+                <span class="method-name">price_trend</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="price_trend-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">159</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">price_trend</span>
+<span class="line-num">160</span>   <span class="ruby-identifier">records</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">loaded?</span>
+<span class="line-num">161</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">sort_by</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:recorded_at</span>)
+<span class="line-num">162</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">163</span>     <span class="ruby-identifier">price_records</span>.<span class="ruby-identifier">order</span>(<span class="ruby-value">recorded_at:</span> <span class="ruby-value">:asc</span>).<span class="ruby-identifier">to_a</span>
+<span class="line-num">164</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">165</span>   <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">records</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">2</span>
+<span class="line-num">166</span> 
+<span class="line-num">167</span>   <span class="ruby-identifier">latest</span> = <span class="ruby-identifier">records</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">price</span>
+<span class="line-num">168</span>   <span class="ruby-comment"># Compare against average of all previous prices</span>
+<span class="line-num">169</span>   <span class="ruby-identifier">previous_avg</span> = <span class="ruby-identifier">records</span>[<span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">sum</span>(<span class="ruby-operator">&amp;</span><span class="ruby-value">:price</span>) <span class="ruby-operator">/</span> (<span class="ruby-identifier">records</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>).<span class="ruby-identifier">to_f</span>
+<span class="line-num">170</span> 
+<span class="line-num">171</span>   <span class="ruby-identifier">diff_percent</span> = ((<span class="ruby-identifier">latest</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">previous_avg</span>) <span class="ruby-operator">/</span> <span class="ruby-identifier">previous_avg</span> <span class="ruby-operator">*</span> <span class="ruby-value">100</span>).<span class="ruby-identifier">abs</span>
+<span class="line-num">172</span> 
+<span class="line-num">173</span>   <span class="ruby-keyword">case</span>
+<span class="line-num">174</span>   <span class="ruby-keyword">when</span> <span class="ruby-identifier">latest</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">previous_avg</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">diff_percent</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">5</span>
+<span class="line-num">175</span>     <span class="ruby-value">:up</span>
+<span class="line-num">176</span>   <span class="ruby-keyword">when</span> <span class="ruby-identifier">latest</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">previous_avg</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">diff_percent</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">5</span>
+<span class="line-num">177</span>     <span class="ruby-value">:down</span>
+<span class="line-num">178</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">179</span>     <span class="ruby-value">:stable</span>
+<span class="line-num">180</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">181</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Calculate price trend based on latest price vs historical average. Returns :up (price increased), :down (price decreased), :stable (relatively unchanged), or nil</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-price_trend_description" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-price_trend_description" title="Link to this method">
+                <span class="method-name">price_trend_description</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="price_trend_description-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">198</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">price_trend_description</span>
+<span class="line-num">199</span>   <span class="ruby-keyword">case</span> <span class="ruby-identifier">price_trend</span>
+<span class="line-num">200</span>   <span class="ruby-keyword">when</span> <span class="ruby-value">:up</span>
+<span class="line-num">201</span>     <span class="ruby-string">&quot;Price is trending up&quot;</span>
+<span class="line-num">202</span>   <span class="ruby-keyword">when</span> <span class="ruby-value">:down</span>
+<span class="line-num">203</span>     <span class="ruby-string">&quot;Price is trending down&quot;</span>
+<span class="line-num">204</span>   <span class="ruby-keyword">when</span> <span class="ruby-value">:stable</span>
+<span class="line-num">205</span>     <span class="ruby-string">&quot;Price is stable&quot;</span>
+<span class="line-num">206</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">207</span>     <span class="ruby-string">&quot;Not enough data to determine trend&quot;</span>
+<span class="line-num">208</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">209</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Trend description for accessibility</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-price_trend_emoji" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-price_trend_emoji" title="Link to this method">
+                <span class="method-name">price_trend_emoji</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="price_trend_emoji-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">184</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">price_trend_emoji</span>
+<span class="line-num">185</span>   <span class="ruby-keyword">case</span> <span class="ruby-identifier">price_trend</span>
+<span class="line-num">186</span>   <span class="ruby-keyword">when</span> <span class="ruby-value">:up</span>
+<span class="line-num">187</span>     <span class="ruby-string">&quot;📈&quot;</span>
+<span class="line-num">188</span>   <span class="ruby-keyword">when</span> <span class="ruby-value">:down</span>
+<span class="line-num">189</span>     <span class="ruby-string">&quot;📉&quot;</span>
+<span class="line-num">190</span>   <span class="ruby-keyword">when</span> <span class="ruby-value">:stable</span>
+<span class="line-num">191</span>     <span class="ruby-string">&quot;➡️&quot;</span>
+<span class="line-num">192</span>   <span class="ruby-keyword">else</span>
+<span class="line-num">193</span>     <span class="ruby-string">&quot;❓&quot;</span>
+<span class="line-num">194</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">195</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Human-readable price trend indicator</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-recent_alert-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-recent_alert-3F" title="Link to this method">
+                <span class="method-name">recent_alert?</span>
+                <span class="method-args">(window: 7.days)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="recent_alert-3F-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">78</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">recent_alert?</span>(<span class="ruby-value">window:</span> <span class="ruby-value">7</span>.<span class="ruby-identifier">days</span>)
+<span class="line-num">79</span>   <span class="ruby-identifier">last_alerted_at</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">last_alerted_at</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">window</span>.<span class="ruby-identifier">ago</span>
+<span class="line-num">80</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Used by the product detail / index views to decide whether to render the “🎉 Price alert triggered” banner / card chip. Defaults to 7 days so the banner stays around long enough for the user to actually see the deal but doesn’t linger forever.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-scrapeable-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-scrapeable-3F" title="Link to this method">
+                <span class="method-name">scrapeable?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="scrapeable-3F-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">244</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">scrapeable?</span>
+<span class="line-num">245</span>   <span class="ruby-identifier">source_url</span>.<span class="ruby-identifier">present?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">scrape_excluded?</span>(<span class="ruby-identifier">source_url</span>)
+<span class="line-num">246</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-show_refresh_failure-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-show_refresh_failure-3F" title="Link to this method">
+                <span class="method-name">show_refresh_failure?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="show_refresh_failure-3F-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">258</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">show_refresh_failure?</span>
+<span class="line-num">259</span>   <span class="ruby-identifier">auto_refresh?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">last_fetch_error</span>.<span class="ruby-identifier">present?</span>
+<span class="line-num">260</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Only surface cron / “Fetch latest” failures when we actually attempt automatic refresh. Manual-only products should not show REFRESH FAILED.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-stock_known-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-stock_known-3F" title="Link to this method">
+                <span class="method-name">stock_known?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="stock_known-3F-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">95</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">stock_known?</span>
+<span class="line-num">96</span>   <span class="ruby-identifier">stock_status</span>.<span class="ruby-identifier">present?</span>
+<span class="line-num">97</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>— Stock status —————————————————–</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-stock_status_label" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-stock_status_label" title="Link to this method">
+                <span class="method-name">stock_status_label</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="stock_status_label-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">108</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">stock_status_label</span>
+<span class="line-num">109</span>   <span class="ruby-keyword">case</span> <span class="ruby-identifier">stock_status</span>
+<span class="line-num">110</span>   <span class="ruby-keyword">when</span> <span class="ruby-string">&quot;in_stock&quot;</span>     <span class="ruby-keyword">then</span> <span class="ruby-string">&quot;In stock&quot;</span>
+<span class="line-num">111</span>   <span class="ruby-keyword">when</span> <span class="ruby-string">&quot;out_of_stock&quot;</span> <span class="ruby-keyword">then</span> <span class="ruby-string">&quot;Out of stock&quot;</span>
+<span class="line-num">112</span>   <span class="ruby-keyword">end</span>
+<span class="line-num">113</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>Short human label for the UI, or nil when stock is unknown.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-tags_input" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-tags_input" title="Link to this method">
+                <span class="method-name">tags_input</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="tags_input-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">248</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">tags_input</span>
+<span class="line-num">249</span>   <span class="ruby-keyword">defined?</span>(<span class="ruby-ivar">@tags_input</span>) <span class="ruby-operator">?</span> <span class="ruby-ivar">@tags_input</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">tags</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&quot;, &quot;</span>)
+<span class="line-num">250</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-tags_input-3D" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-tags_input-3D" title="Link to this method">
+                <span class="method-name">tags_input=</span>
+                <span class="method-args">(value)</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="tags_input-3D-source">
+            <pre class="ruby">    <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">252</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">tags_input=</span>(<span class="ruby-identifier">value</span>)
+<span class="line-num">253</span>   <span class="ruby-ivar">@tags_input</span> = <span class="ruby-identifier">value</span>
+<span class="line-num">254</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+      <div id="method-i-target_price_alert_enabled-3F" class="method-detail anchor-link ">
+        <div class="method-header">
+
+            <div class="method-heading">
+              <a href="#method-i-target_price_alert_enabled-3F" title="Link to this method">
+                <span class="method-name">target_price_alert_enabled?</span>
+                <span class="method-args">()</span>
+              </a>
+            </div>
+
+        </div>
+
+
+          <div class="method-controls">
+            <details class="method-source-toggle">
+              <summary>Source</summary>
+            </details>
+          </div>
+          <div class="method-source-code" id="target_price_alert_enabled-3F-source">
+            <pre class="ruby">   <span class="ruby-comment"># File app/models/product.rb</span>
+<span class="line-num">63</span> <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">target_price_alert_enabled?</span>
+<span class="line-num">64</span>   <span class="ruby-identifier">target_price</span>.<span class="ruby-identifier">present?</span>
+<span class="line-num">65</span> <span class="ruby-keyword">end</span></pre>
+          </div>
+
+
+
+        <div class="method-description">
+
+
+          <p>True iff the owner has asked to be alerted when the price hits or drops below <code>target_price</code>. Used by <a href="PriceAlerter.html"><code>PriceAlerter</code></a> to decide whether to bother running the rest of the alert evaluation.</p>
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+    </section>
+
+
+
+
+  </section>
+
+</main>
+
+<aside class="table-of-contents" role="complementary" aria-label="Table of Contents">
+  <div class="toc-sticky">
+    <h3 class="toc-heading">On This Page</h3>
+    <nav class="toc-nav" id="toc-nav" aria-label="Page sections">
+      <!-- Generated by JavaScript based on page headings -->
+    </nav>
+  </div>
+</aside>
+
+
+<footer class="site-footer">
+  
+
+  <div class="footer-bottom">
+    <p>
+      Generated by <a href="https://ruby.github.io/rdoc/">RDoc 7.2.0</a>
+      using the Aliki theme by <a href="http://st0012.dev">Stan Lo</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+
