@@ -167,8 +167,7 @@
               <% if @product.auto_refresh? && @product.scrapeable? %>
                 <%= button_to fetch_price_product_path(@product), method: :post,
                       class: "pt-btn pt-btn-primary pt-btn-block",
-                      data: { turbo_confirm: "Fetch the latest price from the source URL? This may take a few seconds." },
-                      form: { style: "width: 100%;" } do %>
+                      data: { turbo_confirm: "Fetch the latest price from the source URL? This may take a few seconds." } do %>
                   ↻ Fetch latest from source
                 <% end %>
               <% end %>

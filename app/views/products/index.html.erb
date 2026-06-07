@@ -25,10 +25,13 @@
             <span class="pt-hero-meta-dot"></span>
             <span><strong><%= @pagy&.count || @products.size %></strong> <%= "product".pluralize(@pagy&.count || @products.size) %> tracked</span>
           </div>
-          <%= link_to "Use AI to help you plan your shopping and navigate our site",
-                assistant_path,
-                class: "pt-ai-hint-link",
-                data: { controller: "askai-launcher", action: "askai-launcher#open" } %>
+          <p class="pt-hero-ai-hint">
+            Need help deciding what to buy?
+            <%= link_to "Ask AI",
+                  assistant_path,
+                  class: "pt-inline-link",
+                  data: { controller: "askai-launcher", action: "askai-launcher#open" } %>.
+          </p>
         </aside>
       </div>
     </div>
@@ -90,18 +93,29 @@
                   {}, class: "pt-select", data: { action: "change->auto-submit#submitNow" } %>
           </div>
 
-          <% fav_params = params.permit(:search, :category, :tag, :sort).to_h %>
-          <% if @favorites_only %>
-            <%= link_to "♥ Favorites: on", products_path(fav_params), class: "pt-link-btn pt-link-btn-strong pt-fav-filter is-active" %>
-          <% else %>
-            <%= link_to "♡ Favorites only", products_path(fav_params.merge(favorites: 1)), class: "pt-link-btn pt-link-btn-strong pt-fav-filter" %>
-          <% end %>
+          <div class="pt-toolbar-actions">
+            <% fav_params = params.permit(:search, :category, :tag, :sort).to_h %>
+            <% if @favorites_only %>
+              <%= link_to products_path(fav_params), class: "pt-toolbar-btn pt-toolbar-btn-fav is-active", aria: { current: "true" } do %>
+                <%= render "shared/icon", name: "heart", size: 14 %>
+                <span>Favorites</span>
+              <% end %>
+            <% else %>
+              <%= link_to products_path(fav_params.merge(favorites: 1)), class: "pt-toolbar-btn pt-toolbar-btn-fav" do %>
+                <%= render "shared/icon", name: "heart", size: 14 %>
+                <span>Favorites only</span>
+              <% end %>
+            <% end %>
 
-          <%= link_to "Export watchlist", export_watchlist_products_path(format: :csv), class: "pt-link-btn pt-link-btn-strong" %>
+            <%= link_to export_watchlist_products_path(format: :csv), class: "pt-toolbar-btn" do %>
+              <%= render "shared/icon", name: "download", size: 14 %>
+              <span>Export CSV</span>
+            <% end %>
 
-          <% if params[:search].present? || params[:category].present? || params[:tag].present? || (params[:sort].present? && params[:sort] != "newest") %>
-            <%= link_to "Clear filters", products_path, class: "pt-link-btn pt-link-btn-strong" %>
-          <% end %>
+            <% if params[:search].present? || params[:category].present? || params[:tag].present? || (params[:sort].present? && params[:sort] != "newest") || @favorites_only %>
+              <%= link_to "Clear filters", products_path, class: "pt-toolbar-btn pt-toolbar-btn-ghost" %>
+            <% end %>
+          </div>
 
           <%# Keep a hidden submit so Enter in the search box still posts the form,
               and Stimulus is free to call requestSubmit() without warnings. %>

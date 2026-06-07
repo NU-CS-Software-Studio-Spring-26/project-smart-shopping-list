@@ -342,15 +342,13 @@ body {
   color: var(--accent); margin-bottom: 12px;
   text-transform: none; letter-spacing: -0.005em;
 }
-.pt-ai-hint-link {
-  display: inline-block;
-  margin-top: 4px;
-  padding-top: 4px;
-  font-size: 14px; font-weight: 500;
-  color: var(--accent);
-  text-decoration: none;
+.pt-hero-ai-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+  max-width: 38ch;
 }
-.pt-ai-hint-link:hover { text-decoration: underline; }
 .pt-h1 {
   font-size: clamp(32px, 4.5vw, 48px);
   line-height: 1.08;
@@ -471,6 +469,53 @@ body {
   cursor: pointer;
 }
 .pt-input-block { width: 100%; }
+
+.pt-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pt-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  min-height: 38px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-2);
+  background: var(--bg-2);
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.pt-toolbar-btn:hover {
+  background: #ececef;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.pt-toolbar-btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+}
+.pt-toolbar-btn-ghost:hover {
+  background: var(--bg-2);
+  border-color: var(--line-2);
+  color: var(--ink);
+}
+.pt-toolbar-btn-fav.is-active {
+  background: #fff0f3;
+  border-color: #f3b6c6;
+  color: #e0245e;
+}
+.pt-toolbar-btn-fav.is-active .pt-icon {
+  fill: #e0245e;
+  stroke: #e0245e;
+}
 
 .pt-view-toggle {
   display: flex; background: var(--bg-2); border-radius: var(--r-md); padding: 3px;
@@ -2027,9 +2072,6 @@ body {
   overflow: hidden;
 }
 .pt-fav-item-price { padding: 2px 10px 10px; font-size: 13px; color: var(--muted); }
-
-/* Favorites filter chip in the toolbar. */
-.pt-fav-filter.is-active { color: #e0245e; }
 
 /* ---- Live password requirement checklist (#70) ---- */
 .pt-pw-reqs {
