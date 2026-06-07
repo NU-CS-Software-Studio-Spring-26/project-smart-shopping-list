@@ -5,8 +5,26 @@ class UserTest < ActiveSupport::TestCase
     {
       email_address: "person@example.com",
       password: "Test#Pass9!",
-      password_confirmation: "Test#Pass9!"
+      password_confirmation: "Test#Pass9!",
+      terms_accepted: true
     }.merge(overrides)
+  end
+
+  test "terms_accepted is required on create for password users" do
+    user = User.new(valid_attributes(terms_accepted: false))
+    assert_not user.valid?
+    assert_includes user.errors[:terms_accepted], "must be accepted before creating an account"
+  end
+
+  test "avatar rejects non-image content types" do
+    user = users(:one)
+    user.avatar.attach(
+      io: StringIO.new("plain text"),
+      filename: "notes.txt",
+      content_type: "text/plain"
+    )
+    assert_not user.valid?
+    assert_includes user.errors[:avatar], "must be a PNG, JPEG, WebP, or GIF image"
   end
 
   test "valid with email + password" do

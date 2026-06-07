@@ -89,6 +89,16 @@
             </div>
           </div>
 
+          <div class="pt-field" style="margin-top: 8px;">
+            <label class="pt-check-label">
+              <%= form.check_box :terms_accepted, required: true, class: "pt-check" %>
+              <span>
+                I agree to the <%= link_to "Terms & Disclaimer", terms_path, class: "pt-link" %>
+                and <%= link_to "Privacy Policy", privacy_path, class: "pt-link" %>.
+              </span>
+            </label>
+          </div>
+
           <%= form.submit "Create account", class: "pt-btn pt-btn-primary pt-btn-lg pt-btn-block" %>
         </div>
 
