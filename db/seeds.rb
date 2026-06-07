@@ -7,8 +7,12 @@ User.destroy_all
 
 demo_password = "TrackSave!123"
 
+def seed_user!(**attrs)
+  User.create!(**attrs, terms_accepted: true)
+end
+
 puts "Creating demo user..."
-demo_user = User.create!(
+demo_user = seed_user!(
   email_address: "demo@example.com",
   password: demo_password,
   password_confirmation: demo_password
@@ -33,7 +37,7 @@ users = [ demo_user ]
 puts "Creating load-test users..."
 LOAD_TEST_USER_COUNT.times do |i|
   password = "Shopper!#{i + 1}A#{(i % 9) + 1}z"
-  users << User.create!(
+  users << seed_user!(
     email_address: "shopper#{i + 1}@example.com",
     password: password,
     password_confirmation: password
@@ -41,7 +45,7 @@ LOAD_TEST_USER_COUNT.times do |i|
 end
 
 puts "Creating pagination stress-test account..."
-pagination_user = User.create!(
+pagination_user = seed_user!(
   email_address: "paginationtest@example.com",
   password: "Pagy123!",
   password_confirmation: "Pagy123!"

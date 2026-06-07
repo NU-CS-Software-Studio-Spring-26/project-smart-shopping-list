@@ -32,3 +32,6 @@
 
 # macOS
 .DS_Store
+
+# RSpec example status (regenerated on each run)
+/spec/examples.txt

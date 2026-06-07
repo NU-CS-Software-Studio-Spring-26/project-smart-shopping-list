@@ -1,5 +1,5 @@
-# Lightweight test gate — mirrors the "test" job in ci.yml.
-# Full checks (RuboCop, Brakeman, seed smoke test) run in CI workflow.
+# Test + seed smoke gate. Full security/lint checks run in ci.yml.
+# Before pushing, run: bin/push-check
 name: Rails Tests
 
 on:
@@ -40,3 +40,9 @@ jobs:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
         run: bin/rails db:test:prepare test
+
+      - name: Smoke-test large seed data
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+        run: bin/rails db:seed:replant
