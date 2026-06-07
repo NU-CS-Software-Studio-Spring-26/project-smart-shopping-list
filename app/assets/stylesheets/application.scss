@@ -252,7 +252,7 @@ body {
   align-items: center;
 }
 .pt-hero-cta {
-  display: flex; flex-direction: column; gap: 12px;
+  display: flex; flex-direction: column; gap: 20px;
 }
 .pt-hero-add {
   position: relative;
@@ -344,7 +344,8 @@ body {
 }
 .pt-ai-hint-link {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 4px;
+  padding-top: 4px;
   font-size: 14px; font-weight: 500;
   color: var(--accent);
   text-decoration: none;
@@ -926,6 +927,17 @@ body {
 .pt-form-actions .pt-link-btn { align-self: center; }
 .pt-form-actions-row {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+/* Ask AI page: keep the submit button compact instead of full-width */
+.pt-assistant-form .pt-form-actions {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+.pt-assistant-form .pt-form-actions .pt-btn {
+  width: auto;
+  min-width: 96px;
 }
 
 .pt-pw-meter { display: flex; gap: 4px; align-items: center; margin-top: 6px; }
@@ -1882,7 +1894,12 @@ body {
   padding: 14px 18px;
   border-bottom: 1px solid var(--line-2);
 }
-.pt-askai-form .pt-btn { flex: 0 0 auto; }
+.pt-askai-form .pt-btn {
+  flex: 0 0 auto;
+  min-width: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+}
 
 .pt-askai-body {
   flex: 1 1 auto;
