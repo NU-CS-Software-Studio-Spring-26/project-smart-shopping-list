@@ -200,6 +200,9 @@
                   <span>Out of stock</span>
                 </span>
               <% end %>
+              <%# Out-of-stock and trend badges share the bottom edge of the media
+                  area so the top-right corner stays reserved for the favorite
+                  heart (rendered as a sibling of this link, outside it). %>
               <% if trend %>
                 <span class="pt-trend pt-trend-float" style="color: <%= trend_color %>; background: <%= trend_bg %>;">
                   <span><%= trend_label %></span>
