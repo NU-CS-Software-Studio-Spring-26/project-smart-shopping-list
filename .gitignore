@@ -39,5 +39,8 @@
 # Playwright MCP scratch output
 /.playwright-mcp/
 
+# Local demo screenshots (Playwright MCP output, not for commit)
+/demo-*.png
+
 # Generated RDoc output
 /doc/app/

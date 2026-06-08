@@ -925,7 +925,7 @@ body {
   box-shadow: 0 0 0 3px var(--accent-50);
 }
 .pt-input::placeholder { color: var(--muted); }
-.pt-input:invalid {
+.pt-input:user-invalid {
   border-color: color-mix(in srgb, var(--red) 55%, var(--line));
 }
 
