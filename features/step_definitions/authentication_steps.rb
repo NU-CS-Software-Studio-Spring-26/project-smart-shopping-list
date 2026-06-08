@@ -1,6 +1,12 @@
 Given("I am signed in as {string}") do |email|
-  post session_path, params: { email_address: email, password: "password" }
-  follow_redirect! if response.redirect?
+  password = "Cuke!Pass#42xq"
+  User.find_or_create_by!(email_address: email) do |u|
+    u.password = password
+    u.password_confirmation = password
+    u.terms_accepted = "1"
+  end
+  post session_path, params: { email_address: email, password: password }
+  follow_redirect! while response.redirect?
 end
 
 Given("I am on the sign-up page") do
