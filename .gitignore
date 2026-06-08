@@ -35,3 +35,9 @@
 
 # RSpec example status (regenerated on each run)
 /spec/examples.txt
+
+# Playwright MCP scratch output
+/.playwright-mcp/
+
+# Generated RDoc output
+/doc/app/
