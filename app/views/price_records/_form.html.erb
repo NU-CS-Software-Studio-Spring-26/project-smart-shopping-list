@@ -34,11 +34,12 @@
   </div>
 
   <div class="pt-field">
-    <label class="pt-field-label" for="price_record_store_name">Store</label>
+    <label class="pt-field-label" for="price_record_store_name">Store <span class="pt-field-req">required</span></label>
     <%= f.select :store_name,
           ["Amazon", "Walmart", "Best Buy", "Costco", "Home Depot", "Lowe's", "Target", "eBay", "Newegg", "B&H Photo", "Apple Store", "Lululemon", "Nike", "Adidas", "Etsy", "IKEA", "Macy's", "REI", "Other"],
           { prompt: "Select a store" },
-          class: "pt-select pt-input pt-input-block" %>
+          class: "pt-select pt-input pt-input-block",
+          required: true %>
   </div>
 
   <div class="pt-field">
