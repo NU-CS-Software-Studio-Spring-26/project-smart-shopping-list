@@ -86,8 +86,9 @@
 
     <%= render "shared/flash" %>
 
-    <div id="main-content" tabindex="-1"></div>
-    <%= yield %>
+    <div id="main-content" tabindex="-1">
+      <%= yield %>
+    </div>
 
     <%# Global Ask AI launcher. Skipped on the assistant page itself so the
         ask_ai_results Turbo Frame id stays unique in the response. %>
