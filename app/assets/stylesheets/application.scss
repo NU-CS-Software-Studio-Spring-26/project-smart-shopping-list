@@ -36,6 +36,9 @@
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
   --shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+
+  --pt-gutter: 24px;
+  --pt-gutter-mobile: 20px;
 }
 
 * { box-sizing: border-box; }
@@ -1238,15 +1241,26 @@ body {
 }
 
 @media (max-width: 640px) {
-  /* Safe-area + tighter horizontal padding on small screens */
-  .container-xl {
-    padding-left: calc(16px + env(safe-area-inset-left, 0px));
-    padding-right: calc(16px + env(safe-area-inset-right, 0px));
+  /* Safe-area + comfortable horizontal gutter on small screens */
+  .pt-header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    --bs-gutter-x: var(--pt-gutter-mobile);
+    padding-left: calc(var(--pt-gutter-mobile) + env(safe-area-inset-left, 0px)) !important;
+    padding-right: calc(var(--pt-gutter-mobile) + env(safe-area-inset-right, 0px)) !important;
   }
 
   .pt-page {
     padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     min-height: calc(100vh - 52px);
+    overflow-x: clip;
   }
 
   /* Header: brand + tools on one row; nav drawer below */
@@ -1285,6 +1299,29 @@ body {
   }
   .pt-nav.is-open { display: flex; }
   .pt-nav-link { font-size: 15px; padding: 11px 12px; border-radius: 10px; }
+  .pt-nav { padding-left: 2px; padding-right: 2px; }
+
+  /* In-page banners / CTAs: keep clear of screen edges */
+  .pt-hero-add,
+  .pt-flash,
+  .pt-pin,
+  .pt-savings-block,
+  .pt-ai-advice,
+  .pt-budget-summary,
+  .pt-stat-cta,
+  .pt-retailers-panel,
+  .pt-retailers-footnote {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pt-about-banner {
+    margin-left: calc(var(--pt-gutter-mobile) + env(safe-area-inset-left, 0px));
+    margin-right: calc(var(--pt-gutter-mobile) + env(safe-area-inset-right, 0px));
+    width: auto;
+    border-radius: var(--r-lg);
+    height: clamp(140px, 34vw, 220px);
+  }
 
   /* Toolbar: 2-col filter grid, full-width search + actions */
   .pt-toolbar-wrap {
@@ -1426,13 +1463,13 @@ body {
   /* Flash toasts: inset from screen edges */
   .pt-flash-stack {
     top: calc(56px + env(safe-area-inset-top, 0px));
-    left: calc(12px + env(safe-area-inset-left, 0px));
-    right: calc(12px + env(safe-area-inset-right, 0px));
+    left: calc(var(--pt-gutter-mobile) + env(safe-area-inset-left, 0px));
+    right: calc(var(--pt-gutter-mobile) + env(safe-area-inset-right, 0px));
     width: auto;
     max-width: none;
   }
 
-  .pt-subtabs { gap: 4px; }
+  .pt-subtabs { gap: 4px; padding-left: 0; padding-right: 0; }
   .pt-subtab { font-size: 13px; padding: 8px 14px; }
 }
 
@@ -2146,15 +2183,17 @@ body {
 }
 
 @media (max-width: 520px) {
+  :root { --pt-gutter-mobile: 22px; }
+
   .pt-askai-fab {
-    right: calc(14px + env(safe-area-inset-right, 0px));
-    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    right: calc(var(--pt-gutter-mobile) + env(safe-area-inset-right, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     padding: 12px 14px;
   }
   .pt-askai-panel {
-    right: calc(10px + env(safe-area-inset-right, 0px));
-    left: calc(10px + env(safe-area-inset-left, 0px));
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    right: calc(var(--pt-gutter-mobile) + env(safe-area-inset-right, 0px));
+    left: calc(var(--pt-gutter-mobile) + env(safe-area-inset-left, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     width: auto;
     max-width: none;
     max-height: calc(100vh - 20px - env(safe-area-inset-bottom, 0px));
