@@ -1439,6 +1439,44 @@ body {
   /* Account settings hero */
   .pt-account-hero { flex-direction: column; align-items: flex-start; gap: 14px; }
 
+  /* Auth (sign-in / register): inset hero panel + form from screen edges */
+  .pt-auth {
+    min-height: auto;
+    padding-left: calc(var(--pt-gutter-mobile) + env(safe-area-inset-left, 0px));
+    padding-right: calc(var(--pt-gutter-mobile) + env(safe-area-inset-right, 0px));
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+  .pt-auth-grid { min-height: auto; gap: 0; }
+  .pt-auth-side {
+    padding: 22px 18px;
+    border-radius: var(--r-xl);
+    border: 1px solid var(--line-2);
+    margin-top: 10px;
+  }
+  .pt-auth-side-title { font-size: 30px; }
+  .pt-auth-side-lede { font-size: 15px; max-width: none; }
+  .pt-auth-mark { margin-bottom: 18px; width: 32px; height: 32px; font-size: 12px; }
+  .pt-auth-side-spec { padding-top: 16px; margin-top: 8px; gap: 10px; }
+  .pt-auth-form-wrap {
+    padding: 20px 0 8px;
+    place-items: start stretch;
+  }
+  .pt-auth-form,
+  .pt-auth-form-wrap > .pt-eyebrow,
+  .pt-auth-form-wrap > .pt-h1,
+  .pt-auth-form-wrap > .pt-oauth-actions,
+  .pt-auth-form-wrap > .pt-auth-divider,
+  .pt-auth-form-wrap > form {
+    width: 100%;
+    max-width: none;
+  }
+  .pt-auth-form .pt-h1,
+  .pt-auth-form-wrap > .pt-h1 { font-size: 28px; }
+
+  /* Guest header: drop hamburger (nav is footer-only) and tighten CTA row */
+  .pt-header-inner:not(:has(.pt-header-account)) .pt-nav-toggle { display: none; }
+  .pt-header-inner:not(:has(.pt-header-account)) .pt-nav { display: none !important; }
+
   /* Forms + empty states */
   .pt-form-head { padding-top: 20px; margin-bottom: 24px; }
   .pt-form-head .pt-h1 { font-size: 28px; }
@@ -2204,6 +2242,11 @@ body {
   .pt-toolbar-actions { grid-template-columns: 1fr; }
   .pt-footer-cols { grid-template-columns: 1fr; }
   .pt-retailer-grid { grid-template-columns: 1fr; }
+
+  .pt-auth-side-title { font-size: 26px; }
+  .pt-auth-side-spec { display: none; }
+  .pt-auth-form .pt-h1,
+  .pt-auth-form-wrap > .pt-h1 { font-size: 24px; }
 }
 
 /* ---- Favorites (#68): toggle button, card overlay, detail row, favorites row ---- */
