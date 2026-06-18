@@ -25,18 +25,6 @@
           <span class="pt-brand-name">PriceTracker</span>
         <% end %>
 
-        <button type="button"
-                class="pt-nav-toggle"
-                data-nav-target="button"
-                data-action="click->nav#toggle"
-                aria-controls="pt-primary-nav"
-                aria-expanded="false"
-                aria-label="Toggle navigation menu">
-          <span class="pt-nav-toggle-bar"></span>
-          <span class="pt-nav-toggle-bar"></span>
-          <span class="pt-nav-toggle-bar"></span>
-        </button>
-
         <nav id="pt-primary-nav" class="pt-nav" data-nav-target="menu" data-action="click->nav#close">
           <% if authenticated? %>
             <%= link_to "Products", products_path, class: "pt-nav-link #{'is-active' if controller_name == 'products'}" %>
@@ -44,34 +32,51 @@
             <%= link_to "Reports", reports_path, class: "pt-nav-link #{'is-active' if controller_name == 'reports'}" %>
             <%= link_to "Budget Planner", budget_planner_path, class: "pt-nav-link #{'is-active' if controller_name == 'budget_planner'}" %>
             <%= link_to "Ask AI", assistant_path, class: "pt-nav-link #{'is-active' if controller_name == 'assistant'}" %>
+            <div class="pt-nav-signout">
+              <%= button_to "Sign out", session_path, method: :delete, class: "pt-nav-link pt-nav-link-btn" %>
+            </div>
           <% end %>
           <%= link_to "Supported Sites", supported_retailers_path, class: "pt-nav-link #{'is-active' if controller_name == 'pages' && action_name == 'supported_retailers'}" %>
         </nav>
 
-        <div class="pt-header-right">
-          <% if authenticated? %>
-            <div class="pt-header-account">
-              <%= link_to account_path,
-                    class: "pt-account-chip #{'is-active' if controller_name == 'accounts'}",
-                    aria: { current: (controller_name == 'accounts' ? "page" : nil) } do %>
-                <%= user_avatar_tag(Current.user) %>
-                <span class="pt-account-chip-label">
-                  <span class="pt-account-chip-name">
-                    <%= Current.user.name.presence || Current.user.email_address.split("@").first %>
+        <div class="pt-header-tools">
+          <button type="button"
+                  class="pt-nav-toggle"
+                  data-nav-target="button"
+                  data-action="click->nav#toggle"
+                  aria-controls="pt-primary-nav"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation menu">
+            <span class="pt-nav-toggle-bar"></span>
+            <span class="pt-nav-toggle-bar"></span>
+            <span class="pt-nav-toggle-bar"></span>
+          </button>
+
+          <div class="pt-header-right">
+            <% if authenticated? %>
+              <div class="pt-header-account">
+                <%= link_to account_path,
+                      class: "pt-account-chip #{'is-active' if controller_name == 'accounts'}",
+                      aria: { current: (controller_name == 'accounts' ? "page" : nil) } do %>
+                  <%= user_avatar_tag(Current.user) %>
+                  <span class="pt-account-chip-label">
+                    <span class="pt-account-chip-name">
+                      <%= Current.user.name.presence || Current.user.email_address.split("@").first %>
+                    </span>
+                    <span class="pt-account-chip-meta">Account</span>
                   </span>
-                  <span class="pt-account-chip-meta">Account</span>
-                </span>
-              <% end %>
-              <%= button_to "Sign out",
-                    session_path,
-                    method: :delete,
-                    class: "pt-btn pt-btn-ghost pt-btn-sm",
-                    form: { class: "pt-header-signout-form" } %>
-            </div>
-          <% else %>
-            <%= link_to "Sign in", new_session_path, class: "pt-btn pt-btn-ghost" %>
-            <%= link_to "Create account", new_registration_path, class: "pt-btn pt-btn-primary" %>
-          <% end %>
+                <% end %>
+                <%= button_to "Sign out",
+                      session_path,
+                      method: :delete,
+                      class: "pt-btn pt-btn-ghost pt-btn-sm pt-header-signout-btn",
+                      form: { class: "pt-header-signout-form" } %>
+              </div>
+            <% else %>
+              <%= link_to "Sign in", new_session_path, class: "pt-btn pt-btn-ghost" %>
+              <%= link_to "Create account", new_registration_path, class: "pt-btn pt-btn-primary" %>
+            <% end %>
+          </div>
         </div>
       </div>
     </header>

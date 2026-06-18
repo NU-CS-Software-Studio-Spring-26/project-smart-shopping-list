@@ -54,7 +54,7 @@
             <span class="pt-search-icon"><%= render "shared/icon", name: "search", size: 16 %></span>
             <%= f.text_field :search,
                   value: params[:search],
-                  placeholder: "Search by name, category, description…",
+                  placeholder: "Search products…",
                   class: "pt-search-input",
                   data: { action: "input->auto-submit#queue" } %>
             <% if params[:search].present? %>
