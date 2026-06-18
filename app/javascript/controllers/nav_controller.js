@@ -10,14 +10,18 @@ export default class extends Controller {
   toggle() {
     const open = this.menuTarget.classList.toggle("is-open")
     if (this.hasButtonTarget) {
+      this.buttonTarget.classList.toggle("is-open", open)
       this.buttonTarget.setAttribute("aria-expanded", open ? "true" : "false")
+      this.buttonTarget.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu")
     }
   }
 
   close() {
     this.menuTarget.classList.remove("is-open")
     if (this.hasButtonTarget) {
+      this.buttonTarget.classList.remove("is-open")
       this.buttonTarget.setAttribute("aria-expanded", "false")
+      this.buttonTarget.setAttribute("aria-label", "Open navigation menu")
     }
   }
 

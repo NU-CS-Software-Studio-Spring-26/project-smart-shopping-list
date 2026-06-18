@@ -16,7 +16,7 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body>
+  <body data-controller="hash-scroll" data-action="turbo:load@window->hash-scroll#scrollToHash">
     <a href="#main-content" class="pt-skip-link">Skip to main content</a>
     <header class="pt-header" data-controller="nav" data-action="keydown@window->nav#closeOnEscape">
       <div class="pt-header-inner container-xl">
@@ -74,7 +74,10 @@
               </div>
             <% else %>
               <%= link_to "Sign in", new_session_path, class: "pt-btn pt-btn-ghost" %>
-              <%= link_to "Sign up", new_registration_path, class: "pt-btn pt-btn-primary" %>
+              <%= link_to "Sign up",
+                    new_registration_path(anchor: "signup-form"),
+                    class: "pt-btn pt-btn-primary",
+                    data: { action: "click->hash-scroll#scroll" } %>
             <% end %>
           </div>
         </div>
@@ -120,7 +123,9 @@
               <%= button_to "Sign out", session_path, method: :delete, form: { style: "display:inline" } %>
             <% else %>
               <%= link_to "Sign in", new_session_path %>
-              <%= link_to "Sign up", new_registration_path %>
+              <%= link_to "Sign up",
+                    new_registration_path(anchor: "signup-form"),
+                    data: { action: "click->hash-scroll#scroll" } %>
             <% end %>
           </div>
           <div>

@@ -123,6 +123,7 @@ body {
   font-family: var(--sans);
   cursor: pointer;
   color: var(--red);
+  text-decoration: none;
 }
 .pt-nav-link-btn:hover { background: #fff0f1; color: var(--red); }
 .pt-nav-signout form { margin: 0; width: 100%; }
@@ -131,6 +132,17 @@ body {
   width: 16px; height: 2px;
   background: var(--ink);
   border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.15s ease;
+}
+.pt-nav-toggle.is-open .pt-nav-toggle-bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.pt-nav-toggle.is-open .pt-nav-toggle-bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.pt-nav-toggle.is-open .pt-nav-toggle-bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
 }
 .pt-nav-link {
   color: var(--ink-2);
@@ -246,6 +258,45 @@ body {
 .pt-btn-block { width: 100%; justify-content: center; }
 .pt-btn-icon { font-weight: 400; font-size: 14px; line-height: 1; margin-right: 2px; }
 .pt-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Bootstrap underlines all <a> tags; keep buttons/nav chrome clean. */
+a.pt-btn,
+a.pt-nav-link,
+a.pt-account-chip,
+a.pt-brand,
+a.pt-subtab,
+a.pt-toolbar-btn,
+a.pt-hero-add,
+a.pt-pagination-link {
+  text-decoration: none;
+}
+a.pt-btn:hover,
+a.pt-btn:focus,
+a.pt-btn:active,
+a.pt-nav-link:hover,
+a.pt-nav-link:focus,
+a.pt-nav-link:active,
+a.pt-account-chip:hover,
+a.pt-account-chip:focus,
+a.pt-account-chip:active,
+a.pt-brand:hover,
+a.pt-brand:focus,
+a.pt-brand:active,
+a.pt-subtab:hover,
+a.pt-subtab:focus,
+a.pt-subtab:active,
+a.pt-toolbar-btn:hover,
+a.pt-toolbar-btn:focus,
+a.pt-toolbar-btn:active,
+a.pt-hero-add:hover,
+a.pt-hero-add:focus,
+a.pt-hero-add:active {
+  text-decoration: none;
+}
+
+#signup-form {
+  scroll-margin-top: calc(68px + env(safe-area-inset-top, 0px));
+}
 
 .pt-icon-btn {
   font-size: 12px;

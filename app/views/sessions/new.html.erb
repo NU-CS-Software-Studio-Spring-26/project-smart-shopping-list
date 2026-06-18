@@ -79,7 +79,10 @@
         <% end %>
 
         <div class="pt-auth-foot">
-          New here? <%= link_to "Sign up", new_registration_path, class: "pt-link pt-link-strong" %>
+          New here? <%= link_to "Sign up",
+                new_registration_path(anchor: "signup-form"),
+                class: "pt-link pt-link-strong",
+                data: { action: "click->hash-scroll#scroll" } %>
         </div>
         <div class="pt-auth-links">
           <%= link_to "Forgot password?", new_password_path, class: "pt-link" %>
