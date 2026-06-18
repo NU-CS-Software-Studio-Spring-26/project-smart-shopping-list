@@ -74,7 +74,7 @@
               </div>
             <% else %>
               <%= link_to "Sign in", new_session_path, class: "pt-btn pt-btn-ghost" %>
-              <%= link_to "Create account", new_registration_path, class: "pt-btn pt-btn-primary" %>
+              <%= link_to "Sign up", new_registration_path, class: "pt-btn pt-btn-primary" %>
             <% end %>
           </div>
         </div>
@@ -120,7 +120,7 @@
               <%= button_to "Sign out", session_path, method: :delete, form: { style: "display:inline" } %>
             <% else %>
               <%= link_to "Sign in", new_session_path %>
-              <%= link_to "Create account", new_registration_path %>
+              <%= link_to "Sign up", new_registration_path %>
             <% end %>
           </div>
           <div>
